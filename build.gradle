@@ -1,0 +1,72 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'edu.sc.seis.launch4j' version '2.5.1'
+}
+
+group 'net.foulest'
+version '0.1.8'
+compileJava.options.encoding = 'UTF-8'
+
+repositories {
+    mavenCentral()
+
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+configurations {
+    provided
+    implementation.extendsFrom(provided)
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    provided group: 'commons-io', name: 'commons-io', version: '2.11.0'
+
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    provided group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+
+    // https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform
+    provided group: 'net.java.dev.jna', name: 'jna-platform', version: '5.10.0'
+
+    // https://mvnrepository.com/artifact/com.profesorfalken/jPowerShell
+    implementation group: 'com.profesorfalken', name: 'jPowerShell', version: '3.1.1'
+
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+}
+
+launch4j {
+    outfile = "${project.name}.exe"
+    mainClassName = "${project.group}.repairkit.RepairKit"
+    icon = "${projectDir}/RepairKit.ico"
+
+    jreMinVersion = '1.8.0'
+    initialHeapSize = 128
+    maxHeapSize = 1024
+
+    version = "${project.version}"
+    textVersion = "${project.version}"
+    fileDescription = 'RepairKit by Foulest'
+    copyright = 2022
+    productName = "${project.name}"
+    internalName = "${project.name}"
+
+    manifest = "${projectDir}/RepairKit.manifest"
+}
+
+jar {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+    manifest {
+        attributes 'Main-Class': 'net.foulest.repairkit.RepairKit'
+    }
+
+    from {
+        configurations.provided.asFileTree.files.collect {
+            zipTree(it)
+        }
+    }
+}
