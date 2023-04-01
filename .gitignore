@@ -19,7 +19,6 @@ $RECYCLE.BIN/
 *.stackdump
 *.tar.gz
 *.war
-*.zip
 *~
 .AppleDB
 .AppleDesktop
@@ -42,6 +41,7 @@ $RECYCLE.BIN/
 .fuse_hidden*
 .gradle/
 .idea/
+build/
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
 .nfs*
