@@ -823,11 +823,11 @@ public class RepairKit {
         }
 
         // Patches other security vulnerabilities.
-        runCommand("dism /online /Disable-Feature);eatureName:\"SMB1Protocol\" /NoRestart", false);
-        runCommand("dism /Online /Disable-Feature);eatureName:\"SMB1Protocol-Client\" /NoRestart", false);
-        runCommand("dism /Online /Disable-Feature);eatureName:\"SMB1Protocol-Server\" /NoRestart", false);
-        runCommand("dism /online /Disable-Feature);eatureName:\"MicrosoftWindowsPowerShellV2Root\" /NoRestart", false);
-        runCommand("dism /online /Disable-Feature);eatureName:\"MicrosoftWindowsPowerShellV2\" /NoRestart", false);
+        runCommand("dism /Online /Disable-Feature /FeatureName:\"SMB1Protocol\" /NoRestart", false);
+        runCommand("dism /Online /Disable-Feature /FeatureName:\"SMB1Protocol-Client\" /NoRestart", false);
+        runCommand("dism /Online /Disable-Feature /FeatureName:\"SMB1Protocol-Server\" /NoRestart", false);
+        runCommand("dism /Online /Disable-Feature /FeatureName:\"MicrosoftWindowsPowerShellV2Root\" /NoRestart", false);
+        runCommand("dism /Online /Disable-Feature /FeatureName:\"MicrosoftWindowsPowerShellV2\" /NoRestart", false);
 
         // Removes Visual Studio telemetry.
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\VisualStudio\\Telemetry", "TurnOffSwitch", 1);
@@ -934,7 +934,6 @@ public class RepairKit {
                 new String[]{"Fax", "Fax"},
                 new String[]{"MapsBroker", "Downloaded Maps Manager"},
                 new String[]{"PcaSvc", "Program Compatibility Assistant Service"},
-                new String[]{"Razer Game Scanner Service", "Razer Game Scanner Service"},
                 new String[]{"RemoteAccess", "Remote Access"},
                 new String[]{"RemoteRegistry", "Remote Registry"},
                 new String[]{"RetailDemo", "Retail Demo"},
