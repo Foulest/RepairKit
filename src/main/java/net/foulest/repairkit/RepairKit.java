@@ -19,7 +19,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static net.foulest.repairkit.util.CommandUtil.*;
+import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
+import static net.foulest.repairkit.util.CommandUtil.runCommand;
 import static net.foulest.repairkit.util.FileUtil.*;
 import static net.foulest.repairkit.util.RegistryUtil.*;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
@@ -29,7 +30,7 @@ public class RepairKit {
 
     private static final Set<String> SUPPORTED_OS_NAMES = new HashSet<>(Arrays.asList("Windows 10", "Windows 11"));
     private static final String OUTDATED_OS_MESSAGE = "Your operating system, %s, is outdated, unknown, or not Windows based."
-            + "\nThis software only works on up-to-date Windows operating systems.";
+                                                      + "\nThis software only works on up-to-date Windows operating systems.";
 
     public static final String programName = "RepairKit";
     public static final JPanel panelMain = new JPanel(null);
@@ -62,7 +63,7 @@ public class RepairKit {
         setGUIElements();
 
         // Deletes pre-existing RepairKit files.
-        cleanTempFiles(false, false, false);
+        cleanTempFiles(false);
 
         // Creates the main frame.
         frame.setContentPane(panelMain);
@@ -134,11 +135,25 @@ public class RepairKit {
      */
     public static void setAppButtons() {
         // FanControl Button
-        JButton buttonFanControl = createAppButton("FanControl", "Allows control over system fans.",
-                "FanControl", "FanControl.zip", "\\FanControl.exe", true,
-                System.getenv("APPDATA") + "\\FanControl");
+        JButton buttonFanControl = new JButton("FanControl");
+        buttonFanControl.setToolTipText("Allows control over system fans.");
+        buttonFanControl.setBackground(new Color(200, 200, 200));
         buttonFanControl.setBounds(5, 120, 152, 25);
         addComponents(panelMain, buttonFanControl);
+        buttonFanControl.addActionListener(actionEvent -> {
+            try {
+                String fanControlPath = getCommandOutput("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-Process -Name FanControl | Select-Object Path | ft -hidetableheaders\"", false, false).toString();
+                fanControlPath = fanControlPath.replace("[, ", "");
+                fanControlPath = fanControlPath.replace(", , ]", "");
+
+                if (fanControlPath.contains("Cannot find a process with the name")) {
+                    launchApplication("FanControl", "FanControl.zip", "\\FanControl.exe", true, System.getenv("APPDATA") + "\\FanControl");
+                } else {
+                    runCommand("start \"\" \"" + fanControlPath + "\"", false);
+                }
+            } catch (Exception ignored) {
+            }
+        });
 
         // CPU-Z Button
         JButton buttonCPUZ = createAppButton("CPU-Z", "Displays system hardware information.",
@@ -310,9 +325,10 @@ public class RepairKit {
      */
     private static void cleanFileExplorerThumbnails() {
         runCommand("taskkill /F /IM explorer.exe", false);
-        deleteDirectory(new File(System.getenv("LOCALAPPDATA") + "\\IconCache.db"));
-        deleteDirectory(new File(System.getenv("LOCALAPPDATA") + "\\Microsoft\\Windows\\Explorer\\"), "thumbcache*.db");
-        runCommand("explorer", false);
+        runCommand("taskkill /F /IM Everything.exe", false);
+        runCommand("del /s /q \"%localappdata%\\IconCache.db\"", false);
+        runCommand("del /s /q \"%localappdata%\\Microsoft\\Windows\\Explorer\\\"", false);
+        runCommand("start \"\" \"explorer.exe\"", false);
     }
 
     /**
@@ -363,51 +379,69 @@ public class RepairKit {
      * Cleans all temporary files.
      */
     private static void cleanTempFilesAll() {
-        cleanTempFiles(true, true, true);
+        cleanTempFiles(true);
     }
 
     /**
      * Cleans temporary files.
      *
-     * @param recycleBin   Whether to empty the recycle bin.
-     * @param windowsOld   Whether to notify about the Windows.Old folder.
-     * @param programFiles Whether to clear log files and memory dumps.
+     * @param recycleBin Whether to empty the recycle bin.
      */
-    private static void cleanTempFiles(boolean recycleBin, boolean windowsOld, boolean programFiles) {
+    private static void cleanTempFiles(boolean recycleBin) {
         // Deletes the temp directory.
-        deleteDirectory(new File(System.getProperty("java.io.tmpdir")));
+        deleteDirectory(new File(System.getenv("TEMP")));
+        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\Temp"));
+        deleteDirectory(new File(System.getenv("LOCALAPPDATA") + "\\Temp"));
 
         // Empties the recycle bin.
         if (recycleBin) {
             deleteDirectory(new File("C:\\$Recycle.Bin"));
         }
 
-        // Notifies about the Windows.old folder.
-        if (windowsOld) {
-            if (Files.exists(Paths.get("C:\\Windows.old"))) {
-                JOptionPane.showMessageDialog(null, """
-                                An old Windows installation was found on your system.
-                                \s
-                                You can delete C:\\Windows.old to save significant disk space.""",
-                        "Windows.old Detected", JOptionPane.ERROR_MESSAGE);
-            }
+        // Deletes the Windows.old folder.
+        if (Files.exists(Paths.get("C:\\Windows.old"))) {
+            runCommand("takeown /f \"C:\\Windows.old\" /a /r /d y", false);
+            runCommand("icacls \"C:\\Windows.old\" /grant administrators:F /t", false);
+            deleteDirectory(new File("C:\\Windows.old"));
         }
 
         // Clears old log files and memory dumps.
-        if (programFiles) {
-            deleteDirectory(new File("C:\\"), "*.log");
-            deleteDirectory(new File("C:\\"), "*.old");
-            deleteDirectory(new File("C:\\"), "*.dmp");
-
-            deleteDirectory(new File("C:\\AMD\\Chipset_Software\\Logs"), "*.txt");
-            deleteDirectory(new File("C:\\Program Files (x86)\\Steam\\Logs\\"), "*.txt");
-            deleteDirectory(new File("C:\\ProgramData\\NVIDIA"), "*.log.0");
-            deleteDirectory(new File("C:\\ProgramData\\NVIDIA"), "*.log_backup1");
-            deleteDirectory(new File("C:\\WINDOWS\\TEMP"), "*.tmp");
-            deleteDirectory(new File("C:\\Windows\\System32\\"), "*.tmp");
-            deleteDirectory(new File("C:\\Windows\\System32\\DriverStore\\Temp\\"), "*.tmp");
-            deleteDirectory(new File(System.getenv("APPDATA") + "\\yuzu\\log"), "*.txt");
-        }
+        deleteDirectory(new File("C:\\"), "*.log");
+        deleteDirectory(new File("C:\\"), "*.old");
+        deleteDirectory(new File("C:\\"), "*.dmp");
+        deleteDirectory(new File("C:\\"), "*.etl");
+        deleteDirectory(new File("C:\\"), "*.DS_Store");
+        deleteDirectory(new File("C:\\AMD\\Chipset_Software\\Logs"), "*.txt");
+        deleteDirectory(new File("C:\\Program Files (x86)\\Steam\\Dumps"));
+        deleteDirectory(new File("C:\\Program Files (x86)\\Steam\\Traces"));
+        deleteDirectory(new File("C:\\Program Files (x86)\\Steam\\Logs\\"), "*.txt");
+        deleteDirectory(new File("C:\\ProgramData\\NVIDIA"), "*.log.0");
+        deleteDirectory(new File("C:\\ProgramData\\NVIDIA"), "*.log_backup1");
+        deleteDirectory(new File("C:\\WINDOWS\\TEMP"), "*.tmp");
+        deleteDirectory(new File("C:\\Windows\\System32\\"), "*.tmp");
+        deleteDirectory(new File("C:\\Windows\\System32\\DriverStore\\Temp\\"), "*.tmp");
+        deleteDirectory(new File(System.getenv("APPDATA") + "\\yuzu\\log"), "*.txt");
+        deleteDirectory(new File(System.getenv("APPDATA") + "\\Listary\\UserData"));
+        deleteDirectory(new File(System.getenv("APPDATA") + "\\Sun\\Java\\Deployment\\cache"));
+        deleteDirectory(new File(System.getenv("APPDATA") + "\\Macromedia\\Flash Player"));
+        deleteDirectory(new File(System.getenv("APPDATA") + "\\vstelemetry"));
+        deleteDirectory(new File(System.getenv("LOCALAPPDATA") + "\\Microsoft\\VSApplicationInsights"));
+        deleteDirectory(new File(System.getenv("PROGRAMDATA") + "\\Microsoft\\VSApplicationInsights"));
+        deleteDirectory(new File(System.getenv("USERPROFILE") + "\\.dotnet\\TelemetryStorageService"));
+        deleteDirectory(new File(System.getenv("LOCALAPPDATA") + "\\Microsoft\\Windows\\Explorer"), "*.db");
+        deleteDirectory(new File(System.getenv("PROGRAMDATA") + "\\Microsoft\\Windows Defender\\Scans\\History"));
+        deleteDirectory(new File(System.getenv("LOCALAPPDATA") + "\\Microsoft\\Windows\\WebCache"));
+        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\ServiceProfiles\\LocalService\\AppData\\Local\\Temp"));
+        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\Logs"));
+        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\System32\\LogFiles\\setupcln"));
+        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\System32\\LogFiles\\catroot2\\dberr.txt"));
+        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\System32\\LogFiles\\catroot2.log"));
+        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\System32\\LogFiles\\catroot2.jrs"));
+        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\System32\\LogFiles\\catroot2.edb"));
+        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\System32\\LogFiles\\catroot2.chk"));
+        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\Traces\\WindowsUpdate"));
+        deleteDirectory(new File(System.getenv("LOCALAPPDATA") + "\\Microsoft\\CLR_v4.0\\UsageTraces"));
+        deleteDirectory(new File(System.getenv("LOCALAPPDATA") + "\\Microsoft\\CLR_v4.0_32\\UsageTraces"));
     }
 
     /**
@@ -487,7 +521,7 @@ public class RepairKit {
                 });
 
                 deleteDirectory(new File(System.getenv("APPDATA")
-                        + "\\Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar\\Tombstones\\Bandizip.lnk"));
+                                         + "\\Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar\\Tombstones\\Bandizip.lnk"));
                 runCommand("rd /s /q \"%AppData%\\PeaZip", true);
 
                 // Installs 7-Zip.
@@ -509,17 +543,13 @@ public class RepairKit {
      * Repairs disk issues.
      */
     private static void repairDiskIssues() {
-        // Repairs disk issues using chkdsk.
-        updateProgressLabel("Repairing disk issues (1/3)...");
-        runCommand("echo y | chkdsk /r", false);
-
         // Restores image health using DISM.
-        updateProgressLabel("Repairing disk issues (2/3)...");
-        displayCommandOutput("DISM /Online /Cleanup-Image /RestoreHealth", false);
+        updateProgressLabel("Repairing disk issues (1/2)...");
+        runCommand("DISM /Online /Cleanup-Image /RestoreHealth", false);
 
         // Repairs any corrupted system files.
-        updateProgressLabel("Repairing disk issues (3/3)...");
-        displayCommandOutput("sfc /scannow", false);
+        updateProgressLabel("Repairing disk issues (2/2)...");
+        runCommand("sfc /scannow", false);
 
         // Repairs the WMI Repository if broken.
         repairWMIRepository();
@@ -547,18 +577,19 @@ public class RepairKit {
      */
     private static void runRegistryTweaks() {
         // Disables telemetry and annoyances.
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Diagnostics\\DiagTrack", "ShowedToastAtLevel", 1);
+        deleteRegistryValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Siuf\\Rules", "PeriodInNanoSeconds");
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "Control Panel\\International\\User Profile", "HttpAcceptLanguageOptOut", 1);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\InputPersonalization", "RestrictImplicitInkCollection", 1);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\InputPersonalization", "RestrictImplicitTextCollection", 1);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\InputPersonalization\\TrainedDataStore", "HarvestContacts", 0);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Input\\Settings", "InsightsEnabled", 0);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Input\\TIPC", "Enabled", 0);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Narrator\\NoRoam", "DetailedFeedback", 0);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Narrator\\NoRoam", "DetailedFeedback", 0);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Personalization\\Settings", "AcceptedPrivacyPolicy", 0);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Siuf\\Rules", "NumberOfSIUFInPeriod", 0);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Siuf\\Rules", "PeriodInNanoSeconds", 0);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Speech_OneCore\\Settings\\OnlineSpeechPrivacy", "HasAccepted", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo", "DisabledByGroupPolicy", 1);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo", "Enabled", 0);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications", "GlobalUserDisabled", 0);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "SilentInstalledAppsEnabled", 0);
@@ -573,25 +604,168 @@ public class RepairKit {
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "SubscribedContent-353698Enabled", 0);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "SubscribedContent-88000105Enabled", 0);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager", "SystemPaneSuggestionsEnabled", 0);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Windows Search", "CortanaConsent", 0);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Privacy", "TailoredExperiencesWithDiagnosticDataEnabled", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Diagnostics\\DiagTrack", "ShowedToastAtLevel", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "TaskbarDa", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "TaskbarMn", 0);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\PenWorkspace", "PenWorkspaceAppSuggestionsEnabled", 0);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\SearchSettings", "IsDeviceSearchHistoryEnabled", 0);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\SearchSettings", "SafeSearchMode", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Privacy", "TailoredExperiencesWithDiagnosticDataEnabled", 0);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement", "ScoobeSystemSettingEnabled", 0);
-        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection", "AllowTelemetry", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\InputPersonalization", "AllowInputPersonalization", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\InputPersonalization", "RestrictImplicitInkCollection", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\InputPersonalization", "RestrictImplicitTextCollection", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\Windows\\HandwritingErrorReports", "PreventHandwritingErrorReports", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\Windows\\TabletPC", "PreventHandwritingDataSharing", 1);
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Bluetooth", "AllowAdvertising", 0);
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\System", "AllowExperimentation", 0);
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\WcmSvc\\wifinetworkmanager\\features\\S-1-5-21-1376222853-718990322-3209866679-1001\\SocialNetworks\\ABCH", "OptInStatus", 0);
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\WcmSvc\\wifinetworkmanager\\features\\S-1-5-21-1376222853-718990322-3209866679-1001\\SocialNetworks\\ABCH-SKYPE", "OptInStatus", 0);
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\WcmSvc\\wifinetworkmanager\\features\\S-1-5-21-1376222853-718990322-3209866679-1001\\SocialNetworks\\FACEBOOK", "OptInStatus", 0);
-        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\ControlSet001\\Services\\diagnosticshub.standardcollector.service", "Start", 4);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection", "AllowTelemetry", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection", "DoNotShowFeedbackNotifications", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\InputPersonalization", "AllowInputPersonalization", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\InputPersonalization", "RestrictImplicitInkCollection", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\InputPersonalization", "RestrictImplicitTextCollection", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\SQMClient\\Windows", "CEIPEnable", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows NT\\CurrentVersion\\Software Protection Platform", "NoGenTicket", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\AppCompat", "AITEnable", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent", "DisableSoftLanding", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent", "DisableWindowsConsumerFeatures", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection", "AllowTelemetry", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection", "DoNotShowFeedbackNotifications", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\HandwritingErrorReports", "PreventHandwritingErrorReports", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\TabletPC", "PreventHandwritingDataSharing", 1);
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Diagnostics\\DiagTrack", "DiagTrackAuthorization", 7);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection", "AllowTelemetry", 0);
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\ControlSet001\\Control\\WMI\\Autologger\\AutoLogger-Diagtrack-Listener", "Start", 0);
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\ControlSet001\\Services\\DiagTrack", "Start", 4);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "Control Panel\\International\\User Profile", "HttpAcceptLanguageOptOut", 1);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "TaskbarMn", 0);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "TaskbarDa", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\ControlSet001\\Services\\diagnosticshub.standardcollector.service", "Start", 4);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\MediaPlayer\\Preferences", "UsageTracking", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\WindowsMediaPlayer", "PreventCDDVDMetadataRetrieval", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\WindowsMediaPlayer", "PreventMusicFileMetadataRetrieval", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\WindowsMediaPlayer", "PreventRadioPresetsRetrieval", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\WMDRM", "DisableOnline", 1);
+        setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\'DeviceCensus.exe'", "Debugger", "%windir%\\System32\\taskkill.exe");
+        setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\'CompatTelRunner.exe'", "Debugger", "%windir%\\System32\\taskkill.exe");
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\MicrosoftEdge\\Main", "PreventLiveTileDataCollection", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Edge", "MetricsReportingEnabled", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Edge", "SendSiteInfoToImproveServices", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\EdgeUpdate", "DoNotUpdateToEdgeWithChromium", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\Internet Explorer\\Geolocation", "PolicyDisableGeolocation", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Internet Explorer\\Safety\\PrivacIE", "DisableLogging", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Internet Explorer\\SQM", "DisableCustomerImprovementProgram", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", "CallLegacyWCMPolicies", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", "EnableSSL3Fallback", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", "PreventIgnoreCertErrors", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "NoDriveTypeAutoRun", 255);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "NoAutorun", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer", "NoAutoplayfornonVolume", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Remote Assistance", "fAllowToGetHelp", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Remote Assistance", "fAllowFullControl", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Personalization", "NoLockScreenCamera", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\WCN\\UI", "DisableWcnUi", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\WCN\\Registrars", "DisableFlashConfigRegistrar", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\WCN\\Registrars", "DisableInBand802DOT11Registrar", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\WCN\\Registrars", "DisableUPnPRegistrar", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\WCN\\Registrars", "DisableWPDRegistrar", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\WCN\\Registrars", "EnableRegistrars", 0);
+
+        // Patches security vulnerabilties.
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Lsa", "NoLMHash", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Installer", "AlwaysInstallElevated", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer", "NoDataExecutionPrevention", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\SYSTEM", "DisableHHDEP", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\LSA", "RestrictAnonymous", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\WinRM\\Client", "AllowBasic", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Lsa", "LmCompatibilityLevel", 5);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel", "DisableExceptionChainValidation", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel", "RestrictAnonymousSAM", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Services\\LanManServer\\Parameters", "RestrictNullSessAccess", 1);
+
+        // Disables CCleaner monitoring.
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Piriform\\CCleaner", "Monitoring", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Piriform\\CCleaner", "HelpImproveCCleaner", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Piriform\\CCleaner", "SystemMonitoring", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Piriform\\CCleaner", "UpdateAuto", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Piriform\\CCleaner", "UpdateCheck", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Piriform\\CCleaner", "CheckTrialOffer", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Piriform\\CCleaner", "(Cfg)HealthCheck", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Piriform\\CCleaner", "(Cfg)QuickClean", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Piriform\\CCleaner", "(Cfg)QuickCleanIpm", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Piriform\\CCleaner", "(Cfg)GetIpmForTrial", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Piriform\\CCleaner", "(Cfg)SoftwareUpdater", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Piriform\\CCleaner", "(Cfg)SoftwareUpdaterIpm", 0);
+
+        // Deletes telemetry & recent files logs.
+        deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Adobe\\MediaBrowser\\MRU");
+        deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Direct3D\\MostRecentApplication");
+        deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\MediaPlayer\\Player\\RecentFileList");
+        deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\MediaPlayer\\Player\\RecentURLList");
+        deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Search Assistant\\ACMru");
+        deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Applets\\Paint\\Recent File List");
+        deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit");
+        deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit\\Favorites");
+        deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Applets\\Wordpad\\Recent File List");
+        deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ComDlg32\\LastVisitedPidlMRU");
+        deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ComDlg32\\LastVisitedPidlMRULegacy");
+        deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ComDlg32\\OpenSaveMRU");
+        deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Map Network Drive MRU");
+        deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RecentDocs");
+        deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU");
+        deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\TypedPaths");
+        deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Direct3D\\MostRecentApplication");
+        deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\MediaPlayer\\Player\\RecentFileList");
+        deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\MediaPlayer\\Player\\RecentURLList");
+        deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Applets\\Paint\\Recent File List");
+        deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit");
+        deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit\\Favorites");
+        deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Map Network Drive MRU");
+        deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RecentDocs");
+
+        // Disables Windows Location services.
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors", "DisableWindowsLocationProvider", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors", "DisableLocationScripting", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors", "DisableLocation", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Sensor\\Overrides\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}", "SensorPermissionState", 0);
+        setRegistryStringValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DeviceAccess\\Global\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}", "Value", "Deny");
+
+        // Disables certain search and Cortana functions.
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Speech_OneCore\\Preferences", "ModelDownloadAllowed", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Speech_OneCore\\Preferences", "VoiceActivationDefaultOn", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Speech_OneCore\\Preferences", "VoiceActivationEnableAboveLockscreen", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Speech_OneCore\\Preferences", "VoiceActivationOn", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "ShowCortanaButton", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search", "CanCortanaBeEnabled", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search", "CortanaConsent", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search", "CortanaEnabled", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search", "CortanaInAmbientMode", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search", "DeviceHistoryEnabled", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search", "HistoryViewEnabled", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search", "VoiceShortcut", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\SearchSettings", "IsDeviceSearchHistoryEnabled", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\SearchSettings", "SafeSearchMode", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\PolicyManager\\default\\Experience\\AllowCortana", "value", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\OOBE", "DisableVoice", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search", "BingSearchEnabled", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search", "CortanaEnabled", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "AllowCloudSearch", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "AllowCortana", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "AllowCortanaAboveLock", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "AllowIndexingEncryptedStoresOrItems", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "AllowSearchToUseLocation", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "AlwaysUseAutoLangDetection", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "ConnectedSearchUseWeb", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search", "DisableWebSearch", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer", "NoUseStoreOpenWith", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\System", "DisableLockScreenAppNotifications", 1);
+
+        // Disables Windows error reporting.
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Error Reporting", "Disabled", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting", "Disabled", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\Consent", "DefaultConsent", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\Consent", "DefaultOverrideBehavior", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\Consent", "DefaultOverrideBehavior", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting", "DontSendAdditionalData", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting", "LoggingDisabled", 1);
 
         // Resets the Recycle Bin's icons.
         setRegistryStringValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\CLSID\\{645FF040-5081-101B-9F08-00AA002F954E}\\DefaultIcon", "(Default)", "C:\\Windows\\System32\\imageres.dll,-54");
@@ -609,10 +783,96 @@ public class RepairKit {
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "Start_TrackProgs", 0);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "Start_TrackDocs", 0);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\AutoplayHandlers", "DisableAutoplay", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "HideSCAMeetNow", 1);
+        setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FolderDescriptions\\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\\PropertyBag", "ThisPCPolicy", "Hide");
+        setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FolderDescriptions\\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\\PropertyBag", "ThisPCPolicy", "Hide");
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "ClearRecentDocsOnExit", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "NoRecentDocsHistory", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "NoInternetOpenWith", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "NoPublishingWizard", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "NoOnlinePrintsWizard", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "NoWebServices", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "AllowOnlineTips", 0);
+
+        // Disables Windows Insider features.
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\PreviewBuilds", "EnableExperimentation", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\PreviewBuilds", "EnableConfigFlighting", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\PreviewBuilds", "AllowBuildPreview", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\PolicyManager\\default\\System\\AllowExperimentation", "value", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\PolicyManager\\default\\System\\AllowExperimentation", "value", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\WindowsSelfHost\\UI\\Visibility", "HideInsiderPage", 1);
+
+        // Removes NVIDIA telemetry.
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\NVIDIA Corporation\\NvControlPanel2\\Client", "OptInOrOutPreference", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\NVIDIA Corporation\\Global\\FTS", "EnableRID44231", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\NVIDIA Corporation\\Global\\FTS", "EnableRID64640", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\NVIDIA Corporation\\Global\\FTS", "EnableRID66610", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Services\\nvlddmkm\\Global\\Startup", "SendTelemetryData", 0);
+
+        // Disables browser telemetry.
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Google\\Chrome", "ChromeCleanupReportingEnabled", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Google\\Chrome", "ChromeCleanupEnabled", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "DisallowRun", 1);
+        setRegistryStringValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\DisallowRun", "1", "software_reporter_tool.exe");
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Google\\Chrome", "MetricsReportingEnabled", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Mozilla\\Firefox", "DisableTelemetry", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Mozilla\\Firefox", "DisableDefaultBrowserAgent", 1);
+
+        // Patches Spectre & Meltdown security vulnerabilities.
+        String cpuName = getCommandOutput("wmic cpu get name", false, false).toString();
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverrideMask", 3);
+        setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Virtualization", "MinVmVersionForCpuBasedMitigations", "1.0");
+
+        if (cpuName.contains("Intel")) {
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverride", 0);
+        } else if (cpuName.contains("AMD")) {
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverride", 64);
+        }
+
+        // Patches other security vulnerabilities.
+        runCommand("dism /online /Disable-Feature);eatureName:\"SMB1Protocol\" /NoRestart", false);
+        runCommand("dism /Online /Disable-Feature);eatureName:\"SMB1Protocol-Client\" /NoRestart", false);
+        runCommand("dism /Online /Disable-Feature);eatureName:\"SMB1Protocol-Server\" /NoRestart", false);
+        runCommand("dism /online /Disable-Feature);eatureName:\"MicrosoftWindowsPowerShellV2Root\" /NoRestart", false);
+        runCommand("dism /online /Disable-Feature);eatureName:\"MicrosoftWindowsPowerShellV2\" /NoRestart", false);
+
+        // Removes Visual Studio telemetry.
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\VisualStudio\\Telemetry", "TurnOffSwitch", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\VisualStudio\\Feedback", "DisableFeedbackDialog", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\VisualStudio\\Feedback", "DisableEmailInput", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\VisualStudio\\Feedback", "DisableScreenshotCapture", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\VSCommon\\14.0\\SQM", "OptIn", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\VSCommon\\15.0\\SQM", "OptIn", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\VSCommon\\16.0\\SQM", "OptIn", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Wow6432Node\\Microsoft\\VSCommon\\14.0\\SQM", "OptIn", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Wow6432Node\\Microsoft\\VSCommon\\15.0\\SQM", "OptIn", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Wow6432Node\\Microsoft\\VSCommon\\16.0\\SQM", "OptIn", 0);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\VisualStudio\\SQM", "OptIn", 0);
+
+        // Disables Microsoft Office telemetry.
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Office\\15.0\\Outlook\\Options\\Mail", "EnableLogging", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Office\\16.0\\Outlook\\Options\\Mail", "EnableLogging", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Office\\15.0\\Outlook\\Options\\Calendar", "EnableCalendarLogging", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Office\\16.0\\Outlook\\Options\\Calendar", "EnableCalendarLogging", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Office\\15.0\\Word\\Options", "EnableLogging", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Office\\16.0\\Word\\Options", "EnableLogging", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Office\\15.0\\Word\\Options", "EnableLogging", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\Office\\15.0\\OSM", "EnableLogging", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\Office\\16.0\\OSM", "EnableLogging", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\Office\\15.0\\OSM", "EnableUpload", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\Office\\16.0\\OSM", "EnableUpload", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Office\\Common\\ClientTelemetry", "DisableTelemetry", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Office\\16.0\\Common\\ClientTelemetry", "DisableTelemetry", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Office\\Common\\ClientTelemetry", "VerboseLogging", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Office\\16.0\\Common\\ClientTelemetry", "VerboseLogging", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Office\\15.0\\Common", "QMEnable", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Office\\16.0\\Common", "QMEnable", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Office\\15.0\\Common\\Feedback", "Enabled", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Office\\16.0\\Common\\Feedback", "Enabled", 0);
 
         // Disables the weather and news widget.
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Feeds", "EnableFeeds", 0);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Feeds", "ShellFeedsTaskbarViewMode", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Feeds", "ShellFeedsTaskbarViewMode", 2);
 
         // Disables Game DVR.
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR", "AppCaptureEnabled", 0);
@@ -675,18 +935,35 @@ public class RepairKit {
      */
     private static void runServiceTweaks() {
         List<String[]> serviceList = Arrays.asList(
-                new String[]{"PcaSvc", "Program Compatibility Assistant"},
+                new String[]{"AdobeARMservice", "Adobe Update Service"},
                 new String[]{"DiagTrack", "Connected User Experiences and Telemetry"},
-                new String[]{"WMPNetworkSvc", "Windows Media Player Network Sharing"},
-                new String[]{"RemoteAccess", "Remote Access"},
-                new String[]{"diagnosticshub.standardcollector.service", "Diagnostics Hub Standard Collector"},
-                new String[]{"MapsBroker", "Downloaded Maps Manager"},
+                new String[]{"DoSvc", "Delivery Optimization Service"},
                 new String[]{"Fax", "Fax"},
-                new String[]{"fhsvc", "File History Service"},
-                new String[]{"WpcMonSvc", "Parental Controls"},
+                new String[]{"LogiRegistryService*", "Razer Game Scanner Service"},
+                new String[]{"MapsBroker", "Downloaded Maps Manager"},
+                new String[]{"NvTelemetryContainer", "NVIDIA Telemetry Container"},
+                new String[]{"PcaSvc", "Program Compatibility Assistant Service"},
+                new String[]{"Razer Game Scanner Service", "Razer Game Scanner Service"},
+                new String[]{"RemoteAccess", "Remote Access"},
                 new String[]{"RemoteRegistry", "Remote Registry"},
                 new String[]{"RetailDemo", "Retail Demo"},
-                new String[]{"lmhosts", "TCP/IP NetBIOS Helper"}
+                new String[]{"VSStandardCollectorService150", "Visual Studio Standard Collector Service"},
+                new String[]{"WMPNetworkSvc", "Windows Media Player Network Sharing Service"},
+                new String[]{"WpcMonSvc", "Parental Controls"},
+                new String[]{"adobeflashplayerupdatesvc", "Adobe Update Service"},
+                new String[]{"adobeupdateservice", "Adobe Update Service"},
+                new String[]{"dbupdate", "Dropbox Update Service"},
+                new String[]{"dbupdatem", "Dropbox Update Service"},
+                new String[]{"diagnosticshub.standardcollector.service", "Diagnostics Hub Standard Collector Service"},
+                new String[]{"diagsvc", "Diagnostic Execution Service"},
+                new String[]{"dmwappushservice", "WAP Push Message Routing Service"},
+                new String[]{"fhsvc", "File History Service"},
+                new String[]{"gupdate", "Google Update Service"},
+                new String[]{"gupdatem", "Google Update Service"},
+                new String[]{"lmhosts", "TCP/IP NetBIOS Helper"},
+                new String[]{"wercplsupport", "wercplsupport"},
+                new String[]{"wersvc", "wersvc"},
+                new String[]{"wisvc", "Windows Insider Service"}
         );
 
         for (String[] serviceInfo : serviceList) {
@@ -703,12 +980,127 @@ public class RepairKit {
         // Enables Telnet Client.
         runCommand("DISM /Online /Enable-Feature /FeatureName:TelnetClient", true);
 
-        // Enables scheduled defrag.
-        runCommand("schtasks /Change /ENABLE /TN \"\\Microsoft\\Windows\\Defrag\\ScheduledDefrag\"", true);
-
         // Fixes micro-stuttering in games.
         runCommand("bcdedit /set useplatformtick yes", true);
         runCommand("bcdedit /deletevalue useplatformclock", true);
+
+        // Enables scheduled defrag.
+        runCommand("schtasks /Change /ENABLE /TN \"\\Microsoft\\Windows\\Defrag\\ScheduledDefrag\"", true);
+
+        // Disables various telemetry tasks.
+        runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\ProgramDataUpdater\" /disable", true);
+        runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\AitAgent\" /disable", true);
+        runCommand("schtasks /change /TN \"Microsoft\\Windows\\Customer Experience Improvement Program\\Consolidator\" /disable", true);
+        runCommand("schtasks /change /TN \"Microsoft\\Windows\\Customer Experience Improvement Program\\KernelCeipTask\" /disable", true);
+        runCommand("schtasks /change /TN \"Microsoft\\Windows\\Customer Experience Improvement Program\\UsbCeip\" /disable", true);
+        runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\StartupAppTask\" /disable", true);
+        runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser\" /disable", true);
+        runCommand("setx DOTNET_CLI_TELEMETRY_OPTOUT 1", true);
+        runCommand("setx POWERSHELL_TELEMETRY_OPTOUT 1", true);
+
+        // Disables various update services.
+        runCommand("schtasks /change /TN \"GoogleUpdateTaskMachineCore\" /disable", true);
+        runCommand("schtasks /change /TN \"GoogleUpdateTaskMachineUA\" /disable", true);
+        runCommand("schtasks /change /TN \"Adobe Acrobat Update Task\" /disable", true);
+        runCommand("schtasks /change /TN \"Adobe Flash Player Updater\" /disable", true);
+        runCommand("schtasks /change /TN \"DropboxUpdateTaskMachineCore\" /disable", true);
+        runCommand("schtasks /change /TN \"DropboxUpdateTaskMachineUA\" /disable", true);
+        runCommand("schtasks /change /TN \"\\Mozilla\\Firefox Default Browser Agent 308046B0AF4A39CB\" /disable", true);
+        runCommand("schtasks /change /TN \"\\Mozilla\\Firefox Default Browser Agent D2CEEC440E2074BD\" /disable", true);
+
+        // Disables NetBios for all interfaces.
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"$key = 'HKLM:SYSTEM\\CurrentControlSet\\services\\NetBT\\Parameters\\Interfaces'; Get-ChildItem $key | ForEach {; Set-ItemProperty -Path \"^\"\"$key\\$($_.PSChildName)\"^\"\" -Name NetbiosOptions -Value 2 -Verbose; }\"", false);
+
+        // Disables Windows Fax and Scan feature.
+        runCommand("dism /Online /Disable-Feature /FeatureName:\"FaxServicesClientPackage\" /NoRestart", true);
+
+        // Deletes the controversial 'default0' user.
+        runCommand("net user defaultuser0 /delete", true);
+
+        // Removes default app associations.
+        runCommand("dism /online /Remove-DefaultAppAssociations", true);
+
+        // Clears the Windows product key from registry.
+        runCommand("cscript.exe //nologo \"%SystemRoot%\\system32\\slmgr.vbs\" /cpky", true);
+
+        // Uninstalls useless stock Windows apps.
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.3DBuilder' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.Microsoft3DViewer' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.BingWeather' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.BingSports' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.BingNews' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.BingFinance' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.MicrosoftOfficeHub' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.Office.OneNote' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.Office.Sway' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.WindowsPhone' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.Windows.Phone' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.CommsPhone' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.YourPhone' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.549981C3F5F10' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.GetHelp' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.Getstarted' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.Messaging' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.MixedReality.Portal' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.WindowsFeedbackHub' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.MSPaint' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.WindowsMaps' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.People' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.Wallet' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.Print3D' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.OneConnect' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.MicrosoftSolitaireCollection' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.SkypeApp' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.GroupMe10' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.Advertising.Xaml' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.RemoteDesktop' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.NetworkSpeedTest' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.Todos' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'ShazamEntertainmentLtd.Shazam' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'king.com.CandyCrushSaga' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'king.com.CandyCrushSodaSaga' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Flipboard.Flipboard' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage '9E2F88E3.Twitter' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'ClearChannelRadioDigital.iHeartRadio' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'D5EA27B7.Duolingo-LearnLanguagesforFree' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'AdobeSystemIncorporated.AdobePhotoshop' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'PandoraMediaInc.29680B314EFC2' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage '46928bounde.EclipseManager' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'ActiproSoftwareLLC.562882FEEB491' | Remove-AppxPackage\"", true);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'SpotifyAB.SpotifyMusic' | Remove-AppxPackage\"", true);
+
+        // Disables Chrome telemetry.
+        runCommand("icacls \"%localappdata%\\Google\\Chrome\\User Data\\SwReporter\" /inheritance:r /deny \"*S-1-1-0:(OI)(CI)(F)\" \"*S-1-5-7:(OI)(CI)(F)\"\n", false);
+        runCommand("cacls \"%localappdata%\\Google\\Chrome\\User Data\\SwReporter\" /e /c /d %username%", false);
+
+        // Removes NVIDIA's telemetry tasks.
+        runCommand("rundll32 \"C:\\Program Files\\NVIDIA Corporation\\Installer2\\InstallerCore\\NVI2.DLL\",UninstallPackage NvTelemetryContainer", false);
+        runCommand("rundll32 \"C:\\Program Files\\NVIDIA Corporation\\Installer2\\InstallerCore\\NVI2.DLL\",UninstallPackage NvTelemetry", false);
+        deleteDirectory(new File(System.getenv("WINDIR") + "C:\\Program Files (x86)\\System32\\DriverStore\\FileRepository"), "NvTelemetry*.dll");
+        deleteDirectory(new File("C:\\Program Files (x86)\\NVIDIA Corporation\\NvTelemetry"));
+        deleteDirectory(new File("C:\\Program Files\\NVIDIA Corporation\\NvTelemetry"));
+        runCommand("schtasks /change /TN NvTmMon_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8} /disable", true);
+        runCommand("schtasks /change /TN NvTmRep_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8} /disable", true);
+        runCommand("schtasks /change /TN NvTmRepOnLogon_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8} /disable", true);
+
+        // Disables Office telemetry.
+        runCommand("schtasks /change /TN \"Microsoft\\Office\\OfficeTelemetryAgentFallBack\" /disable", true);
+        runCommand("schtasks /change /TN \"Microsoft\\Office\\OfficeTelemetryAgentFallBack2016\" /disable", true);
+        runCommand("schtasks /change /TN \"Microsoft\\Office\\OfficeTelemetryAgentLogOn\" /disable", true);
+        runCommand("schtasks /change /TN \"Microsoft\\Office\\OfficeTelemetryAgentLogOn2016\" /disable", true);
+        runCommand("schtasks /change /TN \"Microsoft\\Office\\Office 15 Subscription Heartbeat\" /disable", true);
+        runCommand("schtasks /change /TN \"Microsoft\\Office\\Office 16 Subscription Heartbeat\" /disable", true);
+
+        // Removes Visual Studio telemetry.
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"$jsonfile = \"^\"\"$env:APPDATA\\Code\\User\\settings.json\"^\"\"; if (!(Test-Path $jsonfile -PathType Leaf)) {; Write-Host \"^\"\"No updates. Settings file was not at $jsonfile\"^\"\"; exit 0; }; $json = Get-Content $jsonfile | Out-String | ConvertFrom-Json; $json | Add-Member -Type NoteProperty -Name 'telemetry.enableTelemetry' -Value $false -Force; $json | ConvertTo-Json | Set-Content $jsonfile\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"$jsonfile = \"^\"\"$env:APPDATA\\Code\\User\\settings.json\"^\"\"; if (!(Test-Path $jsonfile -PathType Leaf)) {; Write-Host \"^\"\"No updates. Settings file was not at $jsonfile\"^\"\"; exit 0; }; $json = Get-Content $jsonfile | Out-String | ConvertFrom-Json; $json | Add-Member -Type NoteProperty -Name 'telemetry.enableCrashReporter' -Value $false -Force; $json | ConvertTo-Json | Set-Content $jsonfile\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"$jsonfile = \"^\"\"$env:APPDATA\\Code\\User\\settings.json\"^\"\"; if (!(Test-Path $jsonfile -PathType Leaf)) {; Write-Host \"^\"\"No updates. Settings file was not at $jsonfile\"^\"\"; exit 0; }; $json = Get-Content $jsonfile | Out-String | ConvertFrom-Json; $json | Add-Member -Type NoteProperty -Name 'workbench.enableExperiments' -Value $false -Force; $json | ConvertTo-Json | Set-Content $jsonfile\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"$jsonfile = \"^\"\"$env:APPDATA\\Code\\User\\settings.json\"^\"\"; if (!(Test-Path $jsonfile -PathType Leaf)) {; Write-Host \"^\"\"No updates. Settings file was not at $jsonfile\"^\"\"; exit 0; }; $json = Get-Content $jsonfile | Out-String | ConvertFrom-Json; $json | Add-Member -Type NoteProperty -Name 'update.mode' -Value 'manual' -Force; $json | ConvertTo-Json | Set-Content $jsonfile\"\n", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"$jsonfile = \"^\"\"$env:APPDATA\\Code\\User\\settings.json\"^\"\"; if (!(Test-Path $jsonfile -PathType Leaf)) {; Write-Host \"^\"\"No updates. Settings file was not at $jsonfile\"^\"\"; exit 0; }; $json = Get-Content $jsonfile | Out-String | ConvertFrom-Json; $json | Add-Member -Type NoteProperty -Name 'update.showReleaseNotes' -Value $false -Force; $json | ConvertTo-Json | Set-Content $jsonfile\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"$jsonfile = \"^\"\"$env:APPDATA\\Code\\User\\settings.json\"^\"\"; if (!(Test-Path $jsonfile -PathType Leaf)) {; Write-Host \"^\"\"No updates. Settings file was not at $jsonfile\"^\"\"; exit 0; }; $json = Get-Content $jsonfile | Out-String | ConvertFrom-Json; $json | Add-Member -Type NoteProperty -Name 'extensions.autoCheckUpdates' -Value $false -Force; $json | ConvertTo-Json | Set-Content $jsonfile\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"$jsonfile = \"^\"\"$env:APPDATA\\Code\\User\\settings.json\"^\"\"; if (!(Test-Path $jsonfile -PathType Leaf)) {; Write-Host \"^\"\"No updates. Settings file was not at $jsonfile\"^\"\"; exit 0; }; $json = Get-Content $jsonfile | Out-String | ConvertFrom-Json; $json | Add-Member -Type NoteProperty -Name 'extensions.showRecommendationsOnlyOnDemand' -Value $true -Force; $json | ConvertTo-Json | Set-Content $jsonfile\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"$jsonfile = \"^\"\"$env:APPDATA\\Code\\User\\settings.json\"^\"\"; if (!(Test-Path $jsonfile -PathType Leaf)) {; Write-Host \"^\"\"No updates. Settings file was not at $jsonfile\"^\"\"; exit 0; }; $json = Get-Content $jsonfile | Out-String | ConvertFrom-Json; $json | Add-Member -Type NoteProperty -Name 'git.autofetch' -Value $false -Force; $json | ConvertTo-Json | Set-Content $jsonfile\"\n", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"$jsonfile = \"^\"\"$env:APPDATA\\Code\\User\\settings.json\"^\"\"; if (!(Test-Path $jsonfile -PathType Leaf)) {; Write-Host \"^\"\"No updates. Settings file was not at $jsonfile\"^\"\"; exit 0; }; $json = Get-Content $jsonfile | Out-String | ConvertFrom-Json; $json | Add-Member -Type NoteProperty -Name 'npm.fetchOnlinePackageInfo' -Value $false -Force; $json | ConvertTo-Json | Set-Content $jsonfile\"", false);
 
         // Enables the High Performance power plan.
         runCommand("powercfg /setactive 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c", true);
@@ -736,6 +1128,13 @@ public class RepairKit {
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Services\\WSearch", "Start", 2);
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows Search", "SetupCompletedSuccessfully", 0);
         runCommand("net stop WSearch", true);
+
+        // Disables Windows error reporting.
+        runCommand("schtasks /Change /TN \"Microsoft\\Windows\\ErrorDetails\\EnableErrorDetailsUpdate\" /disable", true);
+        runCommand("schtasks /Change /TN \"Microsoft\\Windows\\Windows Error Reporting\\QueueReporting\" /disable", true);
+
+        // Disables the device census telemetry task.
+        runCommand("schtasks /change /TN \"Microsoft\\Windows\\Device Information\\Device\" /disable", true);
 
         // Resets Windows Script Host.
         deleteRegistryValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows Script Host\\Settings", "Enabled");

@@ -122,7 +122,7 @@ public class FileUtil {
     }
 
     public static void saveFile(InputStream input, String fileName, boolean replaceOldFile) {
-        Path savedFilePath = Paths.get(System.getProperty("java.io.tmpdir"), programName, fileName);
+        Path savedFilePath = Paths.get(System.getenv("TEMP"), programName, fileName);
 
         try {
             if (Files.exists(savedFilePath)) {
