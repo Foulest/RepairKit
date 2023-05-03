@@ -939,7 +939,6 @@ public class RepairKit {
                 new String[]{"DiagTrack", "Connected User Experiences and Telemetry"},
                 new String[]{"DoSvc", "Delivery Optimization Service"},
                 new String[]{"Fax", "Fax"},
-                new String[]{"LogiRegistryService*", "Razer Game Scanner Service"},
                 new String[]{"MapsBroker", "Downloaded Maps Manager"},
                 new String[]{"NvTelemetryContainer", "NVIDIA Telemetry Container"},
                 new String[]{"PcaSvc", "Program Compatibility Assistant Service"},
@@ -950,16 +949,11 @@ public class RepairKit {
                 new String[]{"VSStandardCollectorService150", "Visual Studio Standard Collector Service"},
                 new String[]{"WMPNetworkSvc", "Windows Media Player Network Sharing Service"},
                 new String[]{"WpcMonSvc", "Parental Controls"},
-                new String[]{"adobeflashplayerupdatesvc", "Adobe Update Service"},
-                new String[]{"adobeupdateservice", "Adobe Update Service"},
-                new String[]{"dbupdate", "Dropbox Update Service"},
-                new String[]{"dbupdatem", "Dropbox Update Service"},
+                new String[]{"adobeflashplayerupdatesvc", "Flash Player Update Service"},
                 new String[]{"diagnosticshub.standardcollector.service", "Diagnostics Hub Standard Collector Service"},
                 new String[]{"diagsvc", "Diagnostic Execution Service"},
                 new String[]{"dmwappushservice", "WAP Push Message Routing Service"},
                 new String[]{"fhsvc", "File History Service"},
-                new String[]{"gupdate", "Google Update Service"},
-                new String[]{"gupdatem", "Google Update Service"},
                 new String[]{"lmhosts", "TCP/IP NetBIOS Helper"},
                 new String[]{"wercplsupport", "wercplsupport"},
                 new String[]{"wersvc", "wersvc"},
@@ -999,12 +993,7 @@ public class RepairKit {
         runCommand("setx POWERSHELL_TELEMETRY_OPTOUT 1", true);
 
         // Disables various update services.
-        runCommand("schtasks /change /TN \"GoogleUpdateTaskMachineCore\" /disable", true);
-        runCommand("schtasks /change /TN \"GoogleUpdateTaskMachineUA\" /disable", true);
-        runCommand("schtasks /change /TN \"Adobe Acrobat Update Task\" /disable", true);
         runCommand("schtasks /change /TN \"Adobe Flash Player Updater\" /disable", true);
-        runCommand("schtasks /change /TN \"DropboxUpdateTaskMachineCore\" /disable", true);
-        runCommand("schtasks /change /TN \"DropboxUpdateTaskMachineUA\" /disable", true);
         runCommand("schtasks /change /TN \"\\Mozilla\\Firefox Default Browser Agent 308046B0AF4A39CB\" /disable", true);
         runCommand("schtasks /change /TN \"\\Mozilla\\Firefox Default Browser Agent D2CEEC440E2074BD\" /disable", true);
 
