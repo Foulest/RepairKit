@@ -802,13 +802,6 @@ public class RepairKit {
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\PolicyManager\\default\\System\\AllowExperimentation", "value", 0);
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\WindowsSelfHost\\UI\\Visibility", "HideInsiderPage", 1);
 
-        // Removes NVIDIA telemetry.
-        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\NVIDIA Corporation\\NvControlPanel2\\Client", "OptInOrOutPreference", 0);
-        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\NVIDIA Corporation\\Global\\FTS", "EnableRID44231", 0);
-        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\NVIDIA Corporation\\Global\\FTS", "EnableRID64640", 0);
-        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\NVIDIA Corporation\\Global\\FTS", "EnableRID66610", 0);
-        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Services\\nvlddmkm\\Global\\Startup", "SendTelemetryData", 0);
-
         // Disables browser telemetry.
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Google\\Chrome", "ChromeCleanupReportingEnabled", 0);
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Google\\Chrome", "ChromeCleanupEnabled", 0);
@@ -940,7 +933,6 @@ public class RepairKit {
                 new String[]{"DoSvc", "Delivery Optimization Service"},
                 new String[]{"Fax", "Fax"},
                 new String[]{"MapsBroker", "Downloaded Maps Manager"},
-                new String[]{"NvTelemetryContainer", "NVIDIA Telemetry Container"},
                 new String[]{"PcaSvc", "Program Compatibility Assistant Service"},
                 new String[]{"Razer Game Scanner Service", "Razer Game Scanner Service"},
                 new String[]{"RemoteAccess", "Remote Access"},
@@ -1061,16 +1053,6 @@ public class RepairKit {
         // Disables Chrome telemetry.
         runCommand("icacls \"%localappdata%\\Google\\Chrome\\User Data\\SwReporter\" /inheritance:r /deny \"*S-1-1-0:(OI)(CI)(F)\" \"*S-1-5-7:(OI)(CI)(F)\"\n", false);
         runCommand("cacls \"%localappdata%\\Google\\Chrome\\User Data\\SwReporter\" /e /c /d %username%", false);
-
-        // Removes NVIDIA's telemetry tasks.
-        runCommand("rundll32 \"C:\\Program Files\\NVIDIA Corporation\\Installer2\\InstallerCore\\NVI2.DLL\",UninstallPackage NvTelemetryContainer", false);
-        runCommand("rundll32 \"C:\\Program Files\\NVIDIA Corporation\\Installer2\\InstallerCore\\NVI2.DLL\",UninstallPackage NvTelemetry", false);
-        deleteDirectory(new File(System.getenv("WINDIR") + "C:\\Program Files (x86)\\System32\\DriverStore\\FileRepository"), "NvTelemetry*.dll");
-        deleteDirectory(new File("C:\\Program Files (x86)\\NVIDIA Corporation\\NvTelemetry"));
-        deleteDirectory(new File("C:\\Program Files\\NVIDIA Corporation\\NvTelemetry"));
-        runCommand("schtasks /change /TN NvTmMon_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8} /disable", true);
-        runCommand("schtasks /change /TN NvTmRep_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8} /disable", true);
-        runCommand("schtasks /change /TN NvTmRepOnLogon_{B2FE1952-0186-46C3-BAEC-A80AA35AC5B8} /disable", true);
 
         // Disables Office telemetry.
         runCommand("schtasks /change /TN \"Microsoft\\Office\\OfficeTelemetryAgentFallBack\" /disable", true);
