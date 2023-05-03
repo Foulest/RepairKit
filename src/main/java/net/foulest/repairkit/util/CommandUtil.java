@@ -46,6 +46,7 @@ public class CommandUtil {
         runCommand(command, async, line -> {
             output.add(line);
             if (display && !line.trim().isEmpty()) {
+                System.out.println(line);
                 updateProgressLabel(line);
             }
         });

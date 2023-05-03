@@ -130,4 +130,16 @@ public class SwingUtil {
 
         return label;
     }
+
+    /**
+     * Sleeps the current thread for the specified amount of time.
+     *
+     * @param millis Time to sleep in milliseconds.
+     */
+    public static void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException ignored) {
+        }
+    }
 }

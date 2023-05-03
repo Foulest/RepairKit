@@ -1,6 +1,7 @@
 package net.foulest.repairkit;
 
 import com.sun.jna.platform.win32.WinReg;
+import net.foulest.repairkit.util.SwingUtil;
 import net.foulest.repairkit.util.type.HardwareBrand;
 import net.foulest.repairkit.util.type.UninstallData;
 
@@ -19,8 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
-import static net.foulest.repairkit.util.CommandUtil.runCommand;
+import static net.foulest.repairkit.util.CommandUtil.*;
 import static net.foulest.repairkit.util.FileUtil.*;
 import static net.foulest.repairkit.util.RegistryUtil.*;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
@@ -543,13 +543,14 @@ public class RepairKit {
      * Repairs disk issues.
      */
     private static void repairDiskIssues() {
-        // Restores image health using DISM.
-        updateProgressLabel("Repairing disk issues (1/2)...");
-        runCommand("DISM /Online /Cleanup-Image /RestoreHealth", false);
+        updateProgressLabel("Repairing disk issues...");
+        JOptionPane.showMessageDialog(null, "Warning: this process will take some time.", "Repair Disk Issues", JOptionPane.WARNING_MESSAGE);
 
         // Repairs any corrupted system files.
-        updateProgressLabel("Repairing disk issues (2/2)...");
-        runCommand("sfc /scannow", false);
+        getCommandOutput("sfc /scannow", true, false);
+
+        // Restores image health using DISM.
+        getCommandOutput("DISM /Online /Cleanup-Image /RestoreHealth", true, false);
 
         // Repairs the WMI Repository if broken.
         repairWMIRepository();
@@ -823,11 +824,11 @@ public class RepairKit {
         }
 
         // Patches other security vulnerabilities.
-        runCommand("dism /Online /Disable-Feature /FeatureName:\"SMB1Protocol\" /NoRestart", false);
-        runCommand("dism /Online /Disable-Feature /FeatureName:\"SMB1Protocol-Client\" /NoRestart", false);
-        runCommand("dism /Online /Disable-Feature /FeatureName:\"SMB1Protocol-Server\" /NoRestart", false);
-        runCommand("dism /Online /Disable-Feature /FeatureName:\"MicrosoftWindowsPowerShellV2Root\" /NoRestart", false);
-        runCommand("dism /Online /Disable-Feature /FeatureName:\"MicrosoftWindowsPowerShellV2\" /NoRestart", false);
+        runCommand("DISM /Online /Disable-Feature /FeatureName:\"SMB1Protocol\" /NoRestart", false);
+        runCommand("DISM /Online /Disable-Feature /FeatureName:\"SMB1Protocol-Client\" /NoRestart", false);
+        runCommand("DISM /Online /Disable-Feature /FeatureName:\"SMB1Protocol-Server\" /NoRestart", false);
+        runCommand("DISM /Online /Disable-Feature /FeatureName:\"MicrosoftWindowsPowerShellV2Root\" /NoRestart", false);
+        runCommand("DISM /Online /Disable-Feature /FeatureName:\"MicrosoftWindowsPowerShellV2\" /NoRestart", false);
 
         // Removes Visual Studio telemetry.
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\VisualStudio\\Telemetry", "TurnOffSwitch", 1);
@@ -963,7 +964,7 @@ public class RepairKit {
      */
     private static void runSettingsTweaks() {
         // Enables Telnet Client.
-        runCommand("DISM /Online /Enable-Feature /FeatureName:TelnetClient", true);
+        runCommand("DISM /Online /Enable-Feature /FeatureName:\"TelnetClient\"", true);
 
         // Fixes micro-stuttering in games.
         runCommand("bcdedit /set useplatformtick yes", true);
@@ -992,13 +993,13 @@ public class RepairKit {
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"$key = 'HKLM:SYSTEM\\CurrentControlSet\\services\\NetBT\\Parameters\\Interfaces'; Get-ChildItem $key | ForEach {; Set-ItemProperty -Path \"^\"\"$key\\$($_.PSChildName)\"^\"\" -Name NetbiosOptions -Value 2 -Verbose; }\"", false);
 
         // Disables Windows Fax and Scan feature.
-        runCommand("dism /Online /Disable-Feature /FeatureName:\"FaxServicesClientPackage\" /NoRestart", true);
+        runCommand("DISM /Online /Disable-Feature /FeatureName:\"FaxServicesClientPackage\" /NoRestart", true);
 
         // Deletes the controversial 'default0' user.
         runCommand("net user defaultuser0 /delete", true);
 
         // Removes default app associations.
-        runCommand("dism /online /Remove-DefaultAppAssociations", true);
+        runCommand("DISM /Online /Remove-DefaultAppAssociations", true);
 
         // Clears the Windows product key from registry.
         runCommand("cscript.exe //nologo \"%SystemRoot%\\system32\\slmgr.vbs\" /cpky", true);

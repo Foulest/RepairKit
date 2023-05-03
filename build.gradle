@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'net.foulest'
-version '0.2.2'
+version '0.2.3'
 compileJava.options.encoding = 'UTF-8'
 
 repositories {
@@ -29,13 +29,13 @@ dependencies {
     provided group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
 
     // https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform
-    provided group: 'net.java.dev.jna', name: 'jna-platform', version: '5.10.0'
+    provided group: 'net.java.dev.jna', name: 'jna-platform', version: '5.13.0'
 
     // https://mvnrepository.com/artifact/com.profesorfalken/jPowerShell
     implementation group: 'com.profesorfalken', name: 'jPowerShell', version: '3.1.1'
 
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    compileOnly 'org.projectlombok:lombok:1.18.26'
+    annotationProcessor 'org.projectlombok:lombok:1.18.26'
 }
 
 launch4j {
@@ -50,7 +50,7 @@ launch4j {
     version = "${project.version}"
     textVersion = "${project.version}"
     fileDescription = 'RepairKit by Foulest'
-    copyright = 2022
+    copyright = 2023
     productName = "${project.name}"
     internalName = "${project.name}"
 
