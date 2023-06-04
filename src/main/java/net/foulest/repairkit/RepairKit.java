@@ -1,7 +1,6 @@
 package net.foulest.repairkit;
 
 import com.sun.jna.platform.win32.WinReg;
-import net.foulest.repairkit.util.SwingUtil;
 import net.foulest.repairkit.util.type.HardwareBrand;
 import net.foulest.repairkit.util.type.UninstallData;
 
@@ -20,7 +19,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static net.foulest.repairkit.util.CommandUtil.*;
+import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
+import static net.foulest.repairkit.util.CommandUtil.runCommand;
 import static net.foulest.repairkit.util.FileUtil.*;
 import static net.foulest.repairkit.util.RegistryUtil.*;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
@@ -325,9 +325,11 @@ public class RepairKit {
      */
     private static void cleanFileExplorerThumbnails() {
         runCommand("taskkill /F /IM explorer.exe", false);
-        runCommand("taskkill /F /IM Everything.exe", false);
         runCommand("del /s /q \"%localappdata%\\IconCache.db\"", false);
+
+        runCommand("taskkill /F /IM explorer.exe", false);
         runCommand("del /s /q \"%localappdata%\\Microsoft\\Windows\\Explorer\\\"", false);
+
         runCommand("start \"\" \"explorer.exe\"", false);
     }
 
@@ -400,9 +402,7 @@ public class RepairKit {
 
         // Deletes the Windows.old folder.
         if (Files.exists(Paths.get("C:\\Windows.old"))) {
-            runCommand("takeown /f \"C:\\Windows.old\" /a /r /d y", false);
-            runCommand("icacls \"C:\\Windows.old\" /grant administrators:F /t", false);
-            deleteDirectory(new File("C:\\Windows.old"));
+            runCommand("rd /s /q C:\\Windows.old", false);
         }
 
         // Clears old log files and memory dumps.
