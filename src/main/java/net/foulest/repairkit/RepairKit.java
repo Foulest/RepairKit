@@ -158,12 +158,13 @@ public class RepairKit {
         // CPU-Z Button
         JButton buttonCPUZ = createAppButton("CPU-Z", "Displays system hardware information.",
                 "CPU-Z", "CPU-Z.exe", "CPU-Z.exe", false, tempDirectory.getPath());
+        saveFile(RepairKit.class.getClassLoader().getResourceAsStream("resources/cpuz.ini"), "cpuz.ini", false);
         buttonCPUZ.setBounds(162, 120, 152, 25);
         addComponents(panelMain, buttonCPUZ);
 
-        // WinDirStat Button
-        JButton buttonWinDirStat = createAppButton("WinDirStat", "Displays system files organized by size.",
-                "WinDirStat", "WinDirStat.zip", "WinDirStat.exe", true, tempDirectory.getPath());
+        // TreeSize Button
+        JButton buttonWinDirStat = createAppButton("TreeSize", "Displays system files organized by size.",
+                "TreeSize", "TreeSize.zip", "TreeSize.exe", true, tempDirectory.getPath());
         buttonWinDirStat.setBounds(5, 150, 152, 25);
         addComponents(panelMain, buttonWinDirStat);
 
@@ -176,6 +177,7 @@ public class RepairKit {
         // HWMonitor Button
         JButton buttonHWMonitor = createAppButton("HWMonitor", "Displays system hardware information.",
                 "HWMonitor", "HWMonitor.exe", "HWMonitor.exe", false, tempDirectory.getPath());
+        saveFile(RepairKit.class.getClassLoader().getResourceAsStream("resources/hwmonitorw.ini"), "hwmonitorw.ini", false);
         buttonHWMonitor.setBounds(5, 180, 152, 25);
         addComponents(panelMain, buttonHWMonitor);
 
@@ -406,7 +408,6 @@ public class RepairKit {
         }
 
         // Clears old log files and memory dumps.
-        deleteDirectory(new File("C:\\"), "*.log");
         deleteDirectory(new File("C:\\"), "*.old");
         deleteDirectory(new File("C:\\"), "*.dmp");
         deleteDirectory(new File("C:\\"), "*.etl");
@@ -450,6 +451,7 @@ public class RepairKit {
     private static void deleteSystemPolicies() {
         deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\MMC");
         deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\Windows\\System");
+        deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Spynet");
 
         deleteRegistryValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\NonEnum", "{645FF040-5081-101B-9F08-00AA002F954E}");
         deleteRegistryValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", "DisableRegistryTools");
@@ -670,7 +672,7 @@ public class RepairKit {
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\WCN\\Registrars", "DisableWPDRegistrar", 0);
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\WCN\\Registrars", "EnableRegistrars", 0);
 
-        // Patches security vulnerabilties.
+        // Patches security vulnerabilities.
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Lsa", "NoLMHash", 1);
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Installer", "AlwaysInstallElevated", 0);
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer", "NoDataExecutionPrevention", 0);
@@ -721,13 +723,6 @@ public class RepairKit {
         deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit\\Favorites");
         deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Map Network Drive MRU");
         deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RecentDocs");
-
-        // Disables Windows Location services.
-        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors", "DisableWindowsLocationProvider", 1);
-        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors", "DisableLocationScripting", 1);
-        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors", "DisableLocation", 1);
-        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Sensor\\Overrides\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}", "SensorPermissionState", 0);
-        setRegistryStringValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DeviceAccess\\Global\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}", "Value", "Deny");
 
         // Disables certain search and Cortana functions.
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Speech_OneCore\\Preferences", "ModelDownloadAllowed", 0);
@@ -984,11 +979,6 @@ public class RepairKit {
         runCommand("setx DOTNET_CLI_TELEMETRY_OPTOUT 1", true);
         runCommand("setx POWERSHELL_TELEMETRY_OPTOUT 1", true);
 
-        // Disables various update services.
-        runCommand("schtasks /change /TN \"Adobe Flash Player Updater\" /disable", true);
-        runCommand("schtasks /change /TN \"\\Mozilla\\Firefox Default Browser Agent 308046B0AF4A39CB\" /disable", true);
-        runCommand("schtasks /change /TN \"\\Mozilla\\Firefox Default Browser Agent D2CEEC440E2074BD\" /disable", true);
-
         // Disables NetBios for all interfaces.
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"$key = 'HKLM:SYSTEM\\CurrentControlSet\\services\\NetBT\\Parameters\\Interfaces'; Get-ChildItem $key | ForEach {; Set-ItemProperty -Path \"^\"\"$key\\$($_.PSChildName)\"^\"\" -Name NetbiosOptions -Value 2 -Verbose; }\"", false);
 
@@ -1023,7 +1013,6 @@ public class RepairKit {
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.Getstarted' | Remove-AppxPackage\"", true);
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.Messaging' | Remove-AppxPackage\"", true);
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.MixedReality.Portal' | Remove-AppxPackage\"", true);
-        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.WindowsFeedbackHub' | Remove-AppxPackage\"", true);
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.MSPaint' | Remove-AppxPackage\"", true);
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.WindowsMaps' | Remove-AppxPackage\"", true);
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'Microsoft.People' | Remove-AppxPackage\"", true);
@@ -1044,11 +1033,9 @@ public class RepairKit {
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage '9E2F88E3.Twitter' | Remove-AppxPackage\"", true);
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'ClearChannelRadioDigital.iHeartRadio' | Remove-AppxPackage\"", true);
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'D5EA27B7.Duolingo-LearnLanguagesforFree' | Remove-AppxPackage\"", true);
-        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'AdobeSystemIncorporated.AdobePhotoshop' | Remove-AppxPackage\"", true);
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'PandoraMediaInc.29680B314EFC2' | Remove-AppxPackage\"", true);
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage '46928bounde.EclipseManager' | Remove-AppxPackage\"", true);
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'ActiproSoftwareLLC.562882FEEB491' | Remove-AppxPackage\"", true);
-        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage 'SpotifyAB.SpotifyMusic' | Remove-AppxPackage\"", true);
 
         // Disables Chrome telemetry.
         runCommand("icacls \"%localappdata%\\Google\\Chrome\\User Data\\SwReporter\" /inheritance:r /deny \"*S-1-1-0:(OI)(CI)(F)\" \"*S-1-5-7:(OI)(CI)(F)\"\n", false);

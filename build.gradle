@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'net.foulest'
-version '0.2.4'
+version '0.2.5'
 compileJava.options.encoding = 'UTF-8'
 
 repositories {
@@ -23,10 +23,10 @@ configurations {
 
 dependencies {
     // https://mvnrepository.com/artifact/commons-io/commons-io
-    provided group: 'commons-io', name: 'commons-io', version: '2.11.0'
+    provided group: 'commons-io', name: 'commons-io', version: '2.13.0'
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
-    provided group: 'org.apache.commons', name: 'commons-lang3', version: '3.12.0'
+    provided group: 'org.apache.commons', name: 'commons-lang3', version: '3.13.0'
 
     // https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform
     provided group: 'net.java.dev.jna', name: 'jna-platform', version: '5.13.0'
@@ -34,8 +34,8 @@ dependencies {
     // https://mvnrepository.com/artifact/com.profesorfalken/jPowerShell
     implementation group: 'com.profesorfalken', name: 'jPowerShell', version: '3.1.1'
 
-    compileOnly 'org.projectlombok:lombok:1.18.26'
-    annotationProcessor 'org.projectlombok:lombok:1.18.26'
+    compileOnly 'org.projectlombok:lombok:1.18.28'
+    annotationProcessor 'org.projectlombok:lombok:1.18.28'
 }
 
 launch4j {
