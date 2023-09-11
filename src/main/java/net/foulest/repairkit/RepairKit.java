@@ -328,6 +328,9 @@ public class RepairKit {
         unzipFile(tempDirectory + "\\CCleaner.zip", tempDirectory.getPath() + "\\CCleaner");
 
         runCommand(tempDirectory + "\\CCleaner\\CCleaner /AUTO", false);
+
+        runCommand("taskkill /F /IM explorer.exe", false);
+        runCommand("start explorer.exe", false);
     }
 
     /**
