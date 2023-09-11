@@ -1,7 +1,6 @@
 package net.foulest.repairkit;
 
 import com.sun.jna.platform.win32.WinReg;
-import net.foulest.repairkit.util.type.HardwareBrand;
 import net.foulest.repairkit.util.type.UninstallData;
 
 import javax.swing.*;
@@ -21,7 +20,8 @@ import java.util.concurrent.TimeUnit;
 
 import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
 import static net.foulest.repairkit.util.CommandUtil.runCommand;
-import static net.foulest.repairkit.util.FileUtil.*;
+import static net.foulest.repairkit.util.FileUtil.saveFile;
+import static net.foulest.repairkit.util.FileUtil.unzipFile;
 import static net.foulest.repairkit.util.RegistryUtil.*;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
 import static net.foulest.repairkit.util.SwingUtil.*;
@@ -30,12 +30,11 @@ public class RepairKit {
 
     private static final Set<String> SUPPORTED_OS_NAMES = new HashSet<>(Arrays.asList("Windows 10", "Windows 11"));
     private static final String OUTDATED_OS_MESSAGE = "Your operating system, %s, is outdated, unknown, or not Windows based."
-                                                      + "\nThis software only works on up-to-date Windows operating systems.";
+            + "\nThis software only works on up-to-date Windows operating systems.";
 
     public static final String programName = "RepairKit";
     public static final JPanel panelMain = new JPanel(null);
     public static final JFrame frame = new JFrame(programName);
-    public static final JLabel labelProgress = new JLabel();
     public static final File tempDirectory = new File(System.getenv("TEMP") + "\\" + programName);
 
     /**
@@ -63,7 +62,7 @@ public class RepairKit {
         setGUIElements();
 
         // Deletes pre-existing RepairKit files.
-        cleanTempFiles(false);
+        runCommand("rd /s /q " + tempDirectory.getPath(), false);
 
         // Creates the main frame.
         frame.setContentPane(panelMain);
@@ -100,7 +99,7 @@ public class RepairKit {
      * Sets the main panel of the program.
      */
     public static void setMainPanel() {
-        panelMain.setPreferredSize(new Dimension(320, 375));
+        panelMain.setPreferredSize(new Dimension(320, 325));
         panelMain.setBackground(new Color(43, 43, 43));
     }
 
@@ -113,20 +112,14 @@ public class RepairKit {
                 new Color(225, 225, 225), 5, 5, 150, 20);
         addComponents(panelMain, labelTitle);
 
-        // Progress Label
-        labelProgress.setForeground(new Color(225, 225, 225));
-        labelProgress.setBounds(5, 325, 500, 50);
-        addComponents(panelMain, labelProgress);
-        updateProgressLabel("");
-
         // Useful Programs Label
         JLabel labelUsefulPrograms = createLabel("Useful Programs",
-                new Color(225, 225, 225), 5, 95, 150, 20);
+                new Color(225, 225, 225), 5, 75, 150, 20);
         addComponents(panelMain, labelUsefulPrograms);
 
         // System Shortcuts Label
         JLabel labelSystemShortcuts = createLabel("System Shortcuts",
-                new Color(225, 225, 225), 5, 245, 150, 20);
+                new Color(225, 225, 225), 5, 225, 150, 20);
         addComponents(panelMain, labelSystemShortcuts);
     }
 
@@ -138,7 +131,7 @@ public class RepairKit {
         JButton buttonFanControl = new JButton("FanControl");
         buttonFanControl.setToolTipText("Allows control over system fans.");
         buttonFanControl.setBackground(new Color(200, 200, 200));
-        buttonFanControl.setBounds(5, 120, 152, 25);
+        buttonFanControl.setBounds(5, 100, 152, 25);
         addComponents(panelMain, buttonFanControl);
         buttonFanControl.addActionListener(actionEvent -> {
             try {
@@ -147,7 +140,7 @@ public class RepairKit {
                 fanControlPath = fanControlPath.replace(", , ]", "");
 
                 if (fanControlPath.contains("Cannot find a process with the name")) {
-                    launchApplication("FanControl", "FanControl.zip", "\\FanControl.exe", true, System.getenv("APPDATA") + "\\FanControl");
+                    launchApplication("FanControl.zip", "\\FanControl.exe", true, System.getenv("APPDATA") + "\\FanControl");
                 } else {
                     runCommand("start \"\" \"" + fanControlPath + "\"", false);
                 }
@@ -157,34 +150,34 @@ public class RepairKit {
 
         // CPU-Z Button
         JButton buttonCPUZ = createAppButton("CPU-Z", "Displays system hardware information.",
-                "CPU-Z", "CPU-Z.exe", "CPU-Z.exe", false, tempDirectory.getPath());
+                "CPU-Z.exe", "CPU-Z.exe", false, tempDirectory.getPath());
         saveFile(RepairKit.class.getClassLoader().getResourceAsStream("resources/cpuz.ini"), "cpuz.ini", false);
-        buttonCPUZ.setBounds(162, 120, 152, 25);
+        buttonCPUZ.setBounds(162, 100, 152, 25);
         addComponents(panelMain, buttonCPUZ);
 
         // TreeSize Button
         JButton buttonWinDirStat = createAppButton("TreeSize", "Displays system files organized by size.",
-                "TreeSize", "TreeSize.zip", "TreeSize.exe", true, tempDirectory.getPath());
-        buttonWinDirStat.setBounds(5, 150, 152, 25);
+                "TreeSize.zip", "TreeSize.exe", true, tempDirectory.getPath());
+        buttonWinDirStat.setBounds(5, 130, 152, 25);
         addComponents(panelMain, buttonWinDirStat);
 
         // Everything Button
         JButton buttonEverything = createAppButton("Everything", "Displays all files on your system.",
-                "Everything", "Everything.exe", "Everything.exe", false, tempDirectory.getPath());
-        buttonEverything.setBounds(162, 150, 152, 25);
+                "Everything.exe", "Everything.exe", false, tempDirectory.getPath());
+        buttonEverything.setBounds(162, 130, 152, 25);
         addComponents(panelMain, buttonEverything);
 
         // HWMonitor Button
         JButton buttonHWMonitor = createAppButton("HWMonitor", "Displays system hardware information.",
-                "HWMonitor", "HWMonitor.exe", "HWMonitor.exe", false, tempDirectory.getPath());
+                "HWMonitor.exe", "HWMonitor.exe", false, tempDirectory.getPath());
         saveFile(RepairKit.class.getClassLoader().getResourceAsStream("resources/hwmonitorw.ini"), "hwmonitorw.ini", false);
-        buttonHWMonitor.setBounds(5, 180, 152, 25);
+        buttonHWMonitor.setBounds(5, 160, 152, 25);
         addComponents(panelMain, buttonHWMonitor);
 
         // Emsisoft Scan Button
         JButton buttonEmsisoft = createAppButton("Emsisoft Scan", "Scans your system for malware.",
-                "Emsisoft", "Emsisoft.zip", "Emsisoft.exe", true, tempDirectory.getPath());
-        buttonEmsisoft.setBounds(162, 180, 152, 25);
+                "Emsisoft.zip", "Emsisoft.exe", true, tempDirectory.getPath());
+        buttonEmsisoft.setBounds(162, 160, 152, 25);
         addComponents(panelMain, buttonEmsisoft);
     }
 
@@ -192,34 +185,34 @@ public class RepairKit {
      * Sets the program's link buttons.
      */
     public static void setLinkButtons() {
-        // AdGuard Button
-        JButton buttonAdGuard = createLinkButton("AdGuard", "Blocks ads, trackers, and malicious websites.", "start https://adguard.com/en/adguard-browser-extension/overview.html", "Opening link(s)...");
-        buttonAdGuard.setBounds(5, 210, 152, 25);
-        addComponents(panelMain, buttonAdGuard);
+        // uBlock Origin Button
+        JButton buttonUBlockOrigin = createLinkButton("uBlock Origin", "Blocks ads and trackers across all websites.", "start https://ublockorigin.com", "Opening link(s)...");
+        buttonUBlockOrigin.setBounds(5, 190, 152, 25);
+        addComponents(panelMain, buttonUBlockOrigin);
 
-        // NordPass Button
-        JButton buttonNordPass = createLinkButton("NordPass", "The best password manager available.", "start https://nordpass.com/download", "Opening link(s)...");
-        buttonNordPass.setBounds(162, 210, 152, 25);
-        addComponents(panelMain, buttonNordPass);
+        // MS Defender Extension Button
+        JButton buttonDefenderExtension = createLinkButton("Defender Extension", "Blocks malicious websites and phishing attacks.", "start https://chrome.google.com/webstore/detail/microsoft-defender-browse/bkbeeeffjjeopflfhgeknacdieedcoml", "Opening link(s)...");
+        buttonDefenderExtension.setBounds(162, 190, 152, 25);
+        addComponents(panelMain, buttonDefenderExtension);
 
-        // Installed Apps Button
-        JButton buttonInstalledApps = createLinkButton("Installed Apps", "", "start ms-settings:appsfeatures", "Launching...");
-        buttonInstalledApps.setBounds(5, 270, 152, 25);
-        addComponents(panelMain, buttonInstalledApps);
+        // Apps & Features Button
+        JButton buttonAppsFeatures = createLinkButton("Apps & Features", "", "start ms-settings:appsfeatures", "Launching...");
+        buttonAppsFeatures.setBounds(5, 250, 152, 25);
+        addComponents(panelMain, buttonAppsFeatures);
 
         // Windows Update Button
         JButton buttonCheckForUpdates = createLinkButton("Windows Update", "", "start ms-settings:windowsupdate", "Launching...");
-        buttonCheckForUpdates.setBounds(162, 270, 152, 25);
+        buttonCheckForUpdates.setBounds(162, 250, 152, 25);
         addComponents(panelMain, buttonCheckForUpdates);
 
         // Task Manager Button
         JButton buttonTaskManager = createLinkButton("Task Manager", "", "taskmgr", "Launching...");
-        buttonTaskManager.setBounds(5, 300, 152, 25);
+        buttonTaskManager.setBounds(5, 280, 152, 25);
         addComponents(panelMain, buttonTaskManager);
 
         // Windows Defender Button
         JButton buttonSecurity = createLinkButton("Windows Defender", "", "start windowsdefender:", "Launching...");
-        buttonSecurity.setBounds(162, 300, 152, 25);
+        buttonSecurity.setBounds(162, 280, 152, 25);
         addComponents(panelMain, buttonSecurity);
     }
 
@@ -227,21 +220,16 @@ public class RepairKit {
      * Sets the program's repair buttons.
      */
     public static void setRepairButtons() {
-        // Repair System Issues Button
-        JButton buttonSystemIssues = new JButton("Repair System Issues");
-        buttonSystemIssues.setToolTipText("Performs various fixes and maintenance tasks.");
-        buttonSystemIssues.setBackground(new Color(200, 200, 200));
-        buttonSystemIssues.setBounds(5, 30, 310, 25);
-        addComponents(panelMain, buttonSystemIssues);
-        buttonSystemIssues.addActionListener(actionEvent -> {
+        // Run Automatic Repairs Button
+        JButton buttonRepairs = new JButton("Run Automatic Repairs");
+        buttonRepairs.setToolTipText("Performs various fixes and maintenance tasks.");
+        buttonRepairs.setBackground(new Color(200, 200, 200));
+        buttonRepairs.setBounds(5, 30, 310, 35);
+        addComponents(panelMain, buttonRepairs);
+        buttonRepairs.addActionListener(actionEvent -> {
             try {
-                updateProgressLabel("Repairing system issues...");
-
                 // Deletes any system policies.
                 deleteSystemPolicies();
-
-                // Checks for AMD or NVIDIA hardware for driver updates.
-                checkForDriverUpdates();
 
                 // Installs 7-Zip and uninstalls other programs.
                 install7Zip();
@@ -251,12 +239,12 @@ public class RepairKit {
                 ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
 
                 // Submit tasks to the executor.
+                executor.submit(RepairKit::cleanJunkFiles);
                 executor.submit(RepairKit::runServiceTweaks);
                 executor.submit(RepairKit::runRegistryTweaks);
                 executor.submit(RepairKit::runSettingsTweaks);
-                executor.submit(RepairKit::cleanTempFilesAll);
                 executor.submit(RepairKit::cleanSystemMemory);
-                executor.submit(RepairKit::cleanFileExplorerThumbnails);
+                executor.submit(RepairKit::repairWMIRepository);
 
                 // Shut down the executor after all tasks are submitted.
                 executor.shutdown();
@@ -265,7 +253,6 @@ public class RepairKit {
                 boolean allTasksCompleted = executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
 
                 if (allTasksCompleted) {
-                    updateProgressLabel("Done.", 5000);
                     playSound("win.sound.exclamation");
                     JOptionPane.showMessageDialog(null, "System issues repaired successfully.", "Finished", JOptionPane.QUESTION_MESSAGE);
                 } else {
@@ -275,28 +262,20 @@ public class RepairKit {
             } catch (Exception ignored) {
             }
         });
-
-        // Repair Disk Issues Button
-        JButton buttonRepairDisk = createActionButton("Repair Disk Issues", "Repairs disk issues and restores disk health.", RepairKit::repairDiskIssues);
-        buttonRepairDisk.setBounds(5, 60, 310, 25);
-        addComponents(panelMain, buttonRepairDisk);
     }
 
     /**
      * Launches an application.
      *
-     * @param appName        The name of the application.
      * @param appResource    The name of the application's resource.
      * @param appExecutable  The name of the application's executable.
      * @param isZipped       Whether the application is zipped or not.
      * @param extractionPath The path to extract the application to.
      */
-    public static void launchApplication(String appName, String appResource, String appExecutable, boolean isZipped,
-                                         String extractionPath) {
+    public static void launchApplication(String appResource, String appExecutable, boolean isZipped, String extractionPath) {
         Path path = Paths.get(extractionPath, appExecutable);
 
         if (!Files.exists(path)) {
-            updateProgressLabel("Extracting files...");
             InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/" + appResource);
             saveFile(input, appResource, false);
 
@@ -305,7 +284,6 @@ public class RepairKit {
             }
         }
 
-        updateProgressLabel("Launching " + appName + "...", 3000);
         runCommand(path.toString(), true);
     }
 
@@ -319,47 +297,6 @@ public class RepairKit {
             String errorMessage = String.format(OUTDATED_OS_MESSAGE, (osName != null ? osName : "unknown"));
             JOptionPane.showMessageDialog(null, errorMessage, "Incompatible Operating System", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
-        }
-    }
-
-    /**
-     * Cleans the file explorer thumbnails.
-     */
-    private static void cleanFileExplorerThumbnails() {
-        runCommand("taskkill /F /IM explorer.exe", false);
-        runCommand("del /s /q \"%localappdata%\\IconCache.db\"", false);
-
-        runCommand("taskkill /F /IM explorer.exe", false);
-        runCommand("del /s /q \"%localappdata%\\Microsoft\\Windows\\Explorer\\\"", false);
-
-        runCommand("start \"\" \"explorer.exe\"", false);
-    }
-
-    /**
-     * Checks for driver updates for AMD and NVIDIA hardware.
-     */
-    public static void checkForDriverUpdates() {
-        List<HardwareBrand> hardwareBrands = Arrays.asList(
-                new HardwareBrand("AMD", "C:\\Program Files\\AMD\\CNext\\CNext\\RadeonSoftware.exe", "https://www.amd.com/en/support"),
-                new HardwareBrand("NVIDIA", "C:\\Program Files\\NVIDIA Corporation\\NVIDIA GeForce Experience\\NVIDIA GeForce Experience.exe", "https://www.nvidia.com/en-us/geforce/geforce-experience/download/")
-        );
-
-        String cpuName = getCommandOutput("wmic cpu get name", false, false).toString();
-        String gpuName = getCommandOutput("wmic path win32_VideoController get name", false, false).toString();
-
-        for (HardwareBrand brand : hardwareBrands) {
-            if (cpuName.contains(brand.name) || gpuName.contains(brand.name)) {
-                int reply = JOptionPane.showConfirmDialog(null, brand.name + " hardware found. Check for driver updates?",
-                        "Driver Updates", JOptionPane.YES_NO_OPTION);
-
-                if (reply == JOptionPane.YES_OPTION) {
-                    if (Files.exists(Paths.get(brand.hardwareFile))) {
-                        runCommand("\"" + brand.hardwareFile + "\"", true);
-                    } else {
-                        runCommand("start " + brand.downloadUrl, true);
-                    }
-                }
-            }
         }
     }
 
@@ -380,69 +317,17 @@ public class RepairKit {
     }
 
     /**
-     * Cleans all temporary files.
+     * Cleans junk files using CCleaner.
      */
-    private static void cleanTempFilesAll() {
-        cleanTempFiles(true);
-    }
+    private static void cleanJunkFiles() {
+        runCommand("taskkill /F /IM CCleaner.exe", false);
+        runCommand("rd /s /q \"" + tempDirectory + "\\CCleaner\"", false);
 
-    /**
-     * Cleans temporary files.
-     *
-     * @param recycleBin Whether to empty the recycle bin.
-     */
-    private static void cleanTempFiles(boolean recycleBin) {
-        // Deletes the temp directory.
-        deleteDirectory(new File(System.getenv("TEMP")));
-        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\Temp"));
-        deleteDirectory(new File(System.getenv("LOCALAPPDATA") + "\\Temp"));
+        InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/" + "CCleaner.zip");
+        saveFile(input, "CCleaner.zip", true);
+        unzipFile(tempDirectory + "\\CCleaner.zip", tempDirectory.getPath() + "\\CCleaner");
 
-        // Empties the recycle bin.
-        if (recycleBin) {
-            deleteDirectory(new File("C:\\$Recycle.Bin"));
-        }
-
-        // Deletes the Windows.old folder.
-        if (Files.exists(Paths.get("C:\\Windows.old"))) {
-            runCommand("rd /s /q C:\\Windows.old", false);
-        }
-
-        // Clears old log files and memory dumps.
-        deleteDirectory(new File("C:\\"), "*.old");
-        deleteDirectory(new File("C:\\"), "*.dmp");
-        deleteDirectory(new File("C:\\"), "*.etl");
-        deleteDirectory(new File("C:\\"), "*.DS_Store");
-        deleteDirectory(new File("C:\\AMD\\Chipset_Software\\Logs"), "*.txt");
-        deleteDirectory(new File("C:\\Program Files (x86)\\Steam\\Dumps"));
-        deleteDirectory(new File("C:\\Program Files (x86)\\Steam\\Traces"));
-        deleteDirectory(new File("C:\\Program Files (x86)\\Steam\\Logs\\"), "*.txt");
-        deleteDirectory(new File("C:\\ProgramData\\NVIDIA"), "*.log.0");
-        deleteDirectory(new File("C:\\ProgramData\\NVIDIA"), "*.log_backup1");
-        deleteDirectory(new File("C:\\WINDOWS\\TEMP"), "*.tmp");
-        deleteDirectory(new File("C:\\Windows\\System32\\"), "*.tmp");
-        deleteDirectory(new File("C:\\Windows\\System32\\DriverStore\\Temp\\"), "*.tmp");
-        deleteDirectory(new File(System.getenv("APPDATA") + "\\yuzu\\log"), "*.txt");
-        deleteDirectory(new File(System.getenv("APPDATA") + "\\Listary\\UserData"));
-        deleteDirectory(new File(System.getenv("APPDATA") + "\\Sun\\Java\\Deployment\\cache"));
-        deleteDirectory(new File(System.getenv("APPDATA") + "\\Macromedia\\Flash Player"));
-        deleteDirectory(new File(System.getenv("APPDATA") + "\\vstelemetry"));
-        deleteDirectory(new File(System.getenv("LOCALAPPDATA") + "\\Microsoft\\VSApplicationInsights"));
-        deleteDirectory(new File(System.getenv("PROGRAMDATA") + "\\Microsoft\\VSApplicationInsights"));
-        deleteDirectory(new File(System.getenv("USERPROFILE") + "\\.dotnet\\TelemetryStorageService"));
-        deleteDirectory(new File(System.getenv("LOCALAPPDATA") + "\\Microsoft\\Windows\\Explorer"), "*.db");
-        deleteDirectory(new File(System.getenv("PROGRAMDATA") + "\\Microsoft\\Windows Defender\\Scans\\History"));
-        deleteDirectory(new File(System.getenv("LOCALAPPDATA") + "\\Microsoft\\Windows\\WebCache"));
-        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\ServiceProfiles\\LocalService\\AppData\\Local\\Temp"));
-        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\Logs"));
-        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\System32\\LogFiles\\setupcln"));
-        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\System32\\LogFiles\\catroot2\\dberr.txt"));
-        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\System32\\LogFiles\\catroot2.log"));
-        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\System32\\LogFiles\\catroot2.jrs"));
-        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\System32\\LogFiles\\catroot2.edb"));
-        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\System32\\LogFiles\\catroot2.chk"));
-        deleteDirectory(new File(System.getenv("SYSTEMROOT") + "\\Traces\\WindowsUpdate"));
-        deleteDirectory(new File(System.getenv("LOCALAPPDATA") + "\\Microsoft\\CLR_v4.0\\UsageTraces"));
-        deleteDirectory(new File(System.getenv("LOCALAPPDATA") + "\\Microsoft\\CLR_v4.0_32\\UsageTraces"));
+        runCommand(tempDirectory + "\\CCleaner\\CCleaner /AUTO", false);
     }
 
     /**
@@ -522,19 +407,16 @@ public class RepairKit {
                     }
                 });
 
-                deleteDirectory(new File(System.getenv("APPDATA")
-                                         + "\\Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar\\Tombstones\\Bandizip.lnk"));
+                runCommand("del /s /q \"" + System.getenv("APPDATA") + "\\Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar\\Tombstones\\Bandizip.lnk\"", true);
                 runCommand("rd /s /q \"%AppData%\\PeaZip", true);
 
                 // Installs 7-Zip.
                 if (shouldInstall7Zip) {
                     if (!Files.exists(tempPath)) {
-                        updateProgressLabel("Extracting...");
                         InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/7-Zip.exe");
                         saveFile(input, "7-Zip.exe", false);
                     }
 
-                    updateProgressLabel("Installing 7-Zip...");
                     runCommand(tempPath + " /D=\"C:\\Program Files\\7-Zip\" /S", false);
                 }
             }
@@ -542,33 +424,10 @@ public class RepairKit {
     }
 
     /**
-     * Repairs disk issues.
-     */
-    private static void repairDiskIssues() {
-        updateProgressLabel("Repairing disk issues...");
-        JOptionPane.showMessageDialog(null, "Warning: this process will take some time.", "Repair Disk Issues", JOptionPane.WARNING_MESSAGE);
-
-        // Repairs any corrupted system files.
-        getCommandOutput("sfc /scannow", true, false);
-
-        // Restores image health using DISM.
-        getCommandOutput("DISM /Online /Cleanup-Image /RestoreHealth", true, false);
-
-        // Repairs the WMI Repository if broken.
-        repairWMIRepository();
-
-        updateProgressLabel("Done.", 5000);
-        playSound("win.sound.exclamation");
-        JOptionPane.showMessageDialog(null, "Disk issues repaired successfully.", "Finished", JOptionPane.QUESTION_MESSAGE);
-    }
-
-    /**
      * Repairs the WMI Repository.
      */
     private static void repairWMIRepository() {
         if (getCommandOutput("winmgmt /verifyrepository", false, false).toString().contains("not consistent")) {
-            updateProgressLabel("Repairing WMI repository...");
-
             if (getCommandOutput("winmgmt /salvagerepository", false, false).toString().contains("not consistent")) {
                 runCommand("winmgmt /resetrepository", false);
             }
@@ -959,7 +818,7 @@ public class RepairKit {
      */
     private static void runSettingsTweaks() {
         // Enables Telnet Client.
-        runCommand("DISM /Online /Enable-Feature /FeatureName:\"TelnetClient\"", true);
+        runCommand("DISM /Online /Enable-Feature /FeatureName:\"TelnetClient\" /NoRestart", true);
 
         // Fixes micro-stuttering in games.
         runCommand("bcdedit /set useplatformtick yes", true);
@@ -989,7 +848,7 @@ public class RepairKit {
         runCommand("net user defaultuser0 /delete", true);
 
         // Removes default app associations.
-        runCommand("DISM /Online /Remove-DefaultAppAssociations", true);
+        runCommand("DISM /Online /Remove-DefaultAppAssociations /NoRestart", true);
 
         // Clears the Windows product key from registry.
         runCommand("cscript.exe //nologo \"%SystemRoot%\\system32\\slmgr.vbs\" /cpky", true);

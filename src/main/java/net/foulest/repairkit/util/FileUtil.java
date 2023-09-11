@@ -1,19 +1,20 @@
 package net.foulest.repairkit.util;
 
-import org.apache.commons.io.filefilter.WildcardFileFilter;
-
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import static net.foulest.repairkit.RepairKit.programName;
-import static net.foulest.repairkit.util.SwingUtil.showErrorDialog;
 
 public class FileUtil {
 
@@ -44,53 +45,7 @@ public class FileUtil {
                 }
             }
         } catch (IOException ex) {
-            showErrorDialog(ex, "Unzip File");
-        }
-    }
-
-    public static void deleteDirectory(File directory) {
-        try {
-            Path dirPath = directory.toPath();
-            Files.walkFileTree(dirPath, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    Files.delete(file);
-                    return FileVisitResult.CONTINUE;
-                }
-
-                @Override
-                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                    Files.delete(dir);
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        } catch (IOException ignored) {
-        }
-    }
-
-    public static void deleteDirectory(File directory, String filter) {
-        FileFilter fileFilter = new WildcardFileFilter(filter.toLowerCase());
-        Path dirPath = directory.toPath();
-
-        try {
-            Files.walkFileTree(dirPath, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    if (fileFilter.accept(file.toFile())) {
-                        Files.delete(file);
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
-
-                @Override
-                public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                    if (fileFilter.accept(dir.toFile())) {
-                        Files.delete(dir);
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
-            });
-        } catch (IOException ignored) {
+            ex.printStackTrace();
         }
     }
 
@@ -116,7 +71,7 @@ public class FileUtil {
                 }
 
             } catch (Exception ex) {
-                showErrorDialog(ex, "Download File");
+                ex.printStackTrace();
             }
         });
     }
@@ -140,7 +95,7 @@ public class FileUtil {
             Files.copy(input, savedFilePath, StandardCopyOption.REPLACE_EXISTING);
 
         } catch (IOException ex) {
-            showErrorDialog(ex, "Save File");
+            ex.printStackTrace();
         }
     }
 }

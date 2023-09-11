@@ -8,9 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static net.foulest.repairkit.util.SwingUtil.showErrorDialog;
-import static net.foulest.repairkit.util.SwingUtil.updateProgressLabel;
-
 public class CommandUtil {
 
     public static void runCommand(String command, boolean async) {
@@ -21,7 +18,7 @@ public class CommandUtil {
                 Process process = processBuilder.start();
                 process.waitFor();
             } catch (IOException | InterruptedException ex) {
-                showErrorDialog(ex, "Run Command");
+                ex.printStackTrace();
                 Thread.currentThread().interrupt();
             }
         };
@@ -33,21 +30,14 @@ public class CommandUtil {
         }
     }
 
-    public static void displayCommandOutput(String command, boolean async) {
-        runCommand(command, async, line -> {
-            if (!line.trim().isEmpty()) {
-                updateProgressLabel(line);
-            }
-        });
-    }
-
     public static List<String> getCommandOutput(String command, boolean display, boolean async) {
         List<String> output = new ArrayList<>();
+
         runCommand(command, async, line -> {
             output.add(line);
+
             if (display && !line.trim().isEmpty()) {
                 System.out.println(line);
-                updateProgressLabel(line);
             }
         });
         return output.isEmpty() ? Collections.singletonList("") : output;
@@ -69,7 +59,7 @@ public class CommandUtil {
 
                 process.waitFor();
             } catch (IOException | InterruptedException ex) {
-                showErrorDialog(ex, "Run Command Line Consumer");
+                ex.printStackTrace();
                 Thread.currentThread().interrupt();
             }
         };
