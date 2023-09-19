@@ -27,6 +27,7 @@ import static net.foulest.repairkit.util.RegistryUtil.*;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
 import static net.foulest.repairkit.util.SwingUtil.*;
 
+@SuppressWarnings("CallToPrintStackTrace")
 public class RepairKit {
 
     private static final Set<String> SUPPORTED_OS_NAMES = new HashSet<>(Arrays.asList("Windows 10", "Windows 11"));
@@ -151,8 +152,7 @@ public class RepairKit {
 
         // CPU-Z Button
         JButton buttonCPUZ = createAppButton("CPU-Z", "Displays system hardware information.",
-                "CPU-Z.exe", "CPU-Z.exe", false, tempDirectory.getPath());
-        saveFile(RepairKit.class.getClassLoader().getResourceAsStream("resources/cpuz.ini"), "cpuz.ini", false);
+                "CPU-Z.zip", "CPU-Z.exe", true, tempDirectory.getPath());
         buttonCPUZ.setBounds(162, 100, 152, 25);
         addComponents(panelMain, buttonCPUZ);
 
@@ -170,8 +170,7 @@ public class RepairKit {
 
         // HWMonitor Button
         JButton buttonHWMonitor = createAppButton("HWMonitor", "Displays system hardware information.",
-                "HWMonitor.exe", "HWMonitor.exe", false, tempDirectory.getPath());
-        saveFile(RepairKit.class.getClassLoader().getResourceAsStream("resources/hwmonitorw.ini"), "hwmonitorw.ini", false);
+                "HWMonitor.zip", "HWMonitor.exe", true, tempDirectory.getPath());
         buttonHWMonitor.setBounds(5, 160, 152, 25);
         addComponents(panelMain, buttonHWMonitor);
 
@@ -282,11 +281,8 @@ public class RepairKit {
                 // Registry tweaks
                 executor.submit(() -> {
                     try {
-                        System.out.println("Starting runRegistryTweaks task...");
                         runRegistryTweaks();
-                        System.out.println("Finished runRegistryTweaks task!");
                         latch.countDown();
-                        System.out.println("Counted down latch from runRegistryTweaks");
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -394,7 +390,8 @@ public class RepairKit {
         executor.submit(() -> {
             deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\MMC");
             deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\Windows\\System");
-            deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows Defender\\Spynet");
+            deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Internet Explorer");
+            deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows Defender");
             deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Google\\Chrome");
             latch.countDown();
         });
@@ -527,7 +524,7 @@ public class RepairKit {
 
         // Create a thread pool and latch
         ExecutorService executor = Executors.newWorkStealingPool();
-        CountDownLatch latch = new CountDownLatch(20);
+        CountDownLatch latch = new CountDownLatch(19);
 
         // Disables telemetry and annoyances.
         executor.submit(() -> {
@@ -587,12 +584,19 @@ public class RepairKit {
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Installer", "AlwaysInstallElevated", 0);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer", "NoDataExecutionPrevention", 0);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\SYSTEM", "DisableHHDEP", 0);
-            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\LSA", "RestrictAnonymous", 1);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\WinRM\\Client", "AllowBasic", 0);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\LSA", "RestrictAnonymous", 1);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Lsa", "LmCompatibilityLevel", 5);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel", "DisableExceptionChainValidation", 0);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel", "RestrictAnonymousSAM", 1);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Services\\LanManServer\\Parameters", "RestrictNullSessAccess", 1);
+
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "NoDriveTypeAutoRun", 255);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Terminal Server", "fDenyTSConnections", 1);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\SpecialAccounts\\UserList", "Guest", 0);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\SpecialAccounts\\UserList", "Administrator", 0);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\FVE", "UseAdvancedStartup", 1);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows Script Host\\Settings", "Enabled", 0);
             latch.countDown();
         });
 
@@ -622,12 +626,6 @@ public class RepairKit {
             deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit\\Favorites");
             deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Map Network Drive MRU");
             deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RecentDocs");
-            latch.countDown();
-        });
-
-        // Disables Windows Script Host.
-        executor.submit(() -> {
-            deleteRegistryValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows Script Host\\Settings", "Enabled");
             latch.countDown();
         });
 
