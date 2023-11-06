@@ -1,7 +1,7 @@
 # RepairKit
 RepairKit is a comprehensive Java-based Windows repair and maintenance software designed to provide you with a suite of tools for keeping your Windows PC running smoothly.
 
-![RepairKit Software Image](https://i.imgur.com/EBLPyZI.png)
+![RepairKit Software Image](https://i.imgur.com/wO8AlAQ.png)
 
 ## Features
 ### 1. **Run Automatic Repairs**
@@ -24,6 +24,8 @@ One-click access to a suite of essential software:
 - **Emsisoft Scan**: Link to Emsisoft Repair Kit for malware scanning.
 - **uBlock Origin**: Link to the powerful ad-blocker extension.
 - **Defender Extension**: Direct link to Microsoft Defender Browser Protection.
+- **NVCleanstall**: A lightweight NVIDIA graphics card driver updater.
+- **Intel DSA**: Intel's driver and software update utility.
 
 ### 3. **Quick Windows Access Buttons**
 Direct access to critical Windows utilities:
