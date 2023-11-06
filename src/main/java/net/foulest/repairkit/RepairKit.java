@@ -93,7 +93,6 @@ public class RepairKit {
      */
     private static void setupShutdownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            runCommand("taskkill /F /IM Everything.exe", false); // Everything process
             runCommand("rd /s /q " + tempDirectory.getPath(), false); // Temporary files
         }));
     }
@@ -165,7 +164,7 @@ public class RepairKit {
 
         // Everything Button
         JButton buttonEverything = createAppButton("Everything", "Displays all files on your system.",
-                "Everything.exe", "Everything.exe", false, tempDirectory.getPath());
+                "Everything.zip", "Everything.exe", true, tempDirectory.getPath());
         buttonEverything.setBounds(162, 130, 152, 25);
         addComponents(panelMain, buttonEverything);
 
