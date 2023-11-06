@@ -3,41 +3,44 @@ package net.foulest.repairkit.util;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.ptr.IntByReference;
+import lombok.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RegistryUtil {
 
-    private static void createRegistryKeyIfNeeded(WinReg.HKEY hkey, String keyPath) {
+    private static void createRegistryKeyIfNeeded(@NonNull WinReg.HKEY hkey, @NonNull String keyPath) {
         if (!Advapi32Util.registryKeyExists(hkey, keyPath)) {
             Advapi32Util.registryCreateKey(hkey, keyPath);
         }
     }
 
-    public static void setRegistryIntValue(WinReg.HKEY hkey, String keyPath, String keyName, int value) {
+    public static void setRegistryIntValue(@NonNull WinReg.HKEY hkey, @NonNull String keyPath,
+                                           @NonNull String keyName, int value) {
         createRegistryKeyIfNeeded(hkey, keyPath);
         Advapi32Util.registrySetIntValue(hkey, keyPath, keyName, value);
     }
 
-    public static void setRegistryStringValue(WinReg.HKEY hkey, String keyPath, String keyName, String value) {
+    public static void setRegistryStringValue(@NonNull WinReg.HKEY hkey, @NonNull String keyPath,
+                                              @NonNull String keyName, @NonNull String value) {
         createRegistryKeyIfNeeded(hkey, keyPath);
         Advapi32Util.registrySetStringValue(hkey, keyPath, keyName, value);
     }
 
-    public static void deleteRegistryValue(WinReg.HKEY hkey, String keyPath, String value) {
+    public static void deleteRegistryValue(@NonNull WinReg.HKEY hkey, @NonNull String keyPath, @NonNull String value) {
         if (Advapi32Util.registryValueExists(hkey, keyPath, value)) {
             Advapi32Util.registryDeleteValue(hkey, keyPath, value);
         }
     }
 
-    public static void deleteRegistryKey(WinReg.HKEY hkey, String keyPath) {
+    public static void deleteRegistryKey(@NonNull WinReg.HKEY hkey, @NonNull String keyPath) {
         if (Advapi32Util.registryKeyExists(hkey, keyPath)) {
             Advapi32Util.registryDeleteKey(hkey, keyPath);
         }
     }
 
-    public static List<String> listSubKeys(WinReg.HKEY root, String keyPath) {
+    public static List<String> listSubKeys(@NonNull WinReg.HKEY root, @NonNull String keyPath) {
         List<String> subKeysList = new ArrayList<>();
         WinReg.HKEYByReference hkeyRef = Advapi32Util.registryGetKey(root, keyPath, WinNT.KEY_READ);
 

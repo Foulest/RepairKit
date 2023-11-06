@@ -1,5 +1,7 @@
 package net.foulest.repairkit.util;
 
+import lombok.NonNull;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +22,7 @@ public class FileUtil {
 
     private static final ExecutorService DOWNLOAD_EXECUTOR = Executors.newFixedThreadPool(4);
 
-    public static void unzipFile(String fileZip, String fileDest) {
+    public static void unzipFile(@NonNull String fileZip, @NonNull String fileDest) {
         fileZip = fileZip.replace("%temp%", System.getenv("TEMP"));
         fileDest = fileDest.replace("%temp%", System.getenv("TEMP"));
 
@@ -50,7 +52,7 @@ public class FileUtil {
     }
 
     @SuppressWarnings("unused")
-    public static void downloadFile(String link, String fileName, boolean replaceOldFile) {
+    public static void downloadFile(@NonNull String link, @NonNull String fileName, boolean replaceOldFile) {
         DOWNLOAD_EXECUTOR.submit(() -> {
             try {
                 URL url = new URL(link);
@@ -69,14 +71,13 @@ public class FileUtil {
                 try (InputStream inputStream = new BufferedInputStream(con.getInputStream())) {
                     saveFile(inputStream, fileName, replaceOldFile);
                 }
-
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         });
     }
 
-    public static void saveFile(InputStream input, String fileName, boolean replaceOldFile) {
+    public static void saveFile(@NonNull InputStream input, @NonNull String fileName, boolean replaceOldFile) {
         Path savedFilePath = Paths.get(System.getenv("TEMP"), programName, fileName);
 
         try {

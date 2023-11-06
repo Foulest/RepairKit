@@ -1,5 +1,7 @@
 package net.foulest.repairkit.util;
 
+import lombok.NonNull;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -14,7 +16,7 @@ public class SwingUtil {
      * @param panel      Panel to add components to.
      * @param components Components to add.
      */
-    public static void addComponents(JPanel panel, Component... components) {
+    public static void addComponents(@NonNull JPanel panel, @NonNull Component... components) {
         for (Component component : components) {
             panel.add(component);
         }
@@ -23,7 +25,8 @@ public class SwingUtil {
     /**
      * Creates an action button.
      */
-    public static JButton createActionButton(String buttonText, String toolTipText, Runnable action) {
+    public static JButton createActionButton(@NonNull String buttonText, @NonNull String toolTipText,
+                                             @NonNull Runnable action) {
         JButton button = new JButton(buttonText);
         button.setToolTipText(toolTipText);
         button.setBackground(new Color(200, 200, 200));
@@ -41,8 +44,9 @@ public class SwingUtil {
     /**
      * Creates an application button.
      */
-    public static JButton createAppButton(String buttonText, String toolTipText, String appResource,
-                                          String appExecutable, boolean isZipped, String extractionPath) {
+    public static JButton createAppButton(@NonNull String buttonText, @NonNull String toolTipText,
+                                          @NonNull String appResource, @NonNull String appExecutable,
+                                          boolean isZipped, @NonNull String extractionPath) {
         JButton button = new JButton(buttonText);
         button.setToolTipText(toolTipText);
         button.setBackground(new Color(200, 200, 200));
@@ -58,9 +62,24 @@ public class SwingUtil {
     }
 
     /**
+     * Creates a link button without tooltip text.
+     */
+    public static JButton createLinkButton(@NonNull String buttonText,
+                                           @NonNull String command) {
+        JButton button = new JButton(buttonText);
+        button.setToolTipText("");
+        button.setBackground(new Color(200, 200, 200));
+
+        button.addActionListener(actionEvent -> runCommand(command, true));
+        return button;
+    }
+
+    /**
      * Creates a link button.
      */
-    public static JButton createLinkButton(String buttonText, String toolTipText, String command, String progressText) {
+    public static JButton createLinkButton(@NonNull String buttonText,
+                                           @NonNull String toolTipText,
+                                           @NonNull String command) {
         JButton button = new JButton(buttonText);
         button.setToolTipText(toolTipText);
         button.setBackground(new Color(200, 200, 200));
@@ -72,7 +91,8 @@ public class SwingUtil {
     /**
      * Creates a label.
      */
-    public static JLabel createLabel(String labelText, Color textColor, int x, int y, int width, int height) {
+    public static JLabel createLabel(@NonNull String labelText, @NonNull Color textColor,
+                                     int x, int y, int width, int height) {
         JLabel label = new JLabel(labelText);
         label.setForeground(textColor);
         label.setBounds(x, y, width, height);

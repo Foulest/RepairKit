@@ -1,6 +1,7 @@
 package net.foulest.repairkit;
 
 import com.sun.jna.platform.win32.WinReg;
+import lombok.NonNull;
 import net.foulest.repairkit.util.type.UninstallData;
 
 import javax.swing.*;
@@ -101,7 +102,7 @@ public class RepairKit {
      * Sets the main panel of the program.
      */
     public static void setMainPanel() {
-        panelMain.setPreferredSize(new Dimension(320, 325));
+        panelMain.setPreferredSize(new Dimension(320, 355));
         panelMain.setBackground(new Color(43, 43, 43));
     }
 
@@ -121,7 +122,7 @@ public class RepairKit {
 
         // System Shortcuts Label
         JLabel labelSystemShortcuts = createLabel("System Shortcuts",
-                new Color(225, 225, 225), 5, 225, 150, 20);
+                new Color(225, 225, 225), 5, 255, 150, 20);
         addComponents(panelMain, labelSystemShortcuts);
     }
 
@@ -186,33 +187,55 @@ public class RepairKit {
      */
     public static void setLinkButtons() {
         // uBlock Origin Button
-        JButton buttonUBlockOrigin = createLinkButton("uBlock Origin", "Blocks ads and trackers across all websites.", "start https://ublockorigin.com", "Opening link(s)...");
+        JButton buttonUBlockOrigin = createLinkButton("uBlock Origin",
+                "Blocks ads and trackers across all websites.",
+                "start https://ublockorigin.com");
         buttonUBlockOrigin.setBounds(5, 190, 152, 25);
         addComponents(panelMain, buttonUBlockOrigin);
 
         // MS Defender Extension Button
-        JButton buttonDefenderExtension = createLinkButton("Defender Extension", "Blocks malicious websites and phishing attacks.", "start https://chrome.google.com/webstore/detail/microsoft-defender-browse/bkbeeeffjjeopflfhgeknacdieedcoml", "Opening link(s)...");
+        JButton buttonDefenderExtension = createLinkButton("Defender Extension",
+                "Blocks malicious websites and phishing attacks.",
+                "start https://chrome.google.com/webstore/detail/microsoft-defender-browse/bkbeeeffjjeopflfhgeknacdieedcoml");
         buttonDefenderExtension.setBounds(162, 190, 152, 25);
         addComponents(panelMain, buttonDefenderExtension);
 
+        // NVCleanstall Button
+        JButton buttonNVCleanstallExtension = createLinkButton("NVCleanstall",
+                "A lightweight NVIDIA graphics card driver updater.",
+                "start https://www.techpowerup.com/download/techpowerup-nvcleanstall");
+        buttonNVCleanstallExtension.setBounds(5, 220, 152, 25);
+        addComponents(panelMain, buttonNVCleanstallExtension);
+
+        // Intel DSA Button
+        JButton buttonIntelDSA = createLinkButton("Intel DSA Software",
+                "Downloads Intel drivers & keeps them up-to-date.",
+                "start https://www.intel.com/content/www/us/en/support/detect.html");
+        buttonIntelDSA.setBounds(162, 220, 152, 25);
+        addComponents(panelMain, buttonIntelDSA);
+
         // Apps & Features Button
-        JButton buttonAppsFeatures = createLinkButton("Apps & Features", "", "start ms-settings:appsfeatures", "Launching...");
-        buttonAppsFeatures.setBounds(5, 250, 152, 25);
+        JButton buttonAppsFeatures = createLinkButton("Apps & Features",
+                "start ms-settings:appsfeatures");
+        buttonAppsFeatures.setBounds(5, 280, 152, 25);
         addComponents(panelMain, buttonAppsFeatures);
 
         // Windows Update Button
-        JButton buttonCheckForUpdates = createLinkButton("Windows Update", "", "start ms-settings:windowsupdate", "Launching...");
-        buttonCheckForUpdates.setBounds(162, 250, 152, 25);
+        JButton buttonCheckForUpdates = createLinkButton("Windows Update",
+                "start ms-settings:windowsupdate");
+        buttonCheckForUpdates.setBounds(162, 280, 152, 25);
         addComponents(panelMain, buttonCheckForUpdates);
 
         // Task Manager Button
-        JButton buttonTaskManager = createLinkButton("Task Manager", "", "taskmgr", "Launching...");
-        buttonTaskManager.setBounds(5, 280, 152, 25);
+        JButton buttonTaskManager = createLinkButton("Task Manager",
+                "taskmgr");
+        buttonTaskManager.setBounds(5, 310, 152, 25);
         addComponents(panelMain, buttonTaskManager);
 
         // Windows Defender Button
-        JButton buttonSecurity = createLinkButton("Windows Defender", "", "start windowsdefender:", "Launching...");
-        buttonSecurity.setBounds(162, 280, 152, 25);
+        JButton buttonSecurity = createLinkButton("Windows Defender",
+                "start windowsdefender:");
+        buttonSecurity.setBounds(162, 310, 152, 25);
         addComponents(panelMain, buttonSecurity);
     }
 
@@ -325,7 +348,8 @@ public class RepairKit {
      * @param isZipped       Whether the application is zipped or not.
      * @param extractionPath The path to extract the application to.
      */
-    public static void launchApplication(String appResource, String appExecutable, boolean isZipped, String extractionPath) {
+    public static void launchApplication(@NonNull String appResource, @NonNull String appExecutable,
+                                         boolean isZipped, @NonNull String extractionPath) {
         Path path = Paths.get(extractionPath, appExecutable);
 
         if (!Files.exists(path)) {
@@ -391,7 +415,6 @@ public class RepairKit {
             deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\MMC");
             deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\Windows\\System");
             deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Internet Explorer");
-            deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows Defender");
             deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Google\\Chrome");
             latch.countDown();
         });
@@ -803,7 +826,7 @@ public class RepairKit {
         // Shut down the executor
         executor.shutdown();
 
-        System.out.println("Tweaked Windows in " + (System.currentTimeMillis() - startTime) + "ms");
+        System.out.println("Tweaked Windows in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
     /**
@@ -859,7 +882,7 @@ public class RepairKit {
         // Shut down the executor
         executor.shutdown();
 
-        System.out.println("Tweaked " + serviceList.size() + " services in " + (System.currentTimeMillis() - startTime) + "ms");
+        System.out.println("Tweaked " + serviceList.size() + " services in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
     /**
@@ -914,7 +937,10 @@ public class RepairKit {
                 "D5EA27B7.Duolingo-LearnLanguagesforFree",
                 "PandoraMediaInc.29680B314EFC2",
                 "46928bounde.EclipseManager",
-                "ActiproSoftwareLLC.562882FEEB491"
+                "ActiproSoftwareLLC.562882FEEB491",
+                "Microsoft.MicrosoftStickyNotes",
+                "Microsoft.WindowsSoundRecorder",
+                "Microsoft.WindowsFeedbackHub"
         };
 
         List<String> packagesToRemove = Arrays.stream(appPackages)
@@ -953,7 +979,7 @@ public class RepairKit {
         // Shut down the executor
         executor.shutdown();
 
-        System.out.println("Removed " + packagesToRemove.size() + " stock apps in " + (System.currentTimeMillis() - startTime) + "ms");
+        System.out.println("Removed " + packagesToRemove.size() + " stock apps in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
     /**
@@ -1012,6 +1038,7 @@ public class RepairKit {
             runCommand("DISM /Online /Disable-Feature /FeatureName:\"SMB1Protocol-Server\" /NoRestart", false);
             runCommand("DISM /Online /Disable-Feature /FeatureName:\"SMB1Protocol-Deprecation\" /NoRestart", false);
             runCommand("DISM /Online /Disable-Feature /FeatureName:\"TelnetClient\" /NoRestart", false);
+            runCommand("DISM /Online /Disable-Feature /FeatureName:\"Internet-Explorer-Optional-amd64\" /NoRestart", false);
             runCommand("DISM /Online /Disable-Feature /FeatureName:\"MicrosoftWindowsPowerShellV2\" /NoRestart", false);
             runCommand("DISM /Online /Disable-Feature /FeatureName:\"MicrosoftWindowsPowerShellV2Root\" /NoRestart", false);
             latch.countDown();

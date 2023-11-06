@@ -1,5 +1,7 @@
 package net.foulest.repairkit.util;
 
+import lombok.NonNull;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,11 +12,12 @@ import java.util.concurrent.CompletableFuture;
 
 public class CommandUtil {
 
-    public static void runCommand(String command, boolean async) {
+    public static void runCommand(@NonNull String command, boolean async) {
         Runnable commandRunner = () -> {
             try {
                 ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
                 processBuilder.redirectErrorStream(true);
+
                 Process process = processBuilder.start();
                 process.waitFor();
             } catch (IOException | InterruptedException ex) {
@@ -30,7 +33,7 @@ public class CommandUtil {
         }
     }
 
-    public static List<String> getCommandOutput(String command, boolean display, boolean async) {
+    public static List<String> getCommandOutput(@NonNull String command, boolean display, boolean async) {
         List<String> output = new ArrayList<>();
 
         runCommand(command, async, line -> {
@@ -43,15 +46,18 @@ public class CommandUtil {
         return output.isEmpty() ? Collections.singletonList("") : output;
     }
 
-    private static void runCommand(String command, boolean async, LineConsumer lineConsumer) {
+    private static void runCommand(@NonNull String command, boolean async,
+                                   @NonNull LineConsumer lineConsumer) {
         Runnable commandRunner = () -> {
             try {
                 ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
                 processBuilder.redirectErrorStream(true);
+
                 Process process = processBuilder.start();
 
                 try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                     String line;
+
                     while ((line = bufferedReader.readLine()) != null) {
                         lineConsumer.consume(line);
                     }
