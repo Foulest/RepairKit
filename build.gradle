@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'net.foulest'
-version '0.3.0'
+version '0.3.1'
 compileJava.options.encoding = 'UTF-8'
 
 repositories {
@@ -31,9 +31,7 @@ dependencies {
     // https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform
     provided group: 'net.java.dev.jna', name: 'jna-platform', version: '5.13.0'
 
-    // https://mvnrepository.com/artifact/com.profesorfalken/jPowerShell
-    implementation group: 'com.profesorfalken', name: 'jPowerShell', version: '3.1.1'
-
+    // https://projectlombok.org
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }

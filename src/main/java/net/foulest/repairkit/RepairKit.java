@@ -1040,6 +1040,11 @@ public class RepairKit {
             runCommand("DISM /Online /Disable-Feature /FeatureName:\"Internet-Explorer-Optional-amd64\" /NoRestart", false);
             runCommand("DISM /Online /Disable-Feature /FeatureName:\"MicrosoftWindowsPowerShellV2\" /NoRestart", false);
             runCommand("DISM /Online /Disable-Feature /FeatureName:\"MicrosoftWindowsPowerShellV2Root\" /NoRestart", false);
+            runCommand("DISM /Online /Remove-Capability /CapabilityName:\"Print.Fax.Scan~~~~0.0.1.0\" /NoRestart", false);
+            runCommand("DISM /Online /Remove-Capability /CapabilityName:\"Microsoft.Windows.WordPad~~~~0.0.1.0\" /NoRestart", false);
+            runCommand("DISM /Online /Remove-Capability /CapabilityName:\"MathRecognizer~~~~0.0.1.0\" /NoRestart", false);
+            runCommand("DISM /Online /Remove-Capability /CapabilityName:\"Browser.InternetExplorer~~~~0.0.11.0\" /NoRestart", false);
+            runCommand("DISM /Online /Remove-Capability /CapabilityName:\"App.StepsRecorder~~~~0.0.1.0\" /NoRestart", false);
             latch.countDown();
         });
 
