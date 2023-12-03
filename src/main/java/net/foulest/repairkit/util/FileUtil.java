@@ -42,6 +42,11 @@ public class FileUtil {
                 while (zipEntry != null) {
                     Path newPath = targetPath.resolve(zipEntry.getName());
 
+                    // Check for path traversal vulnerabilities
+                    if (!newPath.startsWith(targetPath)) {
+                        throw new IOException("Bad zip entry: " + zipEntry.getName());
+                    }
+
                     if (zipEntry.isDirectory()) {
                         Files.createDirectories(newPath);
                     } else {
