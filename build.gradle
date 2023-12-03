@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'net.foulest'
-version '0.3.1'
+version '0.3.2'
 compileJava.options.encoding = 'UTF-8'
 
 repositories {
@@ -22,12 +22,6 @@ configurations {
 }
 
 dependencies {
-    // https://mvnrepository.com/artifact/commons-io/commons-io
-    provided group: 'commons-io', name: 'commons-io', version: '2.15.0'
-
-    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
-    provided group: 'org.apache.commons', name: 'commons-lang3', version: '3.13.0'
-
     // https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform
     provided group: 'net.java.dev.jna', name: 'jna-platform', version: '5.13.0'
 

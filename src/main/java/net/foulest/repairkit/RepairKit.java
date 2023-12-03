@@ -11,10 +11,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,8 +30,6 @@ import static net.foulest.repairkit.util.SwingUtil.*;
 public class RepairKit {
 
     private static final Set<String> SUPPORTED_OS_NAMES = new HashSet<>(Arrays.asList("Windows 10", "Windows 11"));
-    private static final String OUTDATED_OS_MESSAGE = "Your operating system, %s, is outdated, unknown, or not Windows based."
-            + "\nThis software only works on up-to-date Windows operating systems.";
 
     public static final String programName = "RepairKit";
     public static final JPanel panelMain = new JPanel(null);
@@ -66,6 +62,9 @@ public class RepairKit {
 
         // Deletes pre-existing RepairKit files.
         runCommand("rd /s /q " + tempDirectory.getPath(), false);
+
+        // Checks if Medal is installed.
+        checkForMedal();
 
         // Creates the main frame.
         frame.setContentPane(panelMain);
@@ -353,7 +352,7 @@ public class RepairKit {
 
         if (!Files.exists(path)) {
             InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/" + appResource);
-            saveFile(input, appResource, false);
+            saveFile(Objects.requireNonNull(input), appResource, false);
 
             if (isZipped) {
                 unzipFile(tempDirectory + "\\" + appResource, extractionPath);
@@ -370,9 +369,26 @@ public class RepairKit {
         String osName = System.getProperty("os.name");
 
         if (!SUPPORTED_OS_NAMES.contains(osName)) {
-            String errorMessage = String.format(OUTDATED_OS_MESSAGE, (osName != null ? osName : "unknown"));
+            String errorMessage = String.format("Your operating system, %s, is outdated, unknown, or not Windows based."
+                    + "\nThis software only works on up-to-date Windows operating systems.", (osName != null ? osName : "unknown"));
             JOptionPane.showMessageDialog(null, errorMessage, "Incompatible Operating System", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
+        }
+    }
+
+    /**
+     * Checks if Medal is installed.
+     * Medal causes issues with Desktop Window Manager.
+     */
+    private static void checkForMedal() {
+        String medalPath = getCommandOutput("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-Process -Name Medal | Select-Object Path | ft -hidetableheaders\"", false, false).toString();
+        medalPath = medalPath.replace("[, ", "");
+        medalPath = medalPath.replace(", , ]", "");
+
+        if (!medalPath.contains("Cannot find a process with the name")) {
+            JOptionPane.showMessageDialog(null, "Warning: Medal is installed and running on your system."
+                    + "\nMedal causes issues with Desktop Windows Manager, which affects system performance."
+                    + "\nFinding an alternative to Medal, such as Shadowplay or AMD ReLive is recommended.", "Software Warning", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -388,7 +404,7 @@ public class RepairKit {
 
         // Extracts CCleaner
         InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/" + "CCleaner.zip");
-        saveFile(input, "CCleaner.zip", true);
+        saveFile(Objects.requireNonNull(input), "CCleaner.zip", true);
         unzipFile(tempDirectory + "\\CCleaner.zip", tempDirectory.getPath() + "\\CCleaner");
 
         // Runs CCleaner
@@ -514,7 +530,7 @@ public class RepairKit {
                 if (shouldInstall7Zip) {
                     if (!Files.exists(tempPath)) {
                         InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/7-Zip.exe");
-                        saveFile(input, "7-Zip.exe", false);
+                        saveFile(Objects.requireNonNull(input), "7-Zip.exe", false);
                     }
 
                     runCommand(tempPath + " /D=\"C:\\Program Files\\7-Zip\" /S", false);
