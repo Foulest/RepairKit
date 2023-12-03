@@ -3,7 +3,7 @@ plugins {
     id 'application'
 
     // For creating an executable .exe file
-    id 'edu.sc.seis.launch4j' version '2.5.4'
+    id 'edu.sc.seis.launch4j' version '3.0.5'
 }
 
 group 'net.foulest'
