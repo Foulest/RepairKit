@@ -10,36 +10,78 @@ import java.util.List;
 
 public class RegistryUtil {
 
+    /**
+     * Creates a registry key if it doesn't exist.
+     *
+     * @param hkey    Registry key to check.
+     * @param keyPath Path to the registry key.
+     */
     private static void createRegistryKeyIfNeeded(@NonNull WinReg.HKEY hkey, @NonNull String keyPath) {
         if (!Advapi32Util.registryKeyExists(hkey, keyPath)) {
             Advapi32Util.registryCreateKey(hkey, keyPath);
         }
     }
 
+    /**
+     * Sets a registry int value.
+     *
+     * @param hkey    Registry key to check.
+     * @param keyPath Path to the registry key.
+     * @param keyName Name of the registry key.
+     * @param value   Value to set.
+     */
     public static void setRegistryIntValue(@NonNull WinReg.HKEY hkey, @NonNull String keyPath,
                                            @NonNull String keyName, int value) {
         createRegistryKeyIfNeeded(hkey, keyPath);
         Advapi32Util.registrySetIntValue(hkey, keyPath, keyName, value);
     }
 
+    /**
+     * Sets a registry string value.
+     *
+     * @param hkey    Registry key to check.
+     * @param keyPath Path to the registry key.
+     * @param keyName Name of the registry key.
+     * @param value   Value to set.
+     */
     public static void setRegistryStringValue(@NonNull WinReg.HKEY hkey, @NonNull String keyPath,
                                               @NonNull String keyName, @NonNull String value) {
         createRegistryKeyIfNeeded(hkey, keyPath);
         Advapi32Util.registrySetStringValue(hkey, keyPath, keyName, value);
     }
 
+    /**
+     * Deletes a registry value.
+     *
+     * @param hkey    Registry key to check.
+     * @param keyPath Path to the registry key.
+     * @param value   Value to delete.
+     */
     public static void deleteRegistryValue(@NonNull WinReg.HKEY hkey, @NonNull String keyPath, @NonNull String value) {
         if (Advapi32Util.registryValueExists(hkey, keyPath, value)) {
             Advapi32Util.registryDeleteValue(hkey, keyPath, value);
         }
     }
 
+    /**
+     * Deletes a registry key.
+     *
+     * @param hkey    Registry key to check.
+     * @param keyPath Path to the registry key.
+     */
     public static void deleteRegistryKey(@NonNull WinReg.HKEY hkey, @NonNull String keyPath) {
         if (Advapi32Util.registryKeyExists(hkey, keyPath)) {
             Advapi32Util.registryDeleteKey(hkey, keyPath);
         }
     }
 
+    /**
+     * Lists all sub keys of a registry key.
+     *
+     * @param root    Registry key to check.
+     * @param keyPath Path to the registry key.
+     * @return List of sub keys.
+     */
     public static List<String> listSubKeys(@NonNull WinReg.HKEY root, @NonNull String keyPath) {
         List<String> subKeysList = new ArrayList<>();
         WinReg.HKEYByReference hkeyRef = Advapi32Util.registryGetKey(root, keyPath, WinNT.KEY_READ);

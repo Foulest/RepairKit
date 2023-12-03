@@ -1,44 +1,53 @@
 plugins {
     id 'java'
     id 'application'
+
+    // For creating an executable .exe file
     id 'edu.sc.seis.launch4j' version '2.5.4'
 }
 
 group 'net.foulest'
-version '0.3.2'
+version '0.3.3'
 compileJava.options.encoding = 'UTF-8'
 
 repositories {
+    // Maven central repository
     mavenCentral()
 
+    // Local libraries
     flatDir {
         dirs 'libs'
     }
 }
 
 configurations {
-    provided
+    provided // Custom configuration for compile-only dependencies
     implementation.extendsFrom(provided)
 }
 
 dependencies {
+    // JNA platform - for registry access
     // https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform
     provided group: 'net.java.dev.jna', name: 'jna-platform', version: '5.13.0'
 
+    // Lombok - for reducing boilerplate code
     // https://projectlombok.org
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
 launch4j {
+    // Executable file information
     outfile = "${project.name}.exe"
     mainClassName = "${project.group}.repairkit.RepairKit"
     icon = "${projectDir}/RepairKit.ico"
 
+    // Java runtime information
     jreMinVersion = '1.8.0'
     initialHeapSize = 128
     maxHeapSize = 1024
 
+    // Application version information
     version = "${project.version}"
     textVersion = "${project.version}"
     fileDescription = 'RepairKit by Foulest'
@@ -46,16 +55,19 @@ launch4j {
     productName = "${project.name}"
     internalName = "${project.name}"
 
+    // Custom manifest file for Windows
     manifest = "${projectDir}/RepairKit.manifest"
 }
 
 jar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
+    // Set the 'Main-Class' attribute in the JAR manifest
     manifest {
         attributes 'Main-Class': 'net.foulest.repairkit.RepairKit'
     }
 
+    // Include compile-only dependencies in the JAR
     from {
         configurations.provided.asFileTree.files.collect {
             zipTree(it)

@@ -12,6 +12,12 @@ import java.util.concurrent.CompletableFuture;
 
 public class CommandUtil {
 
+    /**
+     * Runs a command.
+     *
+     * @param command Command to run.
+     * @param async   Whether to run the command asynchronously.
+     */
     public static void runCommand(@NonNull String command, boolean async) {
         Runnable commandRunner = () -> {
             try {
@@ -33,6 +39,14 @@ public class CommandUtil {
         }
     }
 
+    /**
+     * Runs a command and returns the output.
+     *
+     * @param command Command to run.
+     * @param display Whether to display the output.
+     * @param async   Whether to run the command asynchronously.
+     * @return The output of the command.
+     */
     public static List<String> getCommandOutput(@NonNull String command, boolean display, boolean async) {
         List<String> output = new ArrayList<>();
 
@@ -46,6 +60,13 @@ public class CommandUtil {
         return output.isEmpty() ? Collections.singletonList("") : output;
     }
 
+    /**
+     * Runs a command.
+     *
+     * @param command      Command to run.
+     * @param async        Whether to run the command asynchronously.
+     * @param lineConsumer Consumer to consume the output of the command.
+     */
     private static void runCommand(@NonNull String command, boolean async,
                                    @NonNull LineConsumer lineConsumer) {
         Runnable commandRunner = () -> {

@@ -1,18 +1,16 @@
 package net.foulest.repairkit;
 
 import com.sun.jna.platform.win32.WinReg;
-import lombok.NonNull;
 import net.foulest.repairkit.util.type.UninstallData;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,8 +18,7 @@ import java.util.stream.Collectors;
 
 import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
 import static net.foulest.repairkit.util.CommandUtil.runCommand;
-import static net.foulest.repairkit.util.FileUtil.saveFile;
-import static net.foulest.repairkit.util.FileUtil.unzipFile;
+import static net.foulest.repairkit.util.FileUtil.*;
 import static net.foulest.repairkit.util.RegistryUtil.*;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
 import static net.foulest.repairkit.util.SwingUtil.*;
@@ -30,11 +27,8 @@ import static net.foulest.repairkit.util.SwingUtil.*;
 public class RepairKit {
 
     private static final Set<String> SUPPORTED_OS_NAMES = new HashSet<>(Arrays.asList("Windows 10", "Windows 11"));
-
-    public static final String programName = "RepairKit";
-    public static final JPanel panelMain = new JPanel(null);
-    public static final JFrame frame = new JFrame(programName);
-    public static final File tempDirectory = new File(System.getenv("TEMP") + "\\" + programName);
+    private static final JFrame frame = new JFrame("RepairKit");
+    private static final JPanel panelMain = new JPanel(null);
 
     /**
      * The main method of the program.
@@ -49,6 +43,29 @@ public class RepairKit {
             JFrame frame = createMainFrame();
             frame.setVisible(true);
         });
+    }
+
+    /**
+     * Checks if the user's operating system is supported.
+     */
+    private static void checkOperatingSystemCompatibility() {
+        String osName = System.getProperty("os.name");
+
+        if (!SUPPORTED_OS_NAMES.contains(osName)) {
+            String errorMessage = String.format("Your operating system, %s, is outdated, unknown, or not Windows based."
+                    + "\nThis software only works on up-to-date Windows operating systems.", (osName != null ? osName : "unknown"));
+            JOptionPane.showMessageDialog(null, errorMessage, "Incompatible Operating System", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+        }
+    }
+
+    /**
+     * Sets the program's shutdown hook.
+     */
+    private static void setupShutdownHook() {
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            runCommand("rd /s /q " + tempDirectory.getPath(), false); // Temporary files
+        }));
     }
 
     /**
@@ -79,7 +96,7 @@ public class RepairKit {
     /**
      * Sets the program's GUI elements.
      */
-    public static void setGUIElements() {
+    private static void setGUIElements() {
         setMainPanel();
         setLabels();
         setRepairButtons();
@@ -88,18 +105,9 @@ public class RepairKit {
     }
 
     /**
-     * Sets the program's shutdown hook.
-     */
-    private static void setupShutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            runCommand("rd /s /q " + tempDirectory.getPath(), false); // Temporary files
-        }));
-    }
-
-    /**
      * Sets the main panel of the program.
      */
-    public static void setMainPanel() {
+    private static void setMainPanel() {
         panelMain.setPreferredSize(new Dimension(320, 355));
         panelMain.setBackground(new Color(43, 43, 43));
     }
@@ -107,9 +115,9 @@ public class RepairKit {
     /**
      * Sets the program's labels.
      */
-    public static void setLabels() {
+    private static void setLabels() {
         // Title Label
-        JLabel labelTitle = createLabel(programName + " by Foulest",
+        JLabel labelTitle = createLabel("RepairKit by Foulest",
                 new Color(225, 225, 225), 5, 5, 150, 20);
         addComponents(panelMain, labelTitle);
 
@@ -125,122 +133,9 @@ public class RepairKit {
     }
 
     /**
-     * Sets the program's app buttons.
-     */
-    public static void setAppButtons() {
-        // FanControl Button
-        JButton buttonFanControl = new JButton("FanControl");
-        buttonFanControl.setToolTipText("Allows control over system fans.");
-        buttonFanControl.setBackground(new Color(200, 200, 200));
-        buttonFanControl.setBounds(5, 100, 152, 25);
-        addComponents(panelMain, buttonFanControl);
-        buttonFanControl.addActionListener(actionEvent -> {
-            try {
-                String fanControlPath = getCommandOutput("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-Process -Name FanControl | Select-Object Path | ft -hidetableheaders\"", false, false).toString();
-                fanControlPath = fanControlPath.replace("[, ", "");
-                fanControlPath = fanControlPath.replace(", , ]", "");
-
-                if (fanControlPath.contains("Cannot find a process with the name")) {
-                    launchApplication("FanControl.zip", "\\FanControl.exe", true, System.getenv("APPDATA") + "\\FanControl");
-                } else {
-                    runCommand("start \"\" \"" + fanControlPath + "\"", false);
-                }
-            } catch (Exception ignored) {
-            }
-        });
-
-        // CPU-Z Button
-        JButton buttonCPUZ = createAppButton("CPU-Z", "Displays system hardware information.",
-                "CPU-Z.zip", "CPU-Z.exe", true, tempDirectory.getPath());
-        buttonCPUZ.setBounds(162, 100, 152, 25);
-        addComponents(panelMain, buttonCPUZ);
-
-        // TreeSize Button
-        JButton buttonWinDirStat = createAppButton("TreeSize", "Displays system files organized by size.",
-                "TreeSize.zip", "TreeSize.exe", true, tempDirectory.getPath());
-        buttonWinDirStat.setBounds(5, 130, 152, 25);
-        addComponents(panelMain, buttonWinDirStat);
-
-        // Everything Button
-        JButton buttonEverything = createAppButton("Everything", "Displays all files on your system.",
-                "Everything.zip", "Everything.exe", true, tempDirectory.getPath());
-        buttonEverything.setBounds(162, 130, 152, 25);
-        addComponents(panelMain, buttonEverything);
-
-        // HWMonitor Button
-        JButton buttonHWMonitor = createAppButton("HWMonitor", "Displays system hardware information.",
-                "HWMonitor.zip", "HWMonitor.exe", true, tempDirectory.getPath());
-        buttonHWMonitor.setBounds(5, 160, 152, 25);
-        addComponents(panelMain, buttonHWMonitor);
-
-        // Emsisoft Scan Button
-        JButton buttonEmsisoft = createAppButton("Emsisoft Scan", "Scans your system for malware.",
-                "Emsisoft.zip", "Emsisoft.exe", true, tempDirectory.getPath());
-        buttonEmsisoft.setBounds(162, 160, 152, 25);
-        addComponents(panelMain, buttonEmsisoft);
-    }
-
-    /**
-     * Sets the program's link buttons.
-     */
-    public static void setLinkButtons() {
-        // uBlock Origin Button
-        JButton buttonUBlockOrigin = createLinkButton("uBlock Origin",
-                "Blocks ads and trackers across all websites.",
-                "start https://ublockorigin.com");
-        buttonUBlockOrigin.setBounds(5, 190, 152, 25);
-        addComponents(panelMain, buttonUBlockOrigin);
-
-        // MS Defender Extension Button
-        JButton buttonDefenderExtension = createLinkButton("Defender Extension",
-                "Blocks malicious websites and phishing attacks.",
-                "start https://chrome.google.com/webstore/detail/microsoft-defender-browse/bkbeeeffjjeopflfhgeknacdieedcoml");
-        buttonDefenderExtension.setBounds(162, 190, 152, 25);
-        addComponents(panelMain, buttonDefenderExtension);
-
-        // NVCleanstall Button
-        JButton buttonNVCleanstallExtension = createLinkButton("NVCleanstall",
-                "A lightweight NVIDIA graphics card driver updater.",
-                "start https://www.techpowerup.com/download/techpowerup-nvcleanstall");
-        buttonNVCleanstallExtension.setBounds(5, 220, 152, 25);
-        addComponents(panelMain, buttonNVCleanstallExtension);
-
-        // Intel DSA Button
-        JButton buttonIntelDSA = createLinkButton("Intel DSA Software",
-                "Downloads Intel drivers & keeps them up-to-date.",
-                "start https://www.intel.com/content/www/us/en/support/detect.html");
-        buttonIntelDSA.setBounds(162, 220, 152, 25);
-        addComponents(panelMain, buttonIntelDSA);
-
-        // Apps & Features Button
-        JButton buttonAppsFeatures = createLinkButton("Apps & Features",
-                "start ms-settings:appsfeatures");
-        buttonAppsFeatures.setBounds(5, 280, 152, 25);
-        addComponents(panelMain, buttonAppsFeatures);
-
-        // Windows Update Button
-        JButton buttonCheckForUpdates = createLinkButton("Windows Update",
-                "start ms-settings:windowsupdate");
-        buttonCheckForUpdates.setBounds(162, 280, 152, 25);
-        addComponents(panelMain, buttonCheckForUpdates);
-
-        // Task Manager Button
-        JButton buttonTaskManager = createLinkButton("Task Manager",
-                "taskmgr");
-        buttonTaskManager.setBounds(5, 310, 152, 25);
-        addComponents(panelMain, buttonTaskManager);
-
-        // Windows Defender Button
-        JButton buttonSecurity = createLinkButton("Windows Defender",
-                "start windowsdefender:");
-        buttonSecurity.setBounds(162, 310, 152, 25);
-        addComponents(panelMain, buttonSecurity);
-    }
-
-    /**
      * Sets the program's repair buttons.
      */
-    public static void setRepairButtons() {
+    private static void setRepairButtons() {
         // Run Automatic Repairs Button
         JButton buttonRepairs = new JButton("Run Automatic Repairs");
         buttonRepairs.setToolTipText("Performs various fixes and maintenance tasks.");
@@ -339,41 +234,116 @@ public class RepairKit {
     }
 
     /**
-     * Launches an application.
-     *
-     * @param appResource    The name of the application's resource.
-     * @param appExecutable  The name of the application's executable.
-     * @param isZipped       Whether the application is zipped or not.
-     * @param extractionPath The path to extract the application to.
+     * Sets the program's app buttons.
      */
-    public static void launchApplication(@NonNull String appResource, @NonNull String appExecutable,
-                                         boolean isZipped, @NonNull String extractionPath) {
-        Path path = Paths.get(extractionPath, appExecutable);
+    private static void setAppButtons() {
+        // FanControl Button
+        JButton buttonFanControl = new JButton("FanControl");
+        buttonFanControl.setToolTipText("Allows control over system fans.");
+        buttonFanControl.setBackground(new Color(200, 200, 200));
+        buttonFanControl.setBounds(5, 100, 152, 25);
+        addComponents(panelMain, buttonFanControl);
+        buttonFanControl.addActionListener(actionEvent -> {
+            try {
+                String fanControlPath = getCommandOutput("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-Process -Name FanControl | Select-Object Path | ft -hidetableheaders\"", false, false).toString();
+                fanControlPath = fanControlPath.replace("[, ", "");
+                fanControlPath = fanControlPath.replace(", , ]", "");
 
-        if (!Files.exists(path)) {
-            InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/" + appResource);
-            saveFile(Objects.requireNonNull(input), appResource, false);
-
-            if (isZipped) {
-                unzipFile(tempDirectory + "\\" + appResource, extractionPath);
+                if (fanControlPath.contains("Cannot find a process with the name")) {
+                    launchApplication("FanControl.zip", "\\FanControl.exe", true, System.getenv("APPDATA") + "\\FanControl");
+                } else {
+                    runCommand("start \"\" \"" + fanControlPath + "\"", false);
+                }
+            } catch (Exception ignored) {
             }
-        }
+        });
 
-        runCommand(path.toString(), true);
+        // CPU-Z Button
+        JButton buttonCPUZ = createAppButton("CPU-Z", "Displays system hardware information.",
+                "CPU-Z.zip", "CPU-Z.exe", true, tempDirectory.getPath());
+        buttonCPUZ.setBounds(162, 100, 152, 25);
+        addComponents(panelMain, buttonCPUZ);
+
+        // TreeSize Button
+        JButton buttonWinDirStat = createAppButton("TreeSize", "Displays system files organized by size.",
+                "TreeSize.zip", "TreeSize.exe", true, tempDirectory.getPath());
+        buttonWinDirStat.setBounds(5, 130, 152, 25);
+        addComponents(panelMain, buttonWinDirStat);
+
+        // Everything Button
+        JButton buttonEverything = createAppButton("Everything", "Displays all files on your system.",
+                "Everything.zip", "Everything.exe", true, tempDirectory.getPath());
+        buttonEverything.setBounds(162, 130, 152, 25);
+        addComponents(panelMain, buttonEverything);
+
+        // HWMonitor Button
+        JButton buttonHWMonitor = createAppButton("HWMonitor", "Displays system hardware information.",
+                "HWMonitor.zip", "HWMonitor.exe", true, tempDirectory.getPath());
+        buttonHWMonitor.setBounds(5, 160, 152, 25);
+        addComponents(panelMain, buttonHWMonitor);
+
+        // Emsisoft Scan Button
+        JButton buttonEmsisoft = createAppButton("Emsisoft Scan", "Scans your system for malware.",
+                "Emsisoft.zip", "Emsisoft.exe", true, tempDirectory.getPath());
+        buttonEmsisoft.setBounds(162, 160, 152, 25);
+        addComponents(panelMain, buttonEmsisoft);
     }
 
     /**
-     * Checks if the user's operating system is supported.
+     * Sets the program's link buttons.
      */
-    private static void checkOperatingSystemCompatibility() {
-        String osName = System.getProperty("os.name");
+    private static void setLinkButtons() {
+        // uBlock Origin Button
+        JButton buttonUBlockOrigin = createLinkButton("uBlock Origin",
+                "Blocks ads and trackers across all websites.",
+                "start https://ublockorigin.com");
+        buttonUBlockOrigin.setBounds(5, 190, 152, 25);
+        addComponents(panelMain, buttonUBlockOrigin);
 
-        if (!SUPPORTED_OS_NAMES.contains(osName)) {
-            String errorMessage = String.format("Your operating system, %s, is outdated, unknown, or not Windows based."
-                    + "\nThis software only works on up-to-date Windows operating systems.", (osName != null ? osName : "unknown"));
-            JOptionPane.showMessageDialog(null, errorMessage, "Incompatible Operating System", JOptionPane.ERROR_MESSAGE);
-            System.exit(0);
-        }
+        // MS Defender Extension Button
+        JButton buttonDefenderExtension = createLinkButton("Defender Extension",
+                "Blocks malicious websites and phishing attacks.",
+                "start https://chrome.google.com/webstore/detail/microsoft-defender-browse/bkbeeeffjjeopflfhgeknacdieedcoml");
+        buttonDefenderExtension.setBounds(162, 190, 152, 25);
+        addComponents(panelMain, buttonDefenderExtension);
+
+        // NVCleanstall Button
+        JButton buttonNVCleanstallExtension = createLinkButton("NVCleanstall",
+                "A lightweight NVIDIA graphics card driver updater.",
+                "start https://www.techpowerup.com/download/techpowerup-nvcleanstall");
+        buttonNVCleanstallExtension.setBounds(5, 220, 152, 25);
+        addComponents(panelMain, buttonNVCleanstallExtension);
+
+        // Intel DSA Button
+        JButton buttonIntelDSA = createLinkButton("Intel DSA Software",
+                "Downloads Intel drivers & keeps them up-to-date.",
+                "start https://www.intel.com/content/www/us/en/support/detect.html");
+        buttonIntelDSA.setBounds(162, 220, 152, 25);
+        addComponents(panelMain, buttonIntelDSA);
+
+        // Apps & Features Button
+        JButton buttonAppsFeatures = createLinkButton("Apps & Features",
+                "start ms-settings:appsfeatures");
+        buttonAppsFeatures.setBounds(5, 280, 152, 25);
+        addComponents(panelMain, buttonAppsFeatures);
+
+        // Windows Update Button
+        JButton buttonCheckForUpdates = createLinkButton("Windows Update",
+                "start ms-settings:windowsupdate");
+        buttonCheckForUpdates.setBounds(162, 280, 152, 25);
+        addComponents(panelMain, buttonCheckForUpdates);
+
+        // Task Manager Button
+        JButton buttonTaskManager = createLinkButton("Task Manager",
+                "taskmgr");
+        buttonTaskManager.setBounds(5, 310, 152, 25);
+        addComponents(panelMain, buttonTaskManager);
+
+        // Windows Defender Button
+        JButton buttonSecurity = createLinkButton("Windows Defender",
+                "start windowsdefender:");
+        buttonSecurity.setBounds(162, 310, 152, 25);
+        addComponents(panelMain, buttonSecurity);
     }
 
     /**

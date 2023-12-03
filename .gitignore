@@ -1,71 +1,89 @@
+# Windows system files
 $RECYCLE.BIN/
-**/*.iml
-*.cab
-*.class
-*.ctxt
-*.ear
-*.iml
-*.ipr
-*.iws
-*.jar
-*.lnk
-*.log
-*.msi
-*.msix
-*.msm
-*.msp
-*.nar
-*.rar
-*.stackdump
-*.tar.gz
-*.war
-*~
+Thumbs.db
+Thumbs.db:encryptable
+[Dd]esktop.ini
+ehthumbs.db
+ehthumbs_vista.db
+hs_err_pid*
+
+# macOS system files
 .AppleDB
 .AppleDesktop
 .AppleDouble
 .DS_Store
 .DocumentRevisions-V100
+.Icon
 .LSOverride
+.Network Trash Folder
 .Spotlight-V100
+.Temporary Items
 .TemporaryItems
 .Trash-*
 .Trashes
 .VolumeIcon.icns
 ._*
 .apdisk
-.classpath
 .com.apple.timemachine.donotpresent
-.directory
-.flattened-pom.xml
 .fseventsd
 .fuse_hidden*
+
+# IDE and editor folders
+.buildpath/
+.classpath/
 .gradle/
 .idea/
+.project/
+.settings/
+*.iml
+*.ipr
+*.iws
+*.sublime-project
+*.sublime-workspace
+
+# Java compiled files
+*.class
+*.ear
+*.jar
+*.nar
+*.war
+
+# Maven files
+.mvn/
 build/
-.mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
-.nfs*
-.project
-.tm_*
-Icon
-Network Trash Folder
-Temporary Items
-Thumbs.db
-Thumbs.db:encryptable
-[Dd]esktop.ini
+out/
+run/
+target/
+.flattened-pom.xml
 buildNumber.properties
 dependency-reduced-pom.xml
-ehthumbs.db
-ehthumbs_vista.db
-hs_err_pid*
-out/
 pom.xml.next
 pom.xml.releaseBackup
 pom.xml.tag
 pom.xml.versionsBackup
 release.properties
-run/
-target/
-/build/tmp/jar/MANIFEST.MF
-/build/tmp/compileJava/source-classes-mapping.txt
+
+# Package files
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+
+# Archive files
+*.7z
+*.rar
+*.tar.gz
+*.zip
+
+# Log and temporary files
+*.ctxt
+*.lnk
+*.log
+*.stackdump
+*~
+.nfs*
+.tm_*
+
+# Misc
 machinet.conf

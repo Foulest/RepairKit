@@ -3,6 +3,7 @@ package net.foulest.repairkit.util;
 import lombok.NonNull;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -16,12 +17,17 @@ import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import static net.foulest.repairkit.RepairKit.programName;
-
 public class FileUtil {
 
     private static final ExecutorService DOWNLOAD_EXECUTOR = Executors.newFixedThreadPool(4);
+    public static final File tempDirectory = new File(System.getenv("TEMP") + "\\RepairKit");
 
+    /**
+     * Unzips a file.
+     *
+     * @param fileZip  The file to unzip.
+     * @param fileDest The destination to unzip the file to.
+     */
     public static void unzipFile(@NonNull String fileZip, @NonNull String fileDest) {
         fileZip = fileZip.replace("%temp%", System.getenv("TEMP"));
         fileDest = fileDest.replace("%temp%", System.getenv("TEMP"));
@@ -51,6 +57,13 @@ public class FileUtil {
         }
     }
 
+    /**
+     * Downloads a file.
+     *
+     * @param link           The link to download the file from.
+     * @param fileName       The name of the file to download.
+     * @param replaceOldFile Whether or not to replace the old file.
+     */
     @SuppressWarnings("unused")
     public static void downloadFile(@NonNull String link, @NonNull String fileName, boolean replaceOldFile) {
         DOWNLOAD_EXECUTOR.submit(() -> {
@@ -77,8 +90,15 @@ public class FileUtil {
         });
     }
 
+    /**
+     * Saves a file.
+     *
+     * @param input          The input stream to save.
+     * @param fileName       The name of the file to save.
+     * @param replaceOldFile Whether or not to replace the old file.
+     */
     public static void saveFile(@NonNull InputStream input, @NonNull String fileName, boolean replaceOldFile) {
-        Path savedFilePath = Paths.get(System.getenv("TEMP"), programName, fileName);
+        Path savedFilePath = Paths.get(String.valueOf(tempDirectory), fileName);
 
         try {
             if (Files.exists(savedFilePath)) {
@@ -94,7 +114,6 @@ public class FileUtil {
             }
 
             Files.copy(input, savedFilePath, StandardCopyOption.REPLACE_EXISTING);
-
         } catch (IOException ex) {
             ex.printStackTrace();
         }
