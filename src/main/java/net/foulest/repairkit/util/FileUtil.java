@@ -40,11 +40,11 @@ public class FileUtil {
                 ZipEntry zipEntry = zis.getNextEntry();
 
                 while (zipEntry != null) {
-                    Path newPath = targetPath.resolve(zipEntry.getName());
+                    Path newPath = targetPath.resolve(zipEntry.getName()).normalize();
 
                     // Check for path traversal vulnerabilities
                     if (!newPath.startsWith(targetPath)) {
-                        throw new IOException("Bad zip entry: " + zipEntry.getName());
+                        throw new IOException("Bad zip entry (potential path traversal): " + zipEntry.getName());
                     }
 
                     if (zipEntry.isDirectory()) {
