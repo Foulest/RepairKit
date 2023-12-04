@@ -515,10 +515,9 @@ public class RepairKit {
     private static void repairWMIRepository() {
         long startTime = System.currentTimeMillis();
 
-        if (getCommandOutput("winmgmt /verifyrepository", false, false).toString().contains("not consistent")) {
-            if (getCommandOutput("winmgmt /salvagerepository", false, false).toString().contains("not consistent")) {
-                runCommand("winmgmt /resetrepository", false);
-            }
+        if (getCommandOutput("winmgmt /verifyrepository", false, false).toString().contains("not consistent")
+                && getCommandOutput("winmgmt /salvagerepository", false, false).toString().contains("not consistent")) {
+            runCommand("winmgmt /resetrepository", false);
         }
 
         System.out.println("Repaired WMI repository in " + (System.currentTimeMillis() - startTime) + "ms.");
