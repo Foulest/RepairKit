@@ -1,4 +1,8 @@
 # RepairKit
+
+[![Codacy Security Scan](https://github.com/Foulest/RepairKit/actions/workflows/codacy.yml/badge.svg)](https://github.com/Foulest/RepairKit/actions/workflows/codacy.yml)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/a89004cf20af46219c6adbdd8ca96e94)](https://app.codacy.com/gh/Foulest/RepairKit/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+
 **RepairKit** is a comprehensive, Java-based Windows repair and maintenance software. It's designed to offer a suite of tools for maintaining optimal performance and health of your Windows PC.
 
 ![RepairKit Software Image](https://i.imgur.com/wO8AlAQ.png)
