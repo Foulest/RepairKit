@@ -1,20 +1,12 @@
 # RepairKit
 
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Codacy Security Scan](https://github.com/Foulest/RepairKit/actions/workflows/codacy.yml/badge.svg)](https://github.com/Foulest/RepairKit/actions/workflows/codacy.yml)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/a89004cf20af46219c6adbdd8ca96e94)](https://app.codacy.com/gh/Foulest/RepairKit/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 **RepairKit** is a comprehensive, Java-based Windows repair and maintenance software. It's designed to offer a suite of tools for maintaining optimal performance and health of your Windows PC.
 
 ![RepairKit Software Image](https://i.imgur.com/wO8AlAQ.png)
-
-## Table of Contents
-1. [Features](#features)
-2. [Installation](#installation)
-3. [Usage](#usage)
-4. [Disclaimer](#disclaimer)
-5. [License](#license)
-6. [Contributing](#contributing)
-7. [Getting Help](#getting-help)
 
 ## Features
 ### 1. **Run Automatic Repairs**
@@ -45,63 +37,12 @@ Quickly access essential Windows utilities like:
 - Task Manager
 - Windows Defender
 
-## Installation
-Installing RepairKit is straightforward since it's a standalone executable. Follow these steps to get started:
-
-### Prerequisites
-- Ensure that you have Java installed on your computer. RepairKit requires Java 8. If you don't have Java installed, download and install it from [Oracle's Java website](https://www.java.com/en/download/manual.jsp) or adopt a version from [Adoptium](https://adoptium.net/temurin/releases/?arch=x64&package=jre&version=8&os=windows).
-- Windows 10 or later is required.
-
-### Downloading RepairKit
-1. Navigate to the [Releases page](https://github.com/Foulest/RepairKit/releases) of the RepairKit repository.
-2. Download the latest version of RepairKit. Look for a file named **`RepairKit.exe`**.
-
-### Running RepairKit
-1. After downloading, navigate to the folder where `RepairKit.exe` is saved.
-2. Double-click the `RepairKit.exe` file to run the application.
-   - If your system displays a security warning asking if you trust the application, confirm that you trust the source to proceed.
-3. There's no need to install the software - it runs directly from the executable file.
-
-### Creating a Shortcut (Optional)
-1. To easily access RepairKit, you can create a shortcut on your desktop:
-   - Right-click on the `RepairKit.exe` file.
-   - Select `Send to` > `Desktop (create shortcut)`.
-
-### Troubleshooting
-- If the application does not start, ensure that you have the correct version of Java installed and that your Windows version is compatible.
-- If you encounter any other issues, seek support by opening an issue in the [Issues](https://github.com/Foulest/RepairKit/issues) section.
-
-## Usage
-RepairKit's interface is designed for ease of use, offering direct access to all of its features through a simple menu with buttons. Here's how to navigate and utilize these features:
-
-### Navigating the Interface
-- Upon opening RepairKit, you'll be presented with a user-friendly main menu.
-- The menu primarily consists of buttons that correspond to different tools and functions.
-
-### Accessing Features
-- **Running Automatic Repairs:** Click on the `Run Automatic Repairs` button. This will initiate a series of repair and maintenance tasks, such as cleaning junk files and tweaking system settings.
-- **Using the Bundled Software Suite:** The menu includes buttons linking to each software tool in the suite. Simply click on a button (e.g., `CPU-Z`, `TreeSize`) to either launch the tool or be directed to its download page.
-- **Quick Windows Access:** For quick access to Windows utilities like `Task Manager` or `Windows Update`, click the respective button. This will immediately open the selected utility.
-
-### Executing Tasks
-- Each button in RepairKit performs a specific action, either launching a tool or executing a function.
-- After clicking a button, follow any on-screen prompts or instructions to complete the task or use the tool.
-
-### Exiting the Application
-- To close RepairKit, simply exit the application as you would with any standard Windows program.
-
-### Tips for Effective Use
-- Familiarize yourself with the functions of each button to make the most out of RepairKit.
-- Regularly use the `Run Automatic Repairs` feature for routine maintenance and optimization.
-
-## Disclaimer
-Please review the [full disclaimer](https://github.com/Foulest/RepairKit/blob/main/DISCLAIMER.md) for information about the use of RepairKit.
-
-## License
-This project is licensed under the GPL-3.0 license - see the [LICENSE](https://github.com/Foulest/RepairKit/blob/main/LICENSE) file for details.
-
-## Contributing
-We welcome contributions! Please read our [Contribution Guidelines](https://github.com/Foulest/RepairKit/blob/main/CONTRIBUTION.md) for details on the process for submitting pull requests to us.
+## Useful Links
+- [Contribution Guidelines](https://github.com/Foulest/RepairKit/wiki/Contribution-Guidelines)
+- [Disclaimer](https://github.com/Foulest/RepairKit/wiki/Disclaimer)
+- [Installation](https://github.com/Foulest/RepairKit/wiki/Installation)
+- [Troubleshooting](https://github.com/Foulest/RepairKit/wiki/Troubleshooting)
+- [Usage](https://github.com/Foulest/RepairKit/wiki/Usage)
 
 ## Getting Help
 For support or queries, please open an issue in the [Issues](https://github.com/Foulest/RepairKit/issues) section.
