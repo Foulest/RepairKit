@@ -45,4 +45,4 @@ Quickly access essential Windows utilities like:
 - [Usage](https://github.com/Foulest/RepairKit/wiki/Usage)
 
 ## Getting Help
-For support or queries, please open an issue in the [Issues](https://github.com/Foulest/RepairKit/issues) section.
+For support or queries, please open an issue in the [Issues section](https://github.com/Foulest/RepairKit/issues).
