@@ -51,7 +51,7 @@ launch4j {
     version = "${project.version}"
     textVersion = "${project.version}"
     fileDescription = 'RepairKit by Foulest'
-    copyright = 2023
+    copyright = "2023"
     productName = "${project.name}"
     internalName = "${project.name}"
 
