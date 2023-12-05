@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'net.foulest'
-version = '0.3.4'
+version = '0.3.5'
 description = 'RepairKit'
 compileJava.options.encoding = 'UTF-8'
 
@@ -70,8 +70,8 @@ jar {
 
     // Include compile-only dependencies in the JAR
     from {
-        configurations.provided.asFileTree.files.collect {
-            zipTree(it)
+        configurations.provided.collect { file ->
+            zipTree(file)
         }
     }
 }

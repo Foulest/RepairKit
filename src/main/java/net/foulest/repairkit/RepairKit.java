@@ -29,6 +29,7 @@ public class RepairKit {
     private static final Set<String> SUPPORTED_OS_NAMES = new HashSet<>(Arrays.asList("Windows 10", "Windows 11"));
     private static final JFrame frame = new JFrame("RepairKit");
     private static final JPanel panelMain = new JPanel(null);
+    private static boolean windowsUpdateInProgress = false;
 
     /**
      * The main method of the program.
@@ -38,6 +39,7 @@ public class RepairKit {
     public static void main(String[] args) {
         checkOperatingSystemCompatibility();
         setupShutdownHook();
+        checkForWindowsUpdate();
 
         SwingUtilities.invokeLater(() -> {
             JFrame frame = createMainFrame();
@@ -56,6 +58,20 @@ public class RepairKit {
                     + "\nThis software only works on up-to-date Windows operating systems.", (osName != null ? osName : "unknown"));
             JOptionPane.showMessageDialog(null, errorMessage, "Incompatible Operating System", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
+        }
+    }
+
+    /**
+     * Checks if Windows Update is running.
+     */
+    private static void checkForWindowsUpdate() {
+        // Checks if Windows Update is running.
+        // Windows Update causes problems with DISM.
+        if (getCommandOutput("sc query wuauserv", true, false).toString().contains("RUNNING")) {
+            windowsUpdateInProgress = true;
+            JOptionPane.showMessageDialog(null, "Windows Update is running on your system."
+                            + "\nCertain tweaks will not be applied until Windows Update is finished."
+                    , "Software Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -1017,19 +1033,22 @@ public class RepairKit {
 
         executor.submit(() -> {
             // Patches security vulnerabilities.
-            runCommand("DISM /Online /Disable-Feature /FeatureName:\"SMB1Protocol\" /NoRestart", false);
-            runCommand("DISM /Online /Disable-Feature /FeatureName:\"SMB1Protocol-Client\" /NoRestart", false);
-            runCommand("DISM /Online /Disable-Feature /FeatureName:\"SMB1Protocol-Server\" /NoRestart", false);
-            runCommand("DISM /Online /Disable-Feature /FeatureName:\"SMB1Protocol-Deprecation\" /NoRestart", false);
-            runCommand("DISM /Online /Disable-Feature /FeatureName:\"TelnetClient\" /NoRestart", false);
-            runCommand("DISM /Online /Disable-Feature /FeatureName:\"Internet-Explorer-Optional-amd64\" /NoRestart", false);
-            runCommand("DISM /Online /Disable-Feature /FeatureName:\"MicrosoftWindowsPowerShellV2\" /NoRestart", false);
-            runCommand("DISM /Online /Disable-Feature /FeatureName:\"MicrosoftWindowsPowerShellV2Root\" /NoRestart", false);
-            runCommand("DISM /Online /Remove-Capability /CapabilityName:\"Print.Fax.Scan~~~~0.0.1.0\" /NoRestart", false);
-            runCommand("DISM /Online /Remove-Capability /CapabilityName:\"Microsoft.Windows.WordPad~~~~0.0.1.0\" /NoRestart", false);
-            runCommand("DISM /Online /Remove-Capability /CapabilityName:\"MathRecognizer~~~~0.0.1.0\" /NoRestart", false);
-            runCommand("DISM /Online /Remove-Capability /CapabilityName:\"Browser.InternetExplorer~~~~0.0.11.0\" /NoRestart", false);
-            runCommand("DISM /Online /Remove-Capability /CapabilityName:\"App.StepsRecorder~~~~0.0.1.0\" /NoRestart", false);
+            if (!windowsUpdateInProgress) {
+                runCommand("DISM /Online /Disable-Feature /FeatureName:\"SMB1Protocol\" /NoRestart", false);
+                runCommand("DISM /Online /Disable-Feature /FeatureName:\"SMB1Protocol-Client\" /NoRestart", false);
+                runCommand("DISM /Online /Disable-Feature /FeatureName:\"SMB1Protocol-Server\" /NoRestart", false);
+                runCommand("DISM /Online /Disable-Feature /FeatureName:\"SMB1Protocol-Deprecation\" /NoRestart", false);
+                runCommand("DISM /Online /Disable-Feature /FeatureName:\"TelnetClient\" /NoRestart", false);
+                runCommand("DISM /Online /Disable-Feature /FeatureName:\"Internet-Explorer-Optional-amd64\" /NoRestart", false);
+                runCommand("DISM /Online /Disable-Feature /FeatureName:\"MicrosoftWindowsPowerShellV2\" /NoRestart", false);
+                runCommand("DISM /Online /Disable-Feature /FeatureName:\"MicrosoftWindowsPowerShellV2Root\" /NoRestart", false);
+                runCommand("DISM /Online /Remove-Capability /CapabilityName:\"Print.Fax.Scan~~~~0.0.1.0\" /NoRestart", false);
+                runCommand("DISM /Online /Remove-Capability /CapabilityName:\"Microsoft.Windows.WordPad~~~~0.0.1.0\" /NoRestart", false);
+                runCommand("DISM /Online /Remove-Capability /CapabilityName:\"MathRecognizer~~~~0.0.1.0\" /NoRestart", false);
+                runCommand("DISM /Online /Remove-Capability /CapabilityName:\"Browser.InternetExplorer~~~~0.0.11.0\" /NoRestart", false);
+                runCommand("DISM /Online /Remove-Capability /CapabilityName:\"App.StepsRecorder~~~~0.0.1.0\" /NoRestart", false);
+            }
+
             latch.countDown();
         });
 
