@@ -29,7 +29,7 @@ configurations {
 dependencies {
     // JNA platform - for registry access
     // https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform
-    provided group: 'net.java.dev.jna', name: 'jna-platform', version: '5.13.0'
+    provided group: 'net.java.dev.jna', name: 'jna-platform', version: '5.14.0'
 
     // Lombok - for reducing boilerplate code
     // https://projectlombok.org
