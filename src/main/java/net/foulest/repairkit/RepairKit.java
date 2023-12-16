@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
 import static net.foulest.repairkit.util.CommandUtil.runCommand;
 import static net.foulest.repairkit.util.FileUtil.*;
+import static net.foulest.repairkit.util.ProcessUtil.isProcessRunning;
 import static net.foulest.repairkit.util.RegistryUtil.*;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
 import static net.foulest.repairkit.util.SwingUtil.*;
@@ -54,9 +55,11 @@ public class RepairKit {
         String osName = System.getProperty("os.name");
 
         if (!SUPPORTED_OS_NAMES.contains(osName)) {
-            String errorMessage = String.format("Your operating system, %s, is outdated, unknown, or not Windows based."
-                    + "\nThis software only works on up-to-date Windows operating systems.", (osName != null ? osName : "unknown"));
-            JOptionPane.showMessageDialog(null, errorMessage, "Incompatible Operating System", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null,
+                    "Your operating system" + (osName != null ? ", " + osName + ", " : " ")
+                            + "is outdated, unknown, or not Windows based."
+                            + "\nThis software only works on up-to-date Windows operating systems."
+                    , "Incompatible Operating System", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
         }
     }
@@ -67,10 +70,13 @@ public class RepairKit {
     private static void checkForWindowsUpdate() {
         // Checks if Windows Update is running.
         // Windows Update causes problems with DISM.
-        if (getCommandOutput("sc query wuauserv", true, false).toString().contains("RUNNING")) {
+        if (isProcessRunning("WmiPrvSE.exe")
+                && isProcessRunning("TiWorker.exe")
+                && isProcessRunning("TrustedInstaller.exe")
+                && isProcessRunning("wuauclt.exe")) {
             windowsUpdateInProgress = true;
             JOptionPane.showMessageDialog(null, "Windows Update is running on your system."
-                            + "\nCertain tweaks will not be applied until Windows Update is finished."
+                            + "\nCertain tweaks will not be applied until the Windows Update is finished."
                     , "Software Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
@@ -79,8 +85,9 @@ public class RepairKit {
      * Sets the program's shutdown hook.
      */
     private static void setupShutdownHook() {
+        // Clears the files used by RepairKit on shutdown.
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            runCommand("rd /s /q " + tempDirectory.getPath(), false); // Temporary files
+            runCommand("rd /s /q " + tempDirectory.getPath(), false);
         }));
     }
 
@@ -254,25 +261,29 @@ public class RepairKit {
      */
     private static void setAppButtons() {
         // FanControl Button
-        JButton buttonFanControl = new JButton("FanControl");
-        buttonFanControl.setToolTipText("Allows control over system fans.");
+        JButton buttonFanControl = createActionButton("FanControl",
+                "Allows control over system fans.", () -> {
+                    try {
+                        String fanControlPath = getCommandOutput("PowerShell -ExecutionPolicy Unrestricted"
+                                + " -Command \"Get-Process -Name FanControl | Select-Object Path"
+                                + " | ft -hidetableheaders\"", false, false).toString();
+                        fanControlPath = fanControlPath.replace("[, ", "");
+                        fanControlPath = fanControlPath.replace(", , ]", "");
+
+                        // If FanControl is not running, extract and launch it.
+                        // Otherwise, launch the existing instance.
+                        if (!isProcessRunning("FanControl.exe")) {
+                            launchApplication("FanControl.zip", "\\FanControl.exe",
+                                    true, System.getenv("APPDATA") + "\\FanControl");
+                        } else {
+                            runCommand("start \"\" \"" + fanControlPath + "\"", false);
+                        }
+                    } catch (Exception ignored) {
+                    }
+                });
         buttonFanControl.setBackground(new Color(200, 200, 200));
         buttonFanControl.setBounds(5, 100, 152, 25);
         addComponents(panelMain, buttonFanControl);
-        buttonFanControl.addActionListener(actionEvent -> {
-            try {
-                String fanControlPath = getCommandOutput("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-Process -Name FanControl | Select-Object Path | ft -hidetableheaders\"", false, false).toString();
-                fanControlPath = fanControlPath.replace("[, ", "");
-                fanControlPath = fanControlPath.replace(", , ]", "");
-
-                if (fanControlPath.contains("Cannot find a process with the name")) {
-                    launchApplication("FanControl.zip", "\\FanControl.exe", true, System.getenv("APPDATA") + "\\FanControl");
-                } else {
-                    runCommand("start \"\" \"" + fanControlPath + "\"", false);
-                }
-            } catch (Exception ignored) {
-            }
-        });
 
         // CPU-Z Button
         JButton buttonCPUZ = createAppButton("CPU-Z", "Displays system hardware information.",
@@ -367,14 +378,12 @@ public class RepairKit {
      * Medal causes issues with Desktop Window Manager.
      */
     private static void checkForMedal() {
-        String medalPath = getCommandOutput("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-Process -Name Medal | Select-Object Path | ft -hidetableheaders\"", false, false).toString();
-        medalPath = medalPath.replace("[, ", "");
-        medalPath = medalPath.replace(", , ]", "");
-
-        if (!medalPath.contains("Cannot find a process with the name")) {
-            JOptionPane.showMessageDialog(null, "Warning: Medal is installed and running on your system."
+        if (isProcessRunning("medal.exe")) {
+            JOptionPane.showMessageDialog(null,
+                    "Warning: Medal is installed and running on your system."
                     + "\nMedal causes issues with Desktop Windows Manager, which affects system performance."
-                    + "\nFinding an alternative to Medal, such as Shadowplay or AMD ReLive is recommended.", "Software Warning", JOptionPane.ERROR_MESSAGE);
+                    + "\nFinding an alternative to Medal, such as Shadowplay or AMD ReLive is recommended.",
+                    "Software Warning", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -957,6 +966,7 @@ public class RepairKit {
         ExecutorService executor = Executors.newWorkStealingPool();
         CountDownLatch latch = new CountDownLatch(packagesToRemove.size());
 
+        // Iterate through the list of packages to remove and remove them
         for (String appPackage : packagesToRemove) {
             executor.submit(() -> {
                 try {
