@@ -264,11 +264,10 @@ public class RepairKit {
         JButton buttonFanControl = createActionButton("FanControl",
                 "Allows control over system fans.", () -> {
                     try {
-                        String fanControlPath = getCommandOutput("PowerShell -ExecutionPolicy Unrestricted"
-                                + " -Command \"Get-Process -Name FanControl | Select-Object Path"
-                                + " | ft -hidetableheaders\"", false, false).toString();
-                        fanControlPath = fanControlPath.replace("[, ", "");
-                        fanControlPath = fanControlPath.replace(", , ]", "");
+                        String fanControlPath = getCommandOutput("wmic process where name=\"FanControl.exe\""
+                                + " get ExecutablePath /value", false, false).toString();
+                        fanControlPath = fanControlPath.replace("[, , , , ExecutablePath=", "");
+                        fanControlPath = fanControlPath.replace(", , , , , , , ]", "");
 
                         // If FanControl is not running, extract and launch it.
                         // Otherwise, launch the existing instance.
@@ -381,8 +380,8 @@ public class RepairKit {
         if (isProcessRunning("medal.exe")) {
             JOptionPane.showMessageDialog(null,
                     "Warning: Medal is installed and running on your system."
-                    + "\nMedal causes issues with Desktop Windows Manager, which affects system performance."
-                    + "\nFinding an alternative to Medal, such as Shadowplay or AMD ReLive is recommended.",
+                            + "\nMedal causes issues with Desktop Windows Manager, which affects system performance."
+                            + "\nFinding an alternative to Medal, such as Shadowplay or AMD ReLive is recommended.",
                     "Software Warning", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -891,7 +890,8 @@ public class RepairKit {
         // Shut down the executor
         executor.shutdown();
 
-        System.out.println("Tweaked " + serviceList.size() + " services in " + (System.currentTimeMillis() - startTime) + "ms.");
+        System.out.println("Tweaked " + serviceList.size() + " services in "
+                + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
     /**
@@ -901,7 +901,7 @@ public class RepairKit {
         long startTime = System.currentTimeMillis();
 
         // This function will get a list of all installed app packages
-        String command = "PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage | Select-Object -ExpandProperty Name\"";
+        String command = "PowerShell -ExecutionPolicy Unrestricted -Command \"(Get-AppxPackage).ForEach({ $_.Name })\"";
         List<String> output = getCommandOutput(command, false, false);
         Set<String> installedPackages = new HashSet<>(output);
 
@@ -958,7 +958,7 @@ public class RepairKit {
 
         // If no packages to remove, simply exit
         if (packagesToRemove.isEmpty()) {
-            System.out.println("No stock apps to remove");
+            System.out.println("No stock apps found to remove.");
             return;
         }
 
@@ -989,7 +989,8 @@ public class RepairKit {
         // Shut down the executor
         executor.shutdown();
 
-        System.out.println("Removed " + packagesToRemove.size() + " stock apps in " + (System.currentTimeMillis() - startTime) + "ms.");
+        System.out.println("Removed " + packagesToRemove.size() + " stock apps in "
+                + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
     /**

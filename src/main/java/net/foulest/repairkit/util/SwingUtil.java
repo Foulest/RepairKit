@@ -19,8 +19,8 @@ public class SwingUtil {
     /**
      * Adds components to a panel.
      *
-     * @param panel         Panel to add components to.
-     * @param components    Components to add.
+     * @param panel      Panel to add components to.
+     * @param components Components to add.
      */
     public static void addComponents(@NonNull JPanel panel, @NonNull Component... components) {
         for (Component component : components) {
@@ -31,9 +31,9 @@ public class SwingUtil {
     /**
      * Creates an action button.
      *
-     * @param buttonText    Text to display on the button.
-     * @param toolTipText   Text to display when hovering over the button.
-     * @param action        Action to run when the button is clicked.
+     * @param buttonText  Text to display on the button.
+     * @param toolTipText Text to display when hovering over the button.
+     * @param action      Action to run when the button is clicked.
      */
     @SuppressWarnings("unused")
     public static JButton createActionButton(@NonNull String buttonText, @NonNull String toolTipText,
@@ -81,8 +81,8 @@ public class SwingUtil {
     /**
      * Creates a link button without tooltip text.
      *
-     * @param buttonText    Text to display on the button.
-     * @param command       Command to run when the button is clicked.
+     * @param buttonText Text to display on the button.
+     * @param command    Command to run when the button is clicked.
      */
     public static JButton createLinkButton(@NonNull String buttonText,
                                            @NonNull String command) {
@@ -96,8 +96,8 @@ public class SwingUtil {
     /**
      * Creates a link button.
      *
-     * @param buttonText    Text to display on the button.
-     * @param toolTipText   Text to display when hovering over the button.
+     * @param buttonText  Text to display on the button.
+     * @param toolTipText Text to display when hovering over the button.
      */
     public static JButton createLinkButton(@NonNull String buttonText,
                                            @NonNull String toolTipText,
@@ -130,10 +130,10 @@ public class SwingUtil {
     /**
      * Launches an application.
      *
-     * @param appResource       The name of the application's resource.
-     * @param appExecutable     The name of the application's executable.
-     * @param isZipped          Whether the application is zipped or not.
-     * @param extractionPath    The path to extract the application to.
+     * @param appResource    The name of the application's resource.
+     * @param appExecutable  The name of the application's executable.
+     * @param isZipped       Whether the application is zipped or not.
+     * @param extractionPath The path to extract the application to.
      */
     @SuppressWarnings("SameParameterValue")
     public static void launchApplication(@NonNull String appResource, @NonNull String appExecutable,
