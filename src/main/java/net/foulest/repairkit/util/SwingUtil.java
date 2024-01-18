@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
+import java.util.logging.Level;
 
 import static net.foulest.repairkit.util.CommandUtil.runCommand;
 import static net.foulest.repairkit.util.FileUtil.*;
@@ -35,7 +36,6 @@ public class SwingUtil {
      * @param toolTipText Text to display when hovering over the button.
      * @param action      Action to run when the button is clicked.
      */
-    @SuppressWarnings("unused")
     public static JButton createActionButton(@NonNull String buttonText, @NonNull String toolTipText,
                                              @NonNull Runnable action) {
         JButton button = new JButton(buttonText);
@@ -46,6 +46,7 @@ public class SwingUtil {
             try {
                 action.run();
             } catch (Exception ex) {
+                MessageUtil.log(Level.WARNING, "Failed to run action: " + action);
                 ex.printStackTrace();
             }
         });
@@ -72,6 +73,7 @@ public class SwingUtil {
             try {
                 launchApplication(appResource, appExecutable, isZipped, extractionPath);
             } catch (Exception ex) {
+                MessageUtil.log(Level.WARNING, "Failed to launch application: " + appExecutable);
                 ex.printStackTrace();
             }
         });
@@ -135,7 +137,6 @@ public class SwingUtil {
      * @param isZipped       Whether the application is zipped or not.
      * @param extractionPath The path to extract the application to.
      */
-    @SuppressWarnings("SameParameterValue")
     public static void launchApplication(@NonNull String appResource, @NonNull String appExecutable,
                                          boolean isZipped, @NonNull String extractionPath) {
         Path path = Paths.get(extractionPath, appExecutable);

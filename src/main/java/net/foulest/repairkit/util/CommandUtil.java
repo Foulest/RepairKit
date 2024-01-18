@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 
 public class CommandUtil {
 
@@ -27,8 +28,9 @@ public class CommandUtil {
                 Process process = processBuilder.start();
                 process.waitFor();
             } catch (IOException | InterruptedException ex) {
-                ex.printStackTrace();
                 Thread.currentThread().interrupt();
+                MessageUtil.log(Level.WARNING, "Failed to run command: " + command);
+                ex.printStackTrace();
             }
         };
 
@@ -86,8 +88,9 @@ public class CommandUtil {
 
                 process.waitFor();
             } catch (IOException | InterruptedException ex) {
-                ex.printStackTrace();
                 Thread.currentThread().interrupt();
+                MessageUtil.log(Level.WARNING, "Failed to run command: " + command);
+                ex.printStackTrace();
             }
         };
 

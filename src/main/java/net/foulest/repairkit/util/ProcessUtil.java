@@ -2,6 +2,7 @@ package net.foulest.repairkit.util;
 
 import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
 
+@SuppressWarnings("unused")
 public class ProcessUtil {
 
     /**

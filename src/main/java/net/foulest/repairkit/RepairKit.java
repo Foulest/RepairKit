@@ -1,6 +1,7 @@
 package net.foulest.repairkit;
 
 import com.sun.jna.platform.win32.WinReg;
+import net.foulest.repairkit.util.MessageUtil;
 import net.foulest.repairkit.util.type.UninstallData;
 
 import javax.swing.*;
@@ -14,6 +15,7 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
@@ -24,7 +26,6 @@ import static net.foulest.repairkit.util.RegistryUtil.*;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
 import static net.foulest.repairkit.util.SwingUtil.*;
 
-@SuppressWarnings("CallToPrintStackTrace")
 public class RepairKit {
 
     private static final Set<String> SUPPORTED_OS_NAMES = new HashSet<>(Arrays.asList("Windows 10", "Windows 11"));
@@ -86,9 +87,9 @@ public class RepairKit {
      */
     private static void setupShutdownHook() {
         // Clears the files used by RepairKit on shutdown.
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            runCommand("rd /s /q " + tempDirectory.getPath(), false);
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(() ->
+                runCommand("rd /s /q " + tempDirectory.getPath(), false))
+        );
     }
 
     /**
@@ -160,100 +161,106 @@ public class RepairKit {
      */
     private static void setRepairButtons() {
         // Run Automatic Repairs Button
-        JButton buttonRepairs = new JButton("Run Automatic Repairs");
-        buttonRepairs.setToolTipText("Performs various fixes and maintenance tasks.");
+        JButton buttonRepairs = createActionButton("Run Automatic Repairs",
+                "Performs various fixes and maintenance tasks.", () -> {
+                    try {
+                        // Deletes any system policies.
+                        deleteSystemPolicies();
+
+                        // Installs 7-Zip and uninstalls other programs.
+                        install7Zip();
+
+                        // Create a new executor
+                        ExecutorService executor = Executors.newWorkStealingPool();
+                        CountDownLatch latch = new CountDownLatch(6);
+
+                        // Clean junk files
+                        executor.submit(() -> {
+                            try {
+                                cleanJunkFiles();
+                                latch.countDown();
+                            } catch (Exception ex) {
+                                MessageUtil.log(Level.WARNING, "Error cleaning junk files.");
+                                ex.printStackTrace();
+                            }
+                        });
+
+                        // Repair WMI repository
+                        executor.submit(() -> {
+                            try {
+                                repairWMIRepository();
+                                latch.countDown();
+                            } catch (Exception ex) {
+                                MessageUtil.log(Level.WARNING, "Error repairing WMI repository.");
+                                ex.printStackTrace();
+                            }
+                        });
+
+                        // Service tweaks
+                        executor.submit(() -> {
+                            try {
+                                runServiceTweaks();
+                                latch.countDown();
+                            } catch (Exception ex) {
+                                MessageUtil.log(Level.WARNING, "Error running service tweaks.");
+                                ex.printStackTrace();
+                            }
+                        });
+
+                        // Remove stock apps
+                        executor.submit(() -> {
+                            try {
+                                removeStockApps();
+                                latch.countDown();
+                            } catch (Exception ex) {
+                                MessageUtil.log(Level.WARNING, "Error removing stock apps.");
+                                ex.printStackTrace();
+                            }
+                        });
+
+                        // Registry tweaks
+                        executor.submit(() -> {
+                            try {
+                                runRegistryTweaks();
+                                latch.countDown();
+                            } catch (Exception ex) {
+                                MessageUtil.log(Level.WARNING, "Error running registry tweaks.");
+                                ex.printStackTrace();
+                            }
+                        });
+
+                        // Settings tweaks
+                        executor.submit(() -> {
+                            try {
+                                runSettingsTweaks();
+                                latch.countDown();
+                            } catch (Exception ex) {
+                                MessageUtil.log(Level.WARNING, "Error running settings tweaks.");
+                                ex.printStackTrace();
+                            }
+                        });
+
+                        // Wait for all tasks to complete
+                        try {
+                            latch.await();
+                        } catch (InterruptedException ex) {
+                            Thread.currentThread().interrupt();
+                            MessageUtil.log(Level.WARNING, "Error waiting for tasks to complete.");
+                            ex.printStackTrace();
+                        }
+
+                        // Shut down the executor
+                        executor.shutdown();
+
+                        // Displays a message dialog
+                        playSound("win.sound.exclamation");
+                        JOptionPane.showMessageDialog(null, "System issues repaired successfully.", "Finished", JOptionPane.QUESTION_MESSAGE);
+                    } catch (Exception ignored) {
+                    }
+                });
         buttonRepairs.setBackground(new Color(200, 200, 200));
         buttonRepairs.setBounds(5, 30, 310, 35);
         addComponents(panelMain, buttonRepairs);
-        buttonRepairs.addActionListener(actionEvent -> {
-            try {
-                // Deletes any system policies.
-                deleteSystemPolicies();
-
-                // Installs 7-Zip and uninstalls other programs.
-                install7Zip();
-
-                // Create a new executor
-                ExecutorService executor = Executors.newWorkStealingPool();
-                CountDownLatch latch = new CountDownLatch(6);
-
-                // Clean junk files
-                executor.submit(() -> {
-                    try {
-                        cleanJunkFiles();
-                        latch.countDown();
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
-
-                // Repair WMI repository
-                executor.submit(() -> {
-                    try {
-                        repairWMIRepository();
-                        latch.countDown();
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
-
-                // Service tweaks
-                executor.submit(() -> {
-                    try {
-                        runServiceTweaks();
-                        latch.countDown();
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
-
-                // Remove stock apps
-                executor.submit(() -> {
-                    try {
-                        removeStockApps();
-                        latch.countDown();
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
-
-                // Registry tweaks
-                executor.submit(() -> {
-                    try {
-                        runRegistryTweaks();
-                        latch.countDown();
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
-
-                // Settings tweaks
-                executor.submit(() -> {
-                    try {
-                        runSettingsTweaks();
-                        latch.countDown();
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
-
-                // Wait for all tasks to complete
-                try {
-                    latch.await();
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                    ex.printStackTrace();
-                }
-
-                // Shut down the executor
-                executor.shutdown();
-
-                // Displays a message dialog
-                playSound("win.sound.exclamation");
-                JOptionPane.showMessageDialog(null, "System issues repaired successfully.", "Finished", JOptionPane.QUESTION_MESSAGE);
-            } catch (Exception ignored) {
-            }
-        });
     }
 
     /**
@@ -408,7 +415,7 @@ public class RepairKit {
         runCommand("taskkill /F /IM explorer.exe", false);
         runCommand("start explorer.exe", false);
 
-        System.out.println("Cleaned junk files in " + (System.currentTimeMillis() - startTime) + "ms.");
+        MessageUtil.log(Level.INFO, "Cleaned junk files in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
     /**
@@ -464,13 +471,14 @@ public class RepairKit {
             latch.await();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
+            MessageUtil.log(Level.WARNING, "Error waiting for tasks to complete.");
             ex.printStackTrace();
         }
 
         // Shut down the executor
         executor.shutdown();
 
-        System.out.println("Deleted system policies in " + (System.currentTimeMillis() - startTime) + "ms.");
+        MessageUtil.log(Level.INFO, "Deleted system policies in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
     /**
@@ -517,7 +525,8 @@ public class RepairKit {
                     }
                 });
 
-                runCommand("del /s /q \"" + System.getenv("APPDATA") + "\\Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar\\Tombstones\\Bandizip.lnk\"", true);
+                runCommand("del /s /q \"" + System.getenv("APPDATA")
+                        + "\\Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar\\Tombstones\\Bandizip.lnk\"", true);
                 runCommand("rd /s /q \"%AppData%\\PeaZip", true);
 
                 // Installs 7-Zip.
@@ -544,7 +553,7 @@ public class RepairKit {
             runCommand("winmgmt /resetrepository", false);
         }
 
-        System.out.println("Repaired WMI repository in " + (System.currentTimeMillis() - startTime) + "ms.");
+        MessageUtil.log(Level.INFO, "Repaired WMI repository in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
     /**
@@ -828,13 +837,14 @@ public class RepairKit {
             latch.await();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
+            MessageUtil.log(Level.WARNING, "Error waiting for tasks to complete.");
             ex.printStackTrace();
         }
 
         // Shut down the executor
         executor.shutdown();
 
-        System.out.println("Tweaked Windows in " + (System.currentTimeMillis() - startTime) + "ms.");
+        MessageUtil.log(Level.INFO, "Tweaked Windows in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
     /**
@@ -884,13 +894,14 @@ public class RepairKit {
             latch.await();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
+            MessageUtil.log(Level.WARNING, "Error waiting for tasks to complete.");
             ex.printStackTrace();
         }
 
         // Shut down the executor
         executor.shutdown();
 
-        System.out.println("Tweaked " + serviceList.size() + " services in "
+        MessageUtil.log(Level.INFO, "Tweaked " + serviceList.size() + " services in "
                 + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
@@ -958,7 +969,7 @@ public class RepairKit {
 
         // If no packages to remove, simply exit
         if (packagesToRemove.isEmpty()) {
-            System.out.println("No stock apps found to remove.");
+            MessageUtil.log(Level.INFO, "No stock apps found to remove.");
             return;
         }
 
@@ -983,13 +994,14 @@ public class RepairKit {
             latch.await();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
+            MessageUtil.log(Level.WARNING, "Error waiting for tasks to complete.");
             ex.printStackTrace();
         }
 
         // Shut down the executor
         executor.shutdown();
 
-        System.out.println("Removed " + packagesToRemove.size() + " stock apps in "
+        MessageUtil.log(Level.INFO, "Removed " + packagesToRemove.size() + " stock apps in "
                 + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
@@ -1087,12 +1099,13 @@ public class RepairKit {
             latch.await();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
+            MessageUtil.log(Level.WARNING, "Error waiting for tasks to complete.");
             ex.printStackTrace();
         }
 
         // Shut down the executor
         executor.shutdown();
 
-        System.out.println("Settings tweaks completed in " + (System.currentTimeMillis() - startTime) + "ms.");
+        MessageUtil.log(Level.INFO, "Settings tweaks completed in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 }

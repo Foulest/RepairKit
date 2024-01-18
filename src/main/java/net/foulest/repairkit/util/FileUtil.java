@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -58,6 +59,7 @@ public class FileUtil {
                 }
             }
         } catch (IOException ex) {
+            MessageUtil.log(Level.WARNING, "Failed to unzip file: " + fileZip);
             ex.printStackTrace();
         }
     }
@@ -83,6 +85,8 @@ public class FileUtil {
                 try (InputStream ignored = con.getInputStream()) {
                     // Returns if IP address is blocked.
                 } catch (IOException ex) {
+                    MessageUtil.log(Level.WARNING, "Failed to download file: " + fileName);
+                    ex.printStackTrace();
                     return;
                 }
 
@@ -120,6 +124,7 @@ public class FileUtil {
 
             Files.copy(input, savedFilePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
+            MessageUtil.log(Level.WARNING, "Failed to save file: " + fileName);
             ex.printStackTrace();
         }
     }
