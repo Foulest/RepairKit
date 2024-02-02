@@ -44,7 +44,6 @@ hs_err_pid*
 # Java compiled files
 *.class
 *.ear
-*.jar
 *.nar
 *.war
 

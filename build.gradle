@@ -1,19 +1,22 @@
 plugins {
-    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'maven-publish'
     id 'application'
+    id 'java'
 
     // For creating an executable .exe file
     id 'edu.sc.seis.launch4j' version '3.0.5'
 }
 
 group = 'net.foulest'
-version = '0.3.7'
+version = '0.3.8'
 description = 'RepairKit'
 compileJava.options.encoding = 'UTF-8'
 
 repositories {
     // Maven central repository
     mavenCentral()
+    mavenLocal()
 
     // Local libraries
     flatDir {
@@ -21,19 +24,18 @@ repositories {
     }
 }
 
-configurations {
-    provided // Custom configuration for compile-only dependencies
-    implementation.extendsFrom(provided)
-}
-
 dependencies {
     // JNA platform - for registry access
     // https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform
-    provided group: 'net.java.dev.jna', name: 'jna-platform', version: '5.14.0'
+    implementation group: 'net.java.dev.jna', name: 'jna-platform', version: '5.14.0'
+
+    // JetBrains Annotations - for code inspection and documentation
+    // https://mvnrepository.com/artifact/org.jetbrains/annotations
+    implementation group: 'org.jetbrains', name: 'annotations', version: '24.1.0'
 
     // Lombok - for reducing boilerplate code
     // https://projectlombok.org
-    compileOnly 'org.projectlombok:lombok:1.18.30'
+    implementation 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
@@ -58,20 +60,34 @@ launch4j {
 
     // Custom manifest file for Windows
     manifest = "${projectDir}/RepairKit.manifest"
+
+    headerType = 'console'
 }
 
 jar {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
     // Set the 'Main-Class' attribute in the JAR manifest
     manifest {
         attributes 'Main-Class': 'net.foulest.repairkit.RepairKit'
     }
+}
 
-    // Include compile-only dependencies in the JAR
-    from {
-        configurations.provided.collect { file ->
-            zipTree(file)
-        }
+compileJava {
+    dependsOn('clean')
+}
+
+createExe {
+    dependsOn('shadowJar')
+}
+
+shadowJar {
+    dependencies {
+        exclude(dependency(group: 'org.projectlombok', name: 'lombok'))
     }
+
+    minimize()
+    mainClassName = 'net.foulest.repairkit.RepairKit'
+    relocate 'net.java', 'net.foulest.repairkit.shaded.net.java'
+    relocate 'org.jetbrains', 'net.foulest.repairkit.shaded.org.jetbrains'
 }
