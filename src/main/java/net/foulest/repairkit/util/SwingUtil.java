@@ -5,12 +5,12 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
-import java.util.logging.Level;
 
 import static net.foulest.repairkit.util.CommandUtil.runCommand;
 import static net.foulest.repairkit.util.FileUtil.*;
@@ -136,8 +136,11 @@ public class SwingUtil {
         Path path = Paths.get(extractionPath, appExecutable);
 
         if (!Files.exists(path)) {
-            InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/" + appResource);
-            saveFile(Objects.requireNonNull(input), appResource, false);
+            try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/" + appResource)) {
+                saveFile(Objects.requireNonNull(input), appResource, false);
+            } catch (IOException ex) {
+                MessageUtil.printException(ex);
+            }
 
             if (isZipped) {
                 unzipFile(tempDirectory + "\\" + appResource, extractionPath);

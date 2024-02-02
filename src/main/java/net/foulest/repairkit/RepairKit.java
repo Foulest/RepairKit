@@ -6,6 +6,7 @@ import net.foulest.repairkit.util.type.UninstallData;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -400,9 +401,12 @@ public class RepairKit {
         runCommand("rd /s /q \"" + tempDirectory + "\\CCleaner\"", false);
 
         // Extracts CCleaner
-        InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/" + "CCleaner.zip");
-        saveFile(Objects.requireNonNull(input), "CCleaner.zip", true);
-        unzipFile(tempDirectory + "\\CCleaner.zip", tempDirectory.getPath() + "\\CCleaner");
+        try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/CCleaner.zip")) {
+            saveFile(Objects.requireNonNull(input), "CCleaner.zip", true);
+            unzipFile(tempDirectory + "\\CCleaner.zip", tempDirectory.getPath() + "\\CCleaner");
+        } catch (IOException ex) {
+            MessageUtil.printException(ex);
+        }
 
         // Runs CCleaner
         runCommand(tempDirectory + "\\CCleaner\\CCleaner /AUTO", false);
@@ -527,8 +531,11 @@ public class RepairKit {
                 // Installs 7-Zip.
                 if (shouldInstall7Zip) {
                     if (!Files.exists(tempPath)) {
-                        InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/7-Zip.exe");
-                        saveFile(Objects.requireNonNull(input), "7-Zip.exe", false);
+                        try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/7-Zip.exe")) {
+                            saveFile(Objects.requireNonNull(input), "7-Zip.exe", false);
+                        } catch (IOException ex) {
+                            MessageUtil.printException(ex);
+                        }
                     }
 
                     runCommand(tempPath + " /D=\"C:\\Program Files\\7-Zip\" /S", false);
