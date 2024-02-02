@@ -1,7 +1,5 @@
 package net.foulest.repairkit.util;
 
-import lombok.NonNull;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +27,7 @@ public class FileUtil {
      * @param fileZip  The file to unzip.
      * @param fileDest The destination to unzip the file to.
      */
-    public static void unzipFile(@NonNull String fileZip, @NonNull String fileDest) {
+    public static void unzipFile(String fileZip, String fileDest) {
         fileZip = fileZip.replace("%temp%", System.getenv("TEMP"));
         fileDest = fileDest.replace("%temp%", System.getenv("TEMP"));
 
@@ -59,8 +57,7 @@ public class FileUtil {
                 }
             }
         } catch (IOException ex) {
-            MessageUtil.log(Level.WARNING, "Failed to unzip file: " + fileZip);
-            ex.printStackTrace();
+            MessageUtil.printException(ex);
         }
     }
 
@@ -72,7 +69,7 @@ public class FileUtil {
      * @param replaceOldFile Whether or not to replace the old file.
      */
     @SuppressWarnings("unused")
-    public static void downloadFile(@NonNull String link, @NonNull String fileName, boolean replaceOldFile) {
+    public static void downloadFile(String link, String fileName, boolean replaceOldFile) {
         DOWNLOAD_EXECUTOR.submit(() -> {
             try {
                 URL url = new URL(link);
@@ -85,8 +82,7 @@ public class FileUtil {
                 try (InputStream ignored = con.getInputStream()) {
                     // Returns if IP address is blocked.
                 } catch (IOException ex) {
-                    MessageUtil.log(Level.WARNING, "Failed to download file: " + fileName);
-                    ex.printStackTrace();
+                    MessageUtil.printException(ex);
                     return;
                 }
 
@@ -94,7 +90,7 @@ public class FileUtil {
                     saveFile(inputStream, fileName, replaceOldFile);
                 }
             } catch (Exception ex) {
-                ex.printStackTrace();
+                MessageUtil.printException(ex);
             }
         });
     }
@@ -106,7 +102,7 @@ public class FileUtil {
      * @param fileName       The name of the file to save.
      * @param replaceOldFile Whether or not to replace the old file.
      */
-    public static void saveFile(@NonNull InputStream input, @NonNull String fileName, boolean replaceOldFile) {
+    public static void saveFile(InputStream input, String fileName, boolean replaceOldFile) {
         Path savedFilePath = Paths.get(String.valueOf(tempDirectory), fileName);
 
         try {
@@ -124,8 +120,7 @@ public class FileUtil {
 
             Files.copy(input, savedFilePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
-            MessageUtil.log(Level.WARNING, "Failed to save file: " + fileName);
-            ex.printStackTrace();
+            MessageUtil.printException(ex);
         }
     }
 }

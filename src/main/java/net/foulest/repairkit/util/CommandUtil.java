@@ -1,11 +1,12 @@
 package net.foulest.repairkit.util;
 
-import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -19,7 +20,7 @@ public class CommandUtil {
      * @param command Command to run.
      * @param async   Whether to run the command asynchronously.
      */
-    public static void runCommand(@NonNull String command, boolean async) {
+    public static void runCommand(String command, boolean async) {
         Runnable commandRunner = () -> {
             try {
                 ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
@@ -29,8 +30,7 @@ public class CommandUtil {
                 process.waitFor();
             } catch (IOException | InterruptedException ex) {
                 Thread.currentThread().interrupt();
-                MessageUtil.log(Level.WARNING, "Failed to run command: " + command);
-                ex.printStackTrace();
+                MessageUtil.printException(ex);
             }
         };
 
@@ -49,7 +49,7 @@ public class CommandUtil {
      * @param async   Whether to run the command asynchronously.
      * @return The output of the command.
      */
-    public static List<String> getCommandOutput(@NonNull String command, boolean display, boolean async) {
+    public static @NotNull List<String> getCommandOutput(String command, boolean display, boolean async) {
         List<String> output = new ArrayList<>();
 
         runCommand(command, async, line -> {
@@ -69,8 +69,8 @@ public class CommandUtil {
      * @param async        Whether to run the command asynchronously.
      * @param lineConsumer Consumer to consume the output of the command.
      */
-    private static void runCommand(@NonNull String command, boolean async,
-                                   @NonNull LineConsumer lineConsumer) {
+    private static void runCommand(String command, boolean async,
+                                   LineConsumer lineConsumer) {
         Runnable commandRunner = () -> {
             try {
                 ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
@@ -89,8 +89,7 @@ public class CommandUtil {
                 process.waitFor();
             } catch (IOException | InterruptedException ex) {
                 Thread.currentThread().interrupt();
-                MessageUtil.log(Level.WARNING, "Failed to run command: " + command);
-                ex.printStackTrace();
+                MessageUtil.printException(ex);
             }
         };
 

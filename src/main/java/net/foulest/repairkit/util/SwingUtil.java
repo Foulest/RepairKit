@@ -1,7 +1,7 @@
 package net.foulest.repairkit.util;
 
-import lombok.NonNull;
 import net.foulest.repairkit.RepairKit;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +23,7 @@ public class SwingUtil {
      * @param panel      Panel to add components to.
      * @param components Components to add.
      */
-    public static void addComponents(@NonNull JPanel panel, @NonNull Component... components) {
+    public static void addComponents(JPanel panel, Component @NotNull ... components) {
         for (Component component : components) {
             panel.add(component);
         }
@@ -36,8 +36,7 @@ public class SwingUtil {
      * @param toolTipText Text to display when hovering over the button.
      * @param action      Action to run when the button is clicked.
      */
-    public static JButton createActionButton(@NonNull String buttonText, @NonNull String toolTipText,
-                                             @NonNull Runnable action) {
+    public static @NotNull JButton createActionButton(String buttonText, String toolTipText, Runnable action) {
         JButton button = new JButton(buttonText);
         button.setToolTipText(toolTipText);
         button.setBackground(new Color(200, 200, 200));
@@ -46,8 +45,7 @@ public class SwingUtil {
             try {
                 action.run();
             } catch (Exception ex) {
-                MessageUtil.log(Level.WARNING, "Failed to run action: " + action);
-                ex.printStackTrace();
+                MessageUtil.printException(ex);
             }
         });
         return button;
@@ -62,9 +60,9 @@ public class SwingUtil {
      * @param appExecutable Executable to run.
      * @param isZipped      Whether the resource is zipped.
      */
-    public static JButton createAppButton(@NonNull String buttonText, @NonNull String toolTipText,
-                                          @NonNull String appResource, @NonNull String appExecutable,
-                                          boolean isZipped, @NonNull String extractionPath) {
+    public static @NotNull JButton createAppButton(String buttonText, String toolTipText,
+                                                   String appResource, String appExecutable,
+                                                   boolean isZipped, String extractionPath) {
         JButton button = new JButton(buttonText);
         button.setToolTipText(toolTipText);
         button.setBackground(new Color(200, 200, 200));
@@ -73,8 +71,7 @@ public class SwingUtil {
             try {
                 launchApplication(appResource, appExecutable, isZipped, extractionPath);
             } catch (Exception ex) {
-                MessageUtil.log(Level.WARNING, "Failed to launch application: " + appExecutable);
-                ex.printStackTrace();
+                MessageUtil.printException(ex);
             }
         });
         return button;
@@ -86,8 +83,7 @@ public class SwingUtil {
      * @param buttonText Text to display on the button.
      * @param command    Command to run when the button is clicked.
      */
-    public static JButton createLinkButton(@NonNull String buttonText,
-                                           @NonNull String command) {
+    public static @NotNull JButton createLinkButton(String buttonText, String command) {
         JButton button = new JButton(buttonText);
         button.setToolTipText("");
         button.setBackground(new Color(200, 200, 200));
@@ -101,9 +97,7 @@ public class SwingUtil {
      * @param buttonText  Text to display on the button.
      * @param toolTipText Text to display when hovering over the button.
      */
-    public static JButton createLinkButton(@NonNull String buttonText,
-                                           @NonNull String toolTipText,
-                                           @NonNull String command) {
+    public static @NotNull JButton createLinkButton(String buttonText, String toolTipText, String command) {
         JButton button = new JButton(buttonText);
         button.setToolTipText(toolTipText);
         button.setBackground(new Color(200, 200, 200));
@@ -121,8 +115,8 @@ public class SwingUtil {
      * @param width     Width of the label.
      * @param height    Height of the label.
      */
-    public static JLabel createLabel(@NonNull String labelText, @NonNull Color textColor,
-                                     int x, int y, int width, int height) {
+    public static @NotNull JLabel createLabel(String labelText, Color textColor,
+                                              int x, int y, int width, int height) {
         JLabel label = new JLabel(labelText);
         label.setForeground(textColor);
         label.setBounds(x, y, width, height);
@@ -137,8 +131,8 @@ public class SwingUtil {
      * @param isZipped       Whether the application is zipped or not.
      * @param extractionPath The path to extract the application to.
      */
-    public static void launchApplication(@NonNull String appResource, @NonNull String appExecutable,
-                                         boolean isZipped, @NonNull String extractionPath) {
+    public static void launchApplication(String appResource, String appExecutable,
+                                         boolean isZipped, String extractionPath) {
         Path path = Paths.get(extractionPath, appExecutable);
 
         if (!Files.exists(path)) {

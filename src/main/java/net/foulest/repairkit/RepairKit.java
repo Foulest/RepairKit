@@ -180,8 +180,7 @@ public class RepairKit {
                                 cleanJunkFiles();
                                 latch.countDown();
                             } catch (Exception ex) {
-                                MessageUtil.log(Level.WARNING, "Error cleaning junk files.");
-                                ex.printStackTrace();
+                                MessageUtil.printException(ex);
                             }
                         });
 
@@ -191,8 +190,7 @@ public class RepairKit {
                                 repairWMIRepository();
                                 latch.countDown();
                             } catch (Exception ex) {
-                                MessageUtil.log(Level.WARNING, "Error repairing WMI repository.");
-                                ex.printStackTrace();
+                                MessageUtil.printException(ex);
                             }
                         });
 
@@ -202,8 +200,7 @@ public class RepairKit {
                                 runServiceTweaks();
                                 latch.countDown();
                             } catch (Exception ex) {
-                                MessageUtil.log(Level.WARNING, "Error running service tweaks.");
-                                ex.printStackTrace();
+                                MessageUtil.printException(ex);
                             }
                         });
 
@@ -213,8 +210,7 @@ public class RepairKit {
                                 removeStockApps();
                                 latch.countDown();
                             } catch (Exception ex) {
-                                MessageUtil.log(Level.WARNING, "Error removing stock apps.");
-                                ex.printStackTrace();
+                                MessageUtil.printException(ex);
                             }
                         });
 
@@ -224,8 +220,7 @@ public class RepairKit {
                                 runRegistryTweaks();
                                 latch.countDown();
                             } catch (Exception ex) {
-                                MessageUtil.log(Level.WARNING, "Error running registry tweaks.");
-                                ex.printStackTrace();
+                                MessageUtil.printException(ex);
                             }
                         });
 
@@ -235,8 +230,7 @@ public class RepairKit {
                                 runSettingsTweaks();
                                 latch.countDown();
                             } catch (Exception ex) {
-                                MessageUtil.log(Level.WARNING, "Error running settings tweaks.");
-                                ex.printStackTrace();
+                                MessageUtil.printException(ex);
                             }
                         });
 
@@ -245,8 +239,7 @@ public class RepairKit {
                             latch.await();
                         } catch (InterruptedException ex) {
                             Thread.currentThread().interrupt();
-                            MessageUtil.log(Level.WARNING, "Error waiting for tasks to complete.");
-                            ex.printStackTrace();
+                            MessageUtil.printException(ex);
                         }
 
                         // Shut down the executor
@@ -255,9 +248,11 @@ public class RepairKit {
                         // Displays a message dialog
                         playSound("win.sound.exclamation");
                         JOptionPane.showMessageDialog(null, "System issues repaired successfully.", "Finished", JOptionPane.QUESTION_MESSAGE);
-                    } catch (Exception ignored) {
+                    } catch (Exception ex) {
+                        MessageUtil.printException(ex);
                     }
                 });
+
         buttonRepairs.setBackground(new Color(200, 200, 200));
         buttonRepairs.setBounds(5, 30, 310, 35);
         addComponents(panelMain, buttonRepairs);
@@ -284,7 +279,8 @@ public class RepairKit {
                         } else {
                             runCommand("start \"\" \"" + fanControlPath + "\"", false);
                         }
-                    } catch (Exception ignored) {
+                    } catch (Exception ex) {
+                        MessageUtil.printException(ex);
                     }
                 });
         buttonFanControl.setBackground(new Color(200, 200, 200));
@@ -471,8 +467,7 @@ public class RepairKit {
             latch.await();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            MessageUtil.log(Level.WARNING, "Error waiting for tasks to complete.");
-            ex.printStackTrace();
+            MessageUtil.printException(ex);
         }
 
         // Shut down the executor
@@ -837,8 +832,7 @@ public class RepairKit {
             latch.await();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            MessageUtil.log(Level.WARNING, "Error waiting for tasks to complete.");
-            ex.printStackTrace();
+            MessageUtil.printException(ex);
         }
 
         // Shut down the executor
@@ -894,8 +888,7 @@ public class RepairKit {
             latch.await();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            MessageUtil.log(Level.WARNING, "Error waiting for tasks to complete.");
-            ex.printStackTrace();
+            MessageUtil.printException(ex);
         }
 
         // Shut down the executor
@@ -994,8 +987,7 @@ public class RepairKit {
             latch.await();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            MessageUtil.log(Level.WARNING, "Error waiting for tasks to complete.");
-            ex.printStackTrace();
+            MessageUtil.printException(ex);
         }
 
         // Shut down the executor
@@ -1099,8 +1091,7 @@ public class RepairKit {
             latch.await();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            MessageUtil.log(Level.WARNING, "Error waiting for tasks to complete.");
-            ex.printStackTrace();
+            MessageUtil.printException(ex);
         }
 
         // Shut down the executor
