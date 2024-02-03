@@ -1,16 +1,15 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'edu.sc.seis.launch4j' version '3.0.5'
     id 'maven-publish'
     id 'application'
     id 'java'
-
-    // For creating an executable .exe file
-    id 'edu.sc.seis.launch4j' version '3.0.5'
 }
 
 group = 'net.foulest'
-version = '0.3.8'
+version = '0.3.9'
 description = 'RepairKit'
+
 compileJava.options.encoding = 'UTF-8'
 
 repositories {
@@ -62,30 +61,64 @@ launch4j {
     manifest = "${projectDir}/RepairKit.manifest"
 }
 
-jar {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+tasks {
+    shadowJar {
+        archiveFileName.set("${project.name}-${project.version}.jar")
+        minimize()
 
-    // Set the 'Main-Class' attribute in the JAR manifest
-    manifest {
-        attributes 'Main-Class': 'net.foulest.repairkit.RepairKit'
+        mainClassName = 'net.foulest.repairkit.RepairKit'
+        relocate 'net.java', 'net.foulest.repairkit.shaded.net.java'
+        relocate 'org.jetbrains', 'net.foulest.repairkit.shaded.org.jetbrains'
+    }
+
+    jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+        // Set the 'Main-Class' attribute in the JAR manifest
+        manifest {
+            attributes 'Main-Class': 'net.foulest.repairkit.RepairKit'
+        }
+    }
+
+    compileJava {
+        dependsOn(clean)
+    }
+
+    build {
+        dependsOn(shadowJar)
+    }
+
+    createExe {
+        dependsOn(shadowJar)
+    }
+
+    processResources {
+        filesMatching('**/plugin.yml') {
+            expand(project.properties)
+        }
+    }
+
+    tasks.register('sourceJar', Jar) {
+        from sourceSets.main.allJava
+    }
+
+    jar.configure {
+        archiveClassifier = 'default'
+    }
+
+    shadowJar.configure {
+        archiveClassifier = null
     }
 }
 
-compileJava {
-    dependsOn('clean')
-}
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = "net.foulest.repairkit"
+            artifactId = project.name
+            version = project.version
 
-createExe {
-    dependsOn('shadowJar')
-}
-
-shadowJar {
-    dependencies {
-        exclude(dependency(group: 'org.projectlombok', name: 'lombok'))
+            from components.java
+        }
     }
-
-    minimize()
-    mainClassName = 'net.foulest.repairkit.RepairKit'
-    relocate 'net.java', 'net.foulest.repairkit.shaded.net.java'
-    relocate 'org.jetbrains', 'net.foulest.repairkit.shaded.org.jetbrains'
 }
