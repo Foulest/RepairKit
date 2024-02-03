@@ -41,7 +41,7 @@ dependencies {
 
 launch4j {
     // Executable file information
-    outfile = "${project.name}.exe"
+    outfile = "${project.name}-${project.version}.exe"
     mainClassName = "${project.group}.repairkit.RepairKit"
     icon = "${projectDir}/RepairKit.ico"
 
