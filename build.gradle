@@ -31,11 +31,11 @@ dependencies {
 
     // JetBrains Annotations - for code inspection and documentation
     // https://mvnrepository.com/artifact/org.jetbrains/annotations
-    implementation group: 'org.jetbrains', name: 'annotations', version: '24.1.0'
+    compileOnly group: 'org.jetbrains', name: 'annotations', version: '24.1.0'
 
     // Lombok - for reducing boilerplate code
     // https://projectlombok.org
-    implementation 'org.projectlombok:lombok:1.18.30'
+    compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
@@ -60,8 +60,6 @@ launch4j {
 
     // Custom manifest file for Windows
     manifest = "${projectDir}/RepairKit.manifest"
-
-    headerType = 'console'
 }
 
 jar {
