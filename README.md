@@ -52,7 +52,6 @@ Quickly access essential Windows utilities like:
 - [Contribution Guidelines](https://github.com/Foulest/RepairKit/wiki/Contribution-Guidelines)
 - [Disclaimer](https://github.com/Foulest/RepairKit/wiki/Disclaimer)
 - [Installation](https://github.com/Foulest/RepairKit/wiki/Installation)
-- [Usage](https://github.com/Foulest/RepairKit/wiki/Usage)
 
 ## Getting Help
 
