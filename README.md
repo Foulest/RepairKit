@@ -32,11 +32,12 @@ Access a curated suite of software with just one click, including:
 - **[HWMonitor](https://cpuid.com/softwares/hwmonitor.html)**: Monitor hardware temperatures and specs.
 - **[Emsisoft Scan](https://emsisoft.com/en/home/emergency-kit)**: Scan for malware using Emsisoft Emergency Kit.
 - **[uBlock Origin](https://ublockorigin.com)**: Link to the powerful ad-blocker extension.
-- **[Defender Extension](https://browserprotection.microsoft.com)**: Direct link to Microsoft Defender Browser
-  Protection.
+- **[TrafficLight](https://bitdefender.com/solutions/trafficlight.html)**: Direct link to Bitdefender's TrafficLight 
+  browser extension.
 - **[NVCleanstall](https://techpowerup.com/download/techpowerup-nvcleanstall)**: A lightweight NVIDIA graphics card
   driver updater.
-- **[Intel DSA](https://intel.com/content/www/us/en/support/detect.html)**: Intel's driver and software update utility.
+- **[Process Explorer](https://learn.microsoft.com/en-us/sysinternals/downloads/process-explorer)**: A powerful 
+  alternative to Windows Task Manager.
 
 ### 3. **Quick Windows Access Buttons**
 

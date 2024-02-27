@@ -317,6 +317,12 @@ public class RepairKit {
                 "Emsisoft.zip", "Emsisoft.exe", true, tempDirectory.getPath());
         buttonEmsisoft.setBounds(162, 160, 152, 25);
         addComponents(panelMain, buttonEmsisoft);
+
+        // Process Explorer Button
+        JButton buttonProcessExplorer = createAppButton("Process Explorer", "Displays system processes.",
+                "ProcessExplorer.zip", "ProcessExplorer.exe", true, tempDirectory.getPath());
+        buttonProcessExplorer.setBounds(162, 220, 152, 25);
+        addComponents(panelMain, buttonProcessExplorer);
     }
 
     /**
@@ -330,26 +336,19 @@ public class RepairKit {
         buttonUBlockOrigin.setBounds(5, 190, 152, 25);
         addComponents(panelMain, buttonUBlockOrigin);
 
-        // MS Defender Extension Button
-        JButton buttonDefenderExtension = createLinkButton("Defender Extension",
+        // TrafficLight Extension Button
+        JButton buttonTrafficLight = createLinkButton("TrafficLight",
                 "Blocks malicious websites and phishing attacks.",
-                "start https://chrome.google.com/webstore/detail/microsoft-defender-browse/bkbeeeffjjeopflfhgeknacdieedcoml");
-        buttonDefenderExtension.setBounds(162, 190, 152, 25);
-        addComponents(panelMain, buttonDefenderExtension);
+                "start https://bitdefender.com/solutions/trafficlight.html");
+        buttonTrafficLight.setBounds(162, 190, 152, 25);
+        addComponents(panelMain, buttonTrafficLight);
 
         // NVCleanstall Button
         JButton buttonNVCleanstallExtension = createLinkButton("NVCleanstall",
                 "A lightweight NVIDIA graphics card driver updater.",
-                "start https://www.techpowerup.com/download/techpowerup-nvcleanstall");
+                "start https://techpowerup.com/download/techpowerup-nvcleanstall");
         buttonNVCleanstallExtension.setBounds(5, 220, 152, 25);
         addComponents(panelMain, buttonNVCleanstallExtension);
-
-        // Intel DSA Button
-        JButton buttonIntelDSA = createLinkButton("Intel DSA Software",
-                "Downloads Intel drivers & keeps them up-to-date.",
-                "start https://www.intel.com/content/www/us/en/support/detect.html");
-        buttonIntelDSA.setBounds(162, 220, 152, 25);
-        addComponents(panelMain, buttonIntelDSA);
 
         // Apps & Features Button
         JButton buttonAppsFeatures = createLinkButton("Apps & Features",
