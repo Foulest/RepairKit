@@ -7,7 +7,7 @@
 **RepairKit** is a comprehensive, Java-based Windows repair and maintenance software. It's designed to offer a suite of
 tools for maintaining optimal performance and health of your Windows PC.
 
-![RepairKit Software Image](https://i.imgur.com/wO8AlAQ.png)
+![RepairKit Software Image](https://i.imgur.com/lZhBpMo.png)
 
 ## Features
 
