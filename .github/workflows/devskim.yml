@@ -1,8 +1,7 @@
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by separate
 # terms of service, privacy policy, and support documentation.
-
-name: DevSkim
+name: 'DevSkim'
 
 on:
   push:
@@ -10,24 +9,27 @@ on:
   pull_request:
     branches: [ "main" ]
   schedule:
-    - cron: '37 11 * * 0'
+    - cron: '0 8 * * 1'
 
 jobs:
-  lint:
-    name: DevSkim
-    runs-on: ubuntu-20.04
+  devskim:
     permissions:
       actions: read
       contents: read
       security-events: write
+      statuses: write
+
+    name: 'DevSkim'
+    runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v4
 
-      - name: Run DevSkim scanner
-        uses: microsoft/DevSkim-Action@v1
+      - name: 'Run DevSkim Analysis'
+        uses: microsoft/DevSkim-Action@v1.0.11
 
-      - name: Upload DevSkim scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+      - name: 'Upload DevSkim Results'
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: devskim-results.sarif
