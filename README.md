@@ -1,8 +1,8 @@
 # RepairKit
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![CodeQL Badge](https://github.com/Foulest/RepairKit/actions/workflows/codeql.yml/badge.svg)](https://github.com/Foulest/RepairKit/actions/workflows/codeql.yml)
 [![JitPack Badge](https://jitpack.io/v/Foulest/RepairKit.svg)](https://jitpack.io/#Foulest/RepairKit)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/a89004cf20af46219c6adbdd8ca96e94)](https://app.codacy.com/gh/Foulest/RepairKit/dashboard)
 
 **RepairKit** is a comprehensive, Java-based Windows repair and maintenance software. It's designed to offer a suite of
 tools for maintaining optimal performance and health of your Windows PC.
