@@ -1,9 +1,8 @@
 package net.foulest.repairkit.util;
 
+import lombok.extern.java.Log;
+import net.foulest.repairkit.RepairKit;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Utility class for sending messages.
@@ -11,19 +10,8 @@ import java.util.logging.Logger;
  * @author Foulest
  * @project RepairKit
  */
+@Log
 public final class MessageUtil {
-
-    public static Logger logger = Logger.getLogger("RepairKit");
-
-    /**
-     * Logs a message to the console.
-     *
-     * @param level   The level to log the message at.
-     * @param message The message to log.
-     */
-    public static void log(Level level, String message) {
-        logger.log(level, message);
-    }
 
     /**
      * Prints a detailed message of an exception as a warning to the console, including its type,
@@ -55,6 +43,21 @@ public final class MessageUtil {
         }
 
         // Logging the detailed exception message
-        logger.log(Level.WARNING, message.toString());
+        log.warning(message.toString());
+    }
+
+    /**
+     * Sends a debug message to the console and writes it
+     * to the log file if debug mode is enabled.
+     *
+     * @param message The message to send.
+     */
+    public static void debug(String message) {
+        if (RepairKit.isDebugMode()) {
+            log.info(message);
+
+            // Writes the message to the log file
+            FileUtil.writeToLogFile(message);
+        }
     }
 }
