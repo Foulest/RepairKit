@@ -52,7 +52,7 @@ public class SwingUtil {
     }
 
     /**
-     * Creates an application button.
+     * Creates an application button without launch arguments.
      *
      * @param buttonText    Text to display on the button.
      * @param toolTipText   Text to display when hovering over the button.
@@ -63,13 +63,30 @@ public class SwingUtil {
     public static @NotNull JButton createAppButton(String buttonText, String toolTipText,
                                                    String appResource, String appExecutable,
                                                    boolean isZipped, String extractionPath) {
+        return createAppButton(buttonText, toolTipText, appResource, appExecutable, "", isZipped, extractionPath);
+    }
+
+    /**
+     * Creates an application button.
+     *
+     * @param buttonText     Text to display on the button.
+     * @param toolTipText    Text to display when hovering over the button.
+     * @param appResource    Resource to extract.
+     * @param appExecutable  Executable to run.
+     * @param isZipped       Whether the resource is zipped.
+     * @param extractionPath Path to extract the resource to.
+     * @param launchArgs     Arguments to launch the application with.
+     */
+    public static @NotNull JButton createAppButton(String buttonText, String toolTipText,
+                                                   String appResource, String appExecutable,
+                                                   String launchArgs, boolean isZipped, String extractionPath) {
         JButton button = new JButton(buttonText);
         button.setToolTipText(toolTipText);
         button.setBackground(new Color(200, 200, 200));
 
         button.addActionListener(actionEvent -> {
             try {
-                launchApplication(appResource, appExecutable, isZipped, extractionPath);
+                launchApplication(appResource, appExecutable, launchArgs, isZipped, extractionPath);
             } catch (Exception ex) {
                 MessageUtil.printException(ex);
             }
@@ -124,7 +141,7 @@ public class SwingUtil {
     }
 
     /**
-     * Launches an application.
+     * Launches an application without launch arguments.
      *
      * @param appResource    The name of the application's resource.
      * @param appExecutable  The name of the application's executable.
@@ -133,6 +150,20 @@ public class SwingUtil {
      */
     public static void launchApplication(String appResource, String appExecutable,
                                          boolean isZipped, String extractionPath) {
+        launchApplication(appResource, appExecutable, "", isZipped, extractionPath);
+    }
+
+    /**
+     * Launches an application.
+     *
+     * @param appResource    The name of the application's resource.
+     * @param appExecutable  The name of the application's executable.
+     * @param isZipped       Whether the application is zipped or not.
+     * @param extractionPath The path to extract the application to.
+     * @param launchArgs     The arguments to launch the application with.
+     */
+    public static void launchApplication(String appResource, String appExecutable,
+                                         String launchArgs, boolean isZipped, String extractionPath) {
         Path path = Paths.get(extractionPath, appExecutable);
 
         if (!Files.exists(path)) {
@@ -147,6 +178,6 @@ public class SwingUtil {
             }
         }
 
-        runCommand(path.toString(), true);
+        runCommand(path + (launchArgs.isEmpty() ? "" : " " + launchArgs), true);
     }
 }
