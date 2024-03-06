@@ -1,8 +1,7 @@
 package net.foulest.repairkit;
 
 import com.sun.jna.platform.win32.WinReg;
-import lombok.Getter;
-import lombok.Synchronized;
+import lombok.extern.java.Log;
 import net.foulest.repairkit.util.MessageUtil;
 import net.foulest.repairkit.util.type.UninstallData;
 import org.jetbrains.annotations.NotNull;
@@ -29,15 +28,12 @@ import static net.foulest.repairkit.util.RegistryUtil.*;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
 import static net.foulest.repairkit.util.SwingUtil.*;
 
+@Log
 public class RepairKit {
 
     private static final Set<String> SUPPORTED_OS_NAMES = new HashSet<>(Arrays.asList("Windows 10", "Windows 11"));
-
     private static final JFrame frame = new JFrame("RepairKit");
     private static final JPanel panelMain = new JPanel(null);
-
-    @Getter
-    private static boolean debugMode = false;
     private static boolean windowsUpdateInProgress = false;
 
     /**
@@ -46,7 +42,6 @@ public class RepairKit {
      * @param args The program's arguments.
      */
     public static void main(String @NotNull [] args) {
-        checkForDebugMode(args);
         checkOperatingSystemCompatibility();
         setupShutdownHook();
         checkForWindowsUpdate();
@@ -58,26 +53,9 @@ public class RepairKit {
     }
 
     /**
-     * Checks if debug mode is enabled.
-     *
-     * @param args The program's arguments.
-     */
-    @Synchronized
-    private static void checkForDebugMode(String @NotNull [] args) {
-        // Check if the "/debug" flag is present in the launch arguments
-        for (String arg : args) {
-            if (arg.equals("/debug")) {
-                debugMode = true;
-                break;
-            }
-        }
-    }
-
-    /**
      * Checks if the user's operating system is supported.
      */
     private static void checkOperatingSystemCompatibility() {
-        MessageUtil.debug("Checking operating system compatibility...");
         String osName = System.getProperty("os.name");
 
         if (!SUPPORTED_OS_NAMES.contains(osName)) {
@@ -88,16 +66,12 @@ public class RepairKit {
                     , "Incompatible Operating System", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
         }
-
-        MessageUtil.debug("Operating system (" + System.getProperty("os.name") + ") is compatible.");
     }
 
     /**
      * Checks if Windows Update is running.
      */
     private static void checkForWindowsUpdate() {
-        MessageUtil.debug("Checking for Windows Update...");
-
         // Checks if Windows Update is running.
         // Windows Update causes problems with DISM.
         if (isProcessRunning("WmiPrvSE.exe")
@@ -105,27 +79,20 @@ public class RepairKit {
                 && isProcessRunning("TrustedInstaller.exe")
                 && isProcessRunning("wuauclt.exe")) {
             windowsUpdateInProgress = true;
-            MessageUtil.debug("Windows Update is running; warning user...");
             JOptionPane.showMessageDialog(null, "Windows Update is running on your system."
                             + "\nCertain tweaks will not be applied until the Windows Update is finished."
                     , "Software Warning", JOptionPane.WARNING_MESSAGE);
         }
-
-        MessageUtil.debug("Windows Update check complete.");
     }
 
     /**
      * Sets the program's shutdown hook.
      */
     private static void setupShutdownHook() {
-        MessageUtil.debug("Setting up shutdown hook...");
-
         // Clears the files used by RepairKit on shutdown.
         Runtime.getRuntime().addShutdownHook(new Thread(() ->
                 runCommand("rd /s /q " + tempDirectory.getPath(), false))
         );
-
-        MessageUtil.debug("Shutdown hook set up.");
     }
 
     /**
@@ -134,8 +101,6 @@ public class RepairKit {
      * @return The main frame of the program.
      */
     private static JFrame createMainFrame() {
-        MessageUtil.debug("Creating main frame...");
-
         // Sets the program's GUI elements.
         setGUIElements();
 
@@ -152,7 +117,6 @@ public class RepairKit {
         frame.setLocationRelativeTo(null);
         frame.setResizable(false);
         frame.setVisible(true);
-        MessageUtil.debug("Main frame created.");
         return frame;
     }
 
@@ -160,13 +124,11 @@ public class RepairKit {
      * Sets the program's GUI elements.
      */
     private static void setGUIElements() {
-        MessageUtil.debug("Setting up GUI elements...");
         setMainPanel();
         setLabels();
         setRepairButtons();
         setAppButtons();
         setLinkButtons();
-        MessageUtil.debug("GUI elements set up.");
     }
 
     /**
@@ -421,18 +383,13 @@ public class RepairKit {
      * Medal causes issues with Desktop Window Manager.
      */
     private static void checkForMedal() {
-        MessageUtil.debug("Checking for Medal...");
-
         if (isProcessRunning("medal.exe")) {
-            MessageUtil.debug("Medal is running; warning user...");
             JOptionPane.showMessageDialog(null,
                     "Warning: Medal is installed and running on your system."
                             + "\nMedal causes issues with Desktop Windows Manager, which affects system performance."
                             + "\nFinding an alternative to Medal, such as Shadowplay or AMD ReLive is recommended.",
                     "Software Warning", JOptionPane.ERROR_MESSAGE);
         }
-
-        MessageUtil.debug("Medal check complete.");
     }
 
     /**
@@ -442,12 +399,10 @@ public class RepairKit {
         long startTime = System.currentTimeMillis();
 
         // Kills CCleaner
-        MessageUtil.debug("Cleaning junk files... (1/4)");
         runCommand("taskkill /F /IM CCleaner.exe", false);
         runCommand("rd /s /q \"" + tempDirectory + "\\CCleaner\"", false);
 
         // Extracts CCleaner
-        MessageUtil.debug("Cleaning junk files... (2/4)");
         try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/CCleaner.zip")) {
             saveFile(Objects.requireNonNull(input), "CCleaner.zip", true);
             unzipFile(tempDirectory + "\\CCleaner.zip", tempDirectory.getPath() + "\\CCleaner");
@@ -456,15 +411,13 @@ public class RepairKit {
         }
 
         // Runs CCleaner
-        MessageUtil.debug("Cleaning junk files... (3/4)");
         runCommand(tempDirectory + "\\CCleaner\\CCleaner /AUTO", false);
 
         // Restarts Explorer
-        MessageUtil.debug("Cleaning junk files... (4/4)");
         runCommand("taskkill /F /IM explorer.exe", false);
         runCommand("start explorer.exe", false);
 
-        MessageUtil.debug("Cleaned junk files in " + (System.currentTimeMillis() - startTime) + "ms.");
+        log.info("Cleaned junk files in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
     /**
@@ -476,7 +429,6 @@ public class RepairKit {
         CountDownLatch latch = new CountDownLatch(4);
 
         executor.submit(() -> {
-            MessageUtil.debug("Deleting system policies... (1/4)");
             deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\MMC");
             deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\Windows\\System");
             deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Internet Explorer");
@@ -485,7 +437,6 @@ public class RepairKit {
         });
 
         executor.submit(() -> {
-            MessageUtil.debug("Deleting system policies... (2/4)");
             deleteRegistryValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\NonEnum", "{645FF040-5081-101B-9F08-00AA002F954E}");
             deleteRegistryValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", "DisableRegistryTools");
             deleteRegistryValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", "DisableTaskMgr");
@@ -500,7 +451,6 @@ public class RepairKit {
         });
 
         executor.submit(() -> {
-            MessageUtil.debug("Deleting system policies... (3/4)");
             setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", "Shell", "explorer.exe");
             setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", "Shell", "explorer.exe");
             setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon", "Userinit", "C:\\Windows\\system32\\userinit.exe,");
@@ -508,7 +458,6 @@ public class RepairKit {
         });
 
         executor.submit(() -> {
-            MessageUtil.debug("Deleting system policies... (4/4)");
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "Icons Only", 0);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\Folder\\Hidden\\SHOWALL", "CheckedValue", 1);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\NonEnum", "{645FF040-5081-101B-9F08-00AA002F954E}", 0);
@@ -528,14 +477,13 @@ public class RepairKit {
 
         // Shut down the executor
         executor.shutdown();
-        MessageUtil.debug("Deleted system policies in " + (System.currentTimeMillis() - startTime) + "ms.");
+        log.info("Deleted system policies in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
     /**
      * Installs 7-Zip and uninstalls other archivers.
      */
     private static void install7Zip() {
-        MessageUtil.debug("Checking for 7-Zip and other .zip programs...");
         Path sevenZipPath = Paths.get("C:\\Program Files\\7-Zip\\7zFM.exe");
         Path tempPath = Paths.get(tempDirectory + "\\7-Zip.exe");
 
@@ -600,15 +548,10 @@ public class RepairKit {
      * Repairs the WMI Repository.
      */
     private static void repairWMIRepository() {
-        MessageUtil.debug("Repairing WMI repository...");
-        long startTime = System.currentTimeMillis();
-
         if (getCommandOutput("winmgmt /verifyrepository", false, false).toString().contains("not consistent")
                 && getCommandOutput("winmgmt /salvagerepository", false, false).toString().contains("not consistent")) {
             runCommand("winmgmt /resetrepository", false);
         }
-
-        MessageUtil.debug("Repaired WMI repository in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
     /**
@@ -621,7 +564,6 @@ public class RepairKit {
 
         // Disables telemetry and annoyances.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (1/20)");
             deleteRegistryValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Siuf\\Rules", "PeriodInNanoSeconds");
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "Control Panel\\International\\User Profile", "HttpAcceptLanguageOptOut", 1);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Personalization\\Settings", "AcceptedPrivacyPolicy", 0);
@@ -674,7 +616,6 @@ public class RepairKit {
 
         // Patches security vulnerabilities.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (2/20)");
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Lsa", "NoLMHash", 1);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Installer", "AlwaysInstallElevated", 0);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer", "NoDataExecutionPrevention", 0);
@@ -696,7 +637,6 @@ public class RepairKit {
 
         // Deletes telemetry & recent files logs.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (3/20)");
             deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Adobe\\MediaBrowser\\MRU");
             deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Direct3D\\MostRecentApplication");
             deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\MediaPlayer\\Player\\RecentFileList");
@@ -726,7 +666,6 @@ public class RepairKit {
 
         // Disables certain search and Cortana functions.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (4/20)");
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Speech_OneCore\\Preferences", "ModelDownloadAllowed", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Speech_OneCore\\Preferences", "VoiceActivationDefaultOn", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Speech_OneCore\\Preferences", "VoiceActivationEnableAboveLockscreen", 0);
@@ -750,7 +689,6 @@ public class RepairKit {
 
         // Disables Windows error reporting.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (5/20)");
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting", "Disabled", 1);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\Consent", "DefaultConsent", 0);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\Consent", "DefaultOverrideBehavior", 1);
@@ -762,7 +700,6 @@ public class RepairKit {
 
         // Resets the Recycle Bin's icons.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (6/20)");
             setRegistryStringValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\CLSID\\{645FF040-5081-101B-9F08-00AA002F954E}\\DefaultIcon", "(Default)", "C:\\Windows\\System32\\imageres.dll,-54");
             setRegistryStringValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\CLSID\\{645FF040-5081-101B-9F08-00AA002F954E}\\DefaultIcon", "empty", "C:\\Windows\\System32\\imageres.dll,-55");
             setRegistryStringValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\CLSID\\{645FF040-5081-101B-9F08-00AA002F954E}\\DefaultIcon", "full", "C:\\Windows\\System32\\imageres.dll,-54");
@@ -771,14 +708,12 @@ public class RepairKit {
 
         // Enables updates for other Microsoft products.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (7/20)");
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\WindowsUpdate\\UX\\Settings", "AllowMUUpdateService", 1);
             latch.countDown();
         });
 
         // Disables certain File Explorer features.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (8/20)");
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "HideFileExt", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer", "ShowFrequent", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "DontUsePowerShellOnWinX", 1);
@@ -793,7 +728,6 @@ public class RepairKit {
 
         // Patches Spectre & Meltdown security vulnerabilities.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (9/20)");
             String cpuName = getCommandOutput("wmic cpu get name", false, false).toString();
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverrideMask", 3);
             setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Virtualization", "MinVmVersionForCpuBasedMitigations", "1.0");
@@ -808,7 +742,6 @@ public class RepairKit {
 
         // Disables the weather and news widget.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (10/20)");
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Feeds", "EnableFeeds", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Feeds", "ShellFeedsTaskbarViewMode", 2);
             latch.countDown();
@@ -816,7 +749,6 @@ public class RepairKit {
 
         // Disables Game DVR.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (11/20)");
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR", "AppCaptureEnabled", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SYSTEM\\GameConfigStore", "GameDVR_Enabled", 0);
             latch.countDown();
@@ -824,7 +756,6 @@ public class RepairKit {
 
         // Disables lock screen toasts.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (12/20)");
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings", "NOC_GLOBAL_SETTING_ALLOW_TOASTS_ABOVE_LOCK", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\PushNotifications", "LockScreenToastEnabled", 0);
             latch.countDown();
@@ -832,7 +763,6 @@ public class RepairKit {
 
         // Enables Storage Sense.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (13/20)");
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy", "01", 1);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy", "04", 1);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy", "08", 1);
@@ -845,14 +775,12 @@ public class RepairKit {
 
         // Modifies Windows graphics settings.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (14/20)");
             setRegistryStringValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\DirectX\\UserGpuPreferences", "DirectXUserGlobalSettings", "VRROptimizeEnable=1");
             latch.countDown();
         });
 
         // Modifies Windows networking settings.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (15/20)");
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters", "IRPStackSize", 30);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters", "DefaultTTL", 64);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters", "MaxUserPort", 65534);
@@ -862,7 +790,6 @@ public class RepairKit {
 
         // Disables sticky keys.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (16/20)");
             setRegistryStringValue(WinReg.HKEY_CURRENT_USER, "Control Panel\\Accessibility\\ToggleKeys", "Flags", "58");
             setRegistryStringValue(WinReg.HKEY_CURRENT_USER, "Control Panel\\Accessibility\\StickyKeys", "Flags", "506");
             setRegistryStringValue(WinReg.HKEY_CURRENT_USER, "Control Panel\\Accessibility\\Keyboard Response", "Flags", "122");
@@ -871,7 +798,6 @@ public class RepairKit {
 
         // Disables mouse acceleration.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (17/20)");
             setRegistryStringValue(WinReg.HKEY_CURRENT_USER, "Control Panel\\Mouse", "MouseSpeed", "0");
             setRegistryStringValue(WinReg.HKEY_CURRENT_USER, "Control Panel\\Mouse", "MouseThreshold1", "0");
             setRegistryStringValue(WinReg.HKEY_CURRENT_USER, "Control Panel\\Mouse", "MouseThreshold2", "0");
@@ -880,14 +806,12 @@ public class RepairKit {
 
         // Restores the keyboard layout.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (18/20)");
             deleteRegistryValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Keyboard Layout", "Scancode Map");
             latch.countDown();
         });
 
         // Fixes a battery visibility issue.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (19/20)");
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Power", "EnergyEstimationEnabled", 1);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Power", "EnergyEstimationDisabled", 0);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Power", "UserBatteryDischargeEstimator", 0);
@@ -896,7 +820,6 @@ public class RepairKit {
 
         // Sets certain services to start automatically.
         executor.submit(() -> {
-            MessageUtil.debug("Running registry tweaks... (20/20)");
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows Search", "SetupCompletedSuccessfully", 0);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Services\\WSearch", "Start", 2);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Services\\VSS", "Start", 2);
@@ -914,7 +837,7 @@ public class RepairKit {
 
         // Shut down the executor
         executor.shutdown();
-        MessageUtil.debug("Registry tweaks completed in " + (System.currentTimeMillis() - startTime) + "ms.");
+        log.info("Registry tweaks completed in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
     /**
@@ -950,7 +873,6 @@ public class RepairKit {
         for (String[] serviceInfo : serviceList) {
             executor.submit(() -> {
                 try {
-                    MessageUtil.debug("Tweaking service: " + serviceInfo[1] + "...");
                     String serviceName = serviceInfo[0];
                     runCommand("sc stop \"" + serviceName + "\"", true);
                     runCommand("sc config \"" + serviceName + "\" start=disabled", true);
@@ -970,7 +892,7 @@ public class RepairKit {
 
         // Shut down the executor
         executor.shutdown();
-        MessageUtil.debug("Tweaked " + serviceList.size() + " services in "
+        log.info("Tweaked " + serviceList.size() + " services in "
                 + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
@@ -1036,7 +958,6 @@ public class RepairKit {
 
         // If no packages to remove, simply exit
         if (packagesToRemove.isEmpty()) {
-            MessageUtil.debug("No stock apps found to remove.");
             return;
         }
 
@@ -1048,7 +969,6 @@ public class RepairKit {
         for (String appPackage : packagesToRemove) {
             executor.submit(() -> {
                 try {
-                    MessageUtil.debug("Removing stock app: " + appPackage + "...");
                     runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage '"
                             + appPackage + "' | Remove-AppxPackage\"", false);
                 } finally {
@@ -1067,7 +987,7 @@ public class RepairKit {
 
         // Shut down the executor
         executor.shutdown();
-        MessageUtil.debug("Removed " + packagesToRemove.size() + " stock apps in "
+        log.info("Removed " + packagesToRemove.size() + " stock apps in "
                 + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
@@ -1083,16 +1003,13 @@ public class RepairKit {
 
         executor.submit(() -> {
             // Fixes micro-stuttering in games.
-            MessageUtil.debug("Running settings tweaks... (1/11)");
             runCommand("bcdedit /set useplatformtick yes", true);
             runCommand("bcdedit /deletevalue useplatformclock", true);
 
             // Enables scheduled defrag.
-            MessageUtil.debug("Running settings tweaks... (2/11)");
             runCommand("schtasks /Change /ENABLE /TN \"\\Microsoft\\Windows\\Defrag\\ScheduledDefrag\"", true);
 
             // Disables various telemetry tasks.
-            MessageUtil.debug("Running settings tweaks... (3/11)");
             runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\ProgramDataUpdater\" /disable", true);
             runCommand("schtasks /change /TN \"Microsoft\\Windows\\Customer Experience Improvement Program\\Consolidator\" /disable", true);
             runCommand("schtasks /change /TN \"Microsoft\\Windows\\Customer Experience Improvement Program\\UsbCeip\" /disable", true);
@@ -1104,25 +1021,20 @@ public class RepairKit {
             runCommand("setx POWERSHELL_TELEMETRY_OPTOUT 1", true);
 
             // Deletes the controversial 'default0' user.
-            MessageUtil.debug("Running settings tweaks... (4/11)");
             runCommand("net user defaultuser0 /delete", true);
 
             // Clears the Windows product key from registry.
-            MessageUtil.debug("Running settings tweaks... (5/11)");
             runCommand("cscript.exe //nologo \"%SystemRoot%\\system32\\slmgr.vbs\" /cpky", true);
 
             // Resets network settings.
-            MessageUtil.debug("Running settings tweaks... (6/11)");
             runCommand("netsh winsock reset", true);
             runCommand("netsh int ip reset", true);
             runCommand("ipconfig /flushdns", true);
 
             // Re-registers ExplorerFrame.dll.
-            MessageUtil.debug("Running settings tweaks... (7/11)");
             runCommand("regsvr32 /s ExplorerFrame.dll", true);
 
             // Repairs broken Wi-Fi settings.
-            MessageUtil.debug("Running settings tweaks... (8/11)");
             deleteRegistryKey(WinReg.HKEY_CLASSES_ROOT, "CLSID\\{988248f3-a1ad-49bf-9170-676cbbc36ba3}");
             runCommand("netcfg -v -u dni_dne", true);
             latch.countDown();
@@ -1130,7 +1042,6 @@ public class RepairKit {
 
         executor.submit(() -> {
             // Disables NetBios for all interfaces.
-            MessageUtil.debug("Running settings tweaks... (9/11)");
             final String baseKeyPath = "SYSTEM\\CurrentControlSet\\services\\NetBT\\Parameters\\Interfaces";
             List<String> subKeys = listSubKeys(WinReg.HKEY_LOCAL_MACHINE, baseKeyPath);
 
@@ -1143,7 +1054,6 @@ public class RepairKit {
 
         executor.submit(() -> {
             // Resets Windows Media Player.
-            MessageUtil.debug("Running settings tweaks... (10/11)");
             runCommand("regsvr32 /s jscript.dll", false);
             runCommand("regsvr32 /s vbscript.dll", true);
             latch.countDown();
@@ -1152,8 +1062,6 @@ public class RepairKit {
         executor.submit(() -> {
             // Patches security vulnerabilities.
             if (!windowsUpdateInProgress) {
-                MessageUtil.debug("Running settings tweaks... (11/11)");
-
                 String[] features = {
                         "SMB1Protocol",
                         "SMB1Protocol-Client",
@@ -1169,7 +1077,6 @@ public class RepairKit {
                     if (getCommandOutput("PowerShell -ExecutionPolicy Unrestricted -Command"
                             + " \"Get-WindowsOptionalFeature -FeatureName '" + feature + "' -Online | Select-Object -Property"
                             + " State\"", false, false).contains("Enabled")) {
-                        MessageUtil.debug("Disabling feature: " + feature + "...");
                         runCommand("DISM /Online /Disable-Feature /FeatureName:\"" + feature + "\" /NoRestart", false);
                     }
                 }
@@ -1187,7 +1094,6 @@ public class RepairKit {
                     if (getCommandOutput("PowerShell -ExecutionPolicy Unrestricted -Command"
                             + " \"Get-WindowsCapability -Name '" + capability + "' -Online | Where-Object State"
                             + " -eq 'Installed'\"", false, false).contains("Installed")) {
-                        MessageUtil.debug("Removing capability: " + capability + "...");
                         runCommand("DISM /Online /Remove-Capability /CapabilityName:\"" + capability + "\" /NoRestart", false);
                     }
                 }
@@ -1206,6 +1112,6 @@ public class RepairKit {
 
         // Shut down the executor
         executor.shutdown();
-        MessageUtil.debug("Settings tweaks completed in " + (System.currentTimeMillis() - startTime) + "ms.");
+        log.info("Settings tweaks completed in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 }

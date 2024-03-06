@@ -1,7 +1,6 @@
 package net.foulest.repairkit.util;
 
 import lombok.extern.java.Log;
-import net.foulest.repairkit.RepairKit;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -44,20 +43,5 @@ public final class MessageUtil {
 
         // Logging the detailed exception message
         log.warning(message.toString());
-    }
-
-    /**
-     * Sends a debug message to the console and writes it
-     * to the log file if debug mode is enabled.
-     *
-     * @param message The message to send.
-     */
-    public static void debug(String message) {
-        if (RepairKit.isDebugMode()) {
-            log.info(message);
-
-            // Writes the message to the log file
-            FileUtil.writeToLogFile(message);
-        }
     }
 }

@@ -1,14 +1,15 @@
 package net.foulest.repairkit.util;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
@@ -18,7 +19,6 @@ public class FileUtil {
 
     private static final ExecutorService DOWNLOAD_EXECUTOR = Executors.newFixedThreadPool(4);
     public static final File tempDirectory = new File(System.getenv("TEMP") + "\\RepairKit");
-    public static final File logFile = new File(System.getenv("APPDATA") + "\\RepairKit.log");
 
     /**
      * Unzips a file.
@@ -118,37 +118,6 @@ public class FileUtil {
             }
 
             Files.copy(input, savedFilePath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException ex) {
-            MessageUtil.printException(ex);
-        }
-    }
-
-    /**
-     * Writes the given text to the log file.
-     * Appends the text to the file if it already exists.
-     * Attaches the current hour, minute, and second to the log entry.
-     *
-     * @param text The text to write to the log file.
-     */
-    public static void writeToLogFile(String text) {
-        // Creates the log file if it doesn't exist.
-        if (!logFile.exists()) {
-            try {
-                Files.createDirectories(logFile.getParentFile().toPath());
-                Files.createFile(logFile.toPath());
-            } catch (IOException ex) {
-                MessageUtil.printException(ex);
-            }
-        }
-
-        // Get the current time
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        String formattedTime = now.format(formatter);
-
-        // Writes the text to the log file.
-        try (FileWriter writer = new FileWriter(logFile, true)) {
-            writer.write("[" + formattedTime + "] " + text + System.lineSeparator());
         } catch (IOException ex) {
             MessageUtil.printException(ex);
         }
