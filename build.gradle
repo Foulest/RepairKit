@@ -1,5 +1,4 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'edu.sc.seis.launch4j' version '3.0.5'
     id 'maven-publish'
     id 'application'
@@ -7,7 +6,7 @@ plugins {
 }
 
 group = 'net.foulest'
-version = '0.4.3'
+version = '0.4.4'
 description = 'RepairKit'
 
 compileJava.options.encoding = 'UTF-8'
@@ -24,10 +23,15 @@ repositories {
     }
 }
 
+configurations {
+    provided // Custom configuration for compile-only dependencies
+    implementation.extendsFrom(provided)
+}
+
 dependencies {
     // JNA platform - for registry access
     // https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform
-    implementation group: 'net.java.dev.jna', name: 'jna-platform', version: '5.14.0'
+    provided group: 'net.java.dev.jna', name: 'jna-platform', version: '5.14.0'
 
     // JetBrains Annotations - for code inspection and documentation
     // https://mvnrepository.com/artifact/org.jetbrains/annotations
@@ -63,20 +67,19 @@ launch4j {
 }
 
 tasks {
-    shadowJar {
-        // minimize() and enableRelocation() break things
-        archiveFileName.set("${project.name}-${project.version}.jar")
-        mainClassName = 'net.foulest.repairkit.RepairKit'
-        relocate 'net.java', 'net.foulest.repairkit.shaded.net.java'
-        relocate 'org.jetbrains', 'net.foulest.repairkit.shaded.org.jetbrains'
-    }
-
     jar {
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
         // Set the 'Main-Class' attribute in the JAR manifest
         manifest {
             attributes 'Main-Class': 'net.foulest.repairkit.RepairKit'
+        }
+
+        // Include compile-only dependencies in the JAR
+        from {
+            configurations.provided.collect { file ->
+                zipTree(file)
+            }
         }
     }
 
@@ -84,16 +87,8 @@ tasks {
         dependsOn(clean)
     }
 
-    build {
-        dependsOn(shadowJar)
-    }
-
-    createExe {
-        dependsOn(shadowJar)
-    }
-
     processResources {
-        filesMatching('**/plugin.yml') {
+        filesMatching('**/*.yml') {
             expand(project.properties)
         }
     }
@@ -104,10 +99,6 @@ tasks {
 
     jar.configure {
         archiveClassifier = 'default'
-    }
-
-    shadowJar.configure {
-        archiveClassifier = null
     }
 }
 
