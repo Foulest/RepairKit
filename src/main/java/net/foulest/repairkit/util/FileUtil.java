@@ -56,7 +56,7 @@ public class FileUtil {
                 }
             }
         } catch (IOException ex) {
-            MessageUtil.printException(ex);
+            ex.printStackTrace();
         }
     }
 
@@ -81,7 +81,7 @@ public class FileUtil {
                 try (InputStream ignored = con.getInputStream()) {
                     // Returns if IP address is blocked.
                 } catch (IOException ex) {
-                    MessageUtil.printException(ex);
+                    ex.printStackTrace();
                     return;
                 }
 
@@ -89,7 +89,7 @@ public class FileUtil {
                     saveFile(inputStream, fileName, replaceOldFile);
                 }
             } catch (Exception ex) {
-                MessageUtil.printException(ex);
+                ex.printStackTrace();
             }
         });
     }
@@ -119,7 +119,7 @@ public class FileUtil {
 
             Files.copy(input, savedFilePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
-            MessageUtil.printException(ex);
+            ex.printStackTrace();
         }
     }
 }

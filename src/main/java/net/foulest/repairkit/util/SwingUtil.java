@@ -45,7 +45,7 @@ public class SwingUtil {
             try {
                 action.run();
             } catch (Exception ex) {
-                MessageUtil.printException(ex);
+                ex.printStackTrace();
             }
         });
         return button;
@@ -88,7 +88,7 @@ public class SwingUtil {
             try {
                 launchApplication(appResource, appExecutable, launchArgs, isZipped, extractionPath);
             } catch (Exception ex) {
-                MessageUtil.printException(ex);
+                ex.printStackTrace();
             }
         });
         return button;
@@ -170,7 +170,7 @@ public class SwingUtil {
             try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/" + appResource)) {
                 saveFile(Objects.requireNonNull(input), appResource, false);
             } catch (IOException ex) {
-                MessageUtil.printException(ex);
+                ex.printStackTrace();
             }
 
             if (isZipped) {

@@ -2,7 +2,6 @@ package net.foulest.repairkit;
 
 import com.sun.jna.platform.win32.WinReg;
 import lombok.extern.java.Log;
-import net.foulest.repairkit.util.MessageUtil;
 import net.foulest.repairkit.util.type.UninstallData;
 import org.jetbrains.annotations.NotNull;
 
@@ -183,7 +182,7 @@ public class RepairKit {
                                 cleanJunkFiles();
                                 latch.countDown();
                             } catch (Exception ex) {
-                                MessageUtil.printException(ex);
+                                ex.printStackTrace();
                             }
                         });
 
@@ -193,7 +192,7 @@ public class RepairKit {
                                 repairWMIRepository();
                                 latch.countDown();
                             } catch (Exception ex) {
-                                MessageUtil.printException(ex);
+                                ex.printStackTrace();
                             }
                         });
 
@@ -203,17 +202,17 @@ public class RepairKit {
                                 runServiceTweaks();
                                 latch.countDown();
                             } catch (Exception ex) {
-                                MessageUtil.printException(ex);
+                                ex.printStackTrace();
                             }
                         });
 
-                        // Remove stock apps
+                        // Remove pre-installed bloatware
                         executor.submit(() -> {
                             try {
-                                removeStockApps();
+                                removeBloatware();
                                 latch.countDown();
                             } catch (Exception ex) {
-                                MessageUtil.printException(ex);
+                                ex.printStackTrace();
                             }
                         });
 
@@ -223,7 +222,7 @@ public class RepairKit {
                                 runRegistryTweaks();
                                 latch.countDown();
                             } catch (Exception ex) {
-                                MessageUtil.printException(ex);
+                                ex.printStackTrace();
                             }
                         });
 
@@ -233,7 +232,7 @@ public class RepairKit {
                                 runSettingsTweaks();
                                 latch.countDown();
                             } catch (Exception ex) {
-                                MessageUtil.printException(ex);
+                                ex.printStackTrace();
                             }
                         });
 
@@ -242,7 +241,7 @@ public class RepairKit {
                             latch.await();
                         } catch (InterruptedException ex) {
                             Thread.currentThread().interrupt();
-                            MessageUtil.printException(ex);
+                            ex.printStackTrace();
                         }
 
                         // Shut down the executor
@@ -252,7 +251,7 @@ public class RepairKit {
                         playSound("win.sound.exclamation");
                         JOptionPane.showMessageDialog(null, "System issues repaired successfully.", "Finished", JOptionPane.QUESTION_MESSAGE);
                     } catch (Exception ex) {
-                        MessageUtil.printException(ex);
+                        ex.printStackTrace();
                     }
                 });
 
@@ -283,7 +282,7 @@ public class RepairKit {
                             runCommand("start \"\" \"" + fanControlPath + "\"", false);
                         }
                     } catch (Exception ex) {
-                        MessageUtil.printException(ex);
+                        ex.printStackTrace();
                     }
                 });
         buttonFanControl.setBackground(new Color(200, 200, 200));
@@ -407,7 +406,7 @@ public class RepairKit {
             saveFile(Objects.requireNonNull(input), "CCleaner.zip", true);
             unzipFile(tempDirectory + "\\CCleaner.zip", tempDirectory.getPath() + "\\CCleaner");
         } catch (IOException ex) {
-            MessageUtil.printException(ex);
+            ex.printStackTrace();
         }
 
         // Runs CCleaner
@@ -472,7 +471,7 @@ public class RepairKit {
             latch.await();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            MessageUtil.printException(ex);
+            ex.printStackTrace();
         }
 
         // Shut down the executor
@@ -498,7 +497,8 @@ public class RepairKit {
                 new UninstallData("C:\\Program Files\\Bandizip", "\"C:\\Program Files\\Bandizip\\uninstall\" /S"),
                 new UninstallData("C:\\Program Files\\PeaZip", "\"C:\\Program Files\\PeaZip\\unins000.exe\""),
                 new UninstallData("C:\\Program Files (x86)\\NCH Software\\ExpressZip", null),
-                new UninstallData("C:\\Program Files (x86)\\B1 Free Archiver", null)
+                new UninstallData("C:\\Program Files (x86)\\B1 Free Archiver", null),
+                new UninstallData(System.getenv("LOCALAPPDATA") + "\\Trend Micro\\UnzipOne", System.getenv("LOCALAPPDATA") + "\\Trend Micro\\UnzipOne\\unins000.exe\"")
         );
 
         boolean shouldInstall7Zip = !Files.exists(sevenZipPath);
@@ -534,7 +534,7 @@ public class RepairKit {
                         try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/7-Zip.exe")) {
                             saveFile(Objects.requireNonNull(input), "7-Zip.exe", false);
                         } catch (IOException ex) {
-                            MessageUtil.printException(ex);
+                            ex.printStackTrace();
                         }
                     }
 
@@ -832,7 +832,7 @@ public class RepairKit {
             latch.await();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            MessageUtil.printException(ex);
+            ex.printStackTrace();
         }
 
         // Shut down the executor
@@ -887,7 +887,7 @@ public class RepairKit {
             latch.await();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            MessageUtil.printException(ex);
+            ex.printStackTrace();
         }
 
         // Shut down the executor
@@ -897,15 +897,16 @@ public class RepairKit {
     }
 
     /**
-     * Removes various useless stock Windows apps.
+     * Removes various bloatware applications from the system.
      */
-    private static void removeStockApps() {
+    private static void removeBloatware() {
         long startTime = System.currentTimeMillis();
         String command = "PowerShell -ExecutionPolicy Unrestricted -Command \"(Get-AppxPackage).ForEach({ $_.Name })\"";
         List<String> output = getCommandOutput(command, false, false);
         Set<String> installedPackages = new HashSet<>(output);
 
         String[] appPackages = {
+                // Pre-installed Windows apps
                 "Microsoft.3DBuilder",
                 "Microsoft.Microsoft3DViewer",
                 "Microsoft.BingWeather",
@@ -924,7 +925,6 @@ public class RepairKit {
                 "Microsoft.Getstarted",
                 "Microsoft.Messaging",
                 "Microsoft.MixedReality.Portal",
-                "Microsoft.MSPaint",
                 "Microsoft.WindowsMaps",
                 "Microsoft.People",
                 "Microsoft.Wallet",
@@ -949,7 +949,147 @@ public class RepairKit {
                 "ActiproSoftwareLLC.562882FEEB491",
                 "Microsoft.MicrosoftStickyNotes",
                 "Microsoft.WindowsSoundRecorder",
-                "Microsoft.WindowsFeedbackHub"
+                "Microsoft.WindowsFeedbackHub",
+
+                // Archiver bloatware
+                "3138AweZip.AweZip",
+                "NCHSoftware.ExpressZipFileCompressionandExtraction",
+                "38526MediaLife.ZipPlus",
+                "57868Codaapp.37800EEDB46F1",
+                "37309CoolLeGetInc.ZipExtractorPro-ZipXRarBzip7zTar",
+                "38184CDCTech.unzip-openRARZIP7ZGzipBZforfree",
+                "23436LAT.RapidZip",
+                "11990MediaHub.TrineZipRarZipand7ZExtractor",
+                "22546Cidade.RAROpenerRARtoZIPConverter",
+                "33865VideoStudio.ZipUnlock-UnpackRARopenzip7zipgzi",
+                "20815shootingapp.AirFileViewer",
+                "5259FreeSoftwareApps.FastZipZipRAR7ZExtractor",
+                "15647NeonBand.RarZipExtractorPro",
+                "WuhanNetPowerTechnologyCo.3322537A536FD",
+                "36059XiaoyaStudio.RealZip",
+                "WinZipComputing.WinZipDesktopSubscription",
+                "BooStudioLLC.8ZipLite",
+                "14586regulars.FileViewer",
+                "15647NeonBand.ZipRarExtractorStoreEdition",
+                "11990MediaHub.FreeZipExtractorPro",
+                "22858LISAppStudio.TotalZip",
+                "BallardAppCraftery.ZipViewer",
+                "DeviceDoctor.ZipOpener",
+                "34599PandaViolet.ZipRarExtractor2022",
+                "15068GalaxyApps.RARToZIPConverterOpener",
+                "55562LudeStudio.GTRARExtractor",
+                "WinZipComputing.WinZipUniversal",
+                "17580Baronan.EZip-ZIPRARExtractor",
+                "NCHSoftware.ExpressZipSVFree",
+                "ArtGroup.ZipRarToolforWindows",
+                "NCHSoftware.ExpressZipNLFree",
+                "40119PurpleMartin.UnpackGzip7zipTarCompressDecompr",
+                "723BlossXHawkDev.corx.Archivator11",
+                "49659SandpiperStudio.RARFileExtractor-ZipUnzipFile",
+                "55562LudeStudio.UnzipZipandRARExtractorPro",
+                "4978BestGameStudio.ExtractRarZipUnrarOpenArchiveAl",
+                "39492FruitCandy.RARtoZIPConverterOpener",
+                "DeviceDoctor.RAROpener",
+                "NCHSoftware.ExpressZipPTFree",
+                "9432UNISAPPS.867708A7B439",
+                "57935AX-Systems.com.AX-ZIPExtractor",
+                "11990MediaHub.FilesManager-ZipRar7zandMoreExtracto",
+                "2725Swisspix.RarExtractorRarFileOpenerSimpleUnrarS",
+                "22858LISAppStudio.UniversalFileViewer",
+                "1901TwentyOneTeam.ZiplyLite",
+                "15647NeonBand.ExplorerforFiles",
+                "40174MouriNaruto.NanaZip",
+                "38526MediaLife.FILEVIEWERFORWINDOWS10",
+
+                // Antivirus bloatware
+                "64404Softuna.TotalDiskCleaner",
+                "SymantecCorporation.NortonSecurity",
+                "47772AVGTechnologies.AVGDownloadCenter",
+                "QIHU360SOFTWARECO.LIMITED.360TotalSecurity",
+                "EverydayToolsLLC.MyCleaner",
+                "89E2DF08.KeepSolidDNSFirewall",
+                "ToolsAssistantLLC.AdvancedCleaner",
+                "51CA791E.AvastAntivirusDownloadCenter",
+                "5A894077.McAfeeSecurity",
+                "NANOSecurity.NANOAntivirusSkyScan",
+                "Defenx.DefenxSecurityDownloadCenter",
+
+                // VPN/Proxy bloatware
+                "25930UnblockMate.UnblockMateFreeWebProxy",
+                "6F71D7A7.HotspotShieldFreeVPN",
+                "29645FreeConnectedLimited.X-VPN-FreeUnlimitedVPNPr",
+                "SUNNETTECHNOLOGYINC.BetterVPN-BestFreeVPNUnlimited",
+                "14C78905.TrendMicroPublicWi-FiProtection",
+                "ROCKETTECHNOLOGYINC.RocketVPNProxy",
+                "89E2DF08.VPNUnlimited-SecurePrivateInternetConnect",
+                "AnywaySoftInc.AnyVPN",
+                "SecurityGuarder.FreeUnlimitedVPNProxy-TheInternetF",
+                "TIGERVPNSLTD.VPNPlus",
+                "59992Roob.BestProxyFastUnlimitedVPNfunctionality",
+                "FIYINGORONOCOLTD.VPNPro-BestFreeVPNUnlimitedWifiPr",
+                "LifeAppTechnologyLimited.MicroOpenVPN-FastSecureVP",
+                "WILDFIRETECHNOLOGYINC.WILDFIREVPN",
+                "IFreeNetInc.MicVPN-FreeVPNForEveryone",
+                "FASTPOTATOPTE.LTD.PotatoVPN",
+                "FreeVPNPlanet.PlanetVPN",
+                "Avira.AviraPhantomVPN",
+                "D17A4821.VPNShield2",
+                "FIREWORKSTECHNOLOGYINC.GrassVPN",
+                "59992Roob.BestProxyFastUnlimitedVPNfunctionality",
+                "33842Tronlabs.VPNProxyBrowser",
+                "41219Prispiii.FreeProxyVPN",
+                "6727MontyInc.BestVPNUnlimitedproxy",
+                "YellowElephantProductions.VPNClient",
+                "14589Nov.NinjaIPHider",
+                "25930UnblockMate.UnblockMateFreeWebProxy",
+                "UABMNTechnologijos.MysteriumVPN",
+                "PrimeFintechSolutionCYLtd.NFlixVPN",
+                "SOFTPOSTLLC.WasabiVPN",
+                "1200P33kbooVPNServices.P33kb00VPN",
+                "29009AugiApps.QuickVPNFreeProxy",
+                "55164OliverLi.24465CEEA8147",
+                "WellMadeVenturesGmbH.VPNBuddy",
+                "10801DigitalTz.DUMA-VPN",
+                "PrivadaTechLimited.PrivadaGlobalVPN",
+                "BNESIM.BNEGuardVPNbyBNESIM",
+                "6F71D7A7.TouchVPN",
+                "ProtelionGmbH.ProtelionVPN",
+                "SunrisePrivacyinc.SonicsVPN",
+                "InternetTVServices.InternetTVVPN",
+                "4K-SOFTLTD.6354634F6FD7B",
+                "NodeVPN.NodeVPN",
+                "45552VictoryTechnology.NetworkAccelerator-FreeOver",
+                "3042cilixft.v4freedom",
+                "CyberheartPte.Ltd.50918F9C6B42C",
+                "VPNZone.VPNZONE",
+                "12166732A9970.Returnees-VPN",
+                "20654MicroYiAppStudio.BestHotspot-UnlimitedProxy",
+                "27324InternetOfThingsDev.FreeUnlimitedProxy-ProxyM",
+                "5874nestebe.AnonymousCloudTorrent",
+                "61338learntechnologyapp.SOCKS5proxiesfortelegram",
+                "5514tejasbst.ProxyBrowserPlus",
+                "61338learntechnologyapp.MicroTiger-TrojanWindowsCl",
+
+                // Torrent bloatware
+                "53058betterapp.TorrentDownloader-",
+                "325289AEDD75.TorrentRTFREE",
+                "48713HLXB.fTorrent-FastTorrentDownloader",
+                "BooStudioLLC.TorrexLite-TorrentDownloader",
+                "YellowElephantProductions.58264AF513589",
+                "14586regulars.FileViewer",
+                "20815shootingapp.AirFileViewer",
+                "63341FinalA..TorrentDownloader",
+                "40090TheMockingBird.Torrant-InstantTorrentDownload",
+                "2436VCApps.xTorrentDownloadManager",
+                "49775MorningInSeattle.AZTorrentDownloader",
+                "50976yce.RemoteTorrentClient",
+                "40720RMDEV.ExpressTorrentDownloader",
+                "YellowElephantProductions.TorrentPlayerLite",
+                "325289AEDD75.TorrentSearchPRO",
+                "26571KonstantinSoftware.TorrentGear",
+
+                // Other bloatware
+                "RapartyLTD.RegRu"
         };
 
         List<String> packagesToRemove = Arrays.stream(appPackages)
@@ -982,12 +1122,12 @@ public class RepairKit {
             latch.await();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            MessageUtil.printException(ex);
+            ex.printStackTrace();
         }
 
         // Shut down the executor
         executor.shutdown();
-        log.info("Removed " + packagesToRemove.size() + " stock apps in "
+        log.info("Removed " + packagesToRemove.size() + " installed bloatware apps in "
                 + (System.currentTimeMillis() - startTime) + "ms.");
     }
 
@@ -1107,7 +1247,7 @@ public class RepairKit {
             latch.await();
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
-            MessageUtil.printException(ex);
+            ex.printStackTrace();
         }
 
         // Shut down the executor

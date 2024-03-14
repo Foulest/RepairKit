@@ -30,7 +30,7 @@ public class CommandUtil {
                 process.waitFor();
             } catch (IOException | InterruptedException ex) {
                 Thread.currentThread().interrupt();
-                MessageUtil.printException(ex);
+                ex.printStackTrace();
             }
         };
 
@@ -89,7 +89,7 @@ public class CommandUtil {
                 process.waitFor();
             } catch (IOException | InterruptedException ex) {
                 Thread.currentThread().interrupt();
-                MessageUtil.printException(ex);
+                ex.printStackTrace();
             }
         };
 
