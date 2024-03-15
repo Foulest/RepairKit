@@ -1,4 +1,5 @@
 plugins {
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'edu.sc.seis.launch4j' version '3.0.5'
     id 'maven-publish'
     id 'application'
@@ -6,7 +7,7 @@ plugins {
 }
 
 group = 'net.foulest'
-version = '0.4.6'
+version = '0.4.7'
 description = 'RepairKit'
 
 compileJava.options.encoding = 'UTF-8'
@@ -23,15 +24,10 @@ repositories {
     }
 }
 
-configurations {
-    provided // Custom configuration for compile-only dependencies
-    implementation.extendsFrom(provided)
-}
-
 dependencies {
     // JNA platform - for registry access
     // https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform
-    provided group: 'net.java.dev.jna', name: 'jna-platform', version: '5.14.0'
+    implementation group: 'net.java.dev.jna', name: 'jna-platform', version: '5.14.0'
 
     // JetBrains Annotations - for code inspection and documentation
     // https://mvnrepository.com/artifact/org.jetbrains/annotations
@@ -67,6 +63,11 @@ launch4j {
 }
 
 tasks {
+    shadowJar {
+        mainClassName = 'net.foulest.repairkit.RepairKit'
+        archiveFileName.set("${project.name}-${project.version}.jar")
+    }
+
     jar {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
@@ -74,17 +75,23 @@ tasks {
         manifest {
             attributes 'Main-Class': 'net.foulest.repairkit.RepairKit'
         }
+    }
 
-        // Include compile-only dependencies in the JAR
-        from {
-            configurations.provided.collect { file ->
-                zipTree(file)
-            }
+    createExe {
+        dependsOn(shadowJar)
+
+        // Delete the libs folder
+        doLast {
+            delete(file("${buildDir}/launch4j/lib"))
         }
     }
 
     compileJava {
         dependsOn(clean)
+    }
+
+    build {
+        dependsOn(shadowJar)
     }
 
     processResources {
@@ -95,10 +102,6 @@ tasks {
 
     tasks.register('sourceJar', Jar) {
         from sourceSets.main.allJava
-    }
-
-    jar.configure {
-        archiveClassifier = 'default'
     }
 }
 

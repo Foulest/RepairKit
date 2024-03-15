@@ -1,23 +1,17 @@
 package net.foulest.repairkit.util;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class FileUtil {
 
-    private static final ExecutorService DOWNLOAD_EXECUTOR = Executors.newFixedThreadPool(4);
     public static final File tempDirectory = new File(System.getenv("TEMP") + "\\RepairKit");
 
     /**
@@ -58,40 +52,6 @@ public class FileUtil {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-    }
-
-    /**
-     * Downloads a file.
-     *
-     * @param link           The link to download the file from.
-     * @param fileName       The name of the file to download.
-     * @param replaceOldFile Whether or not to replace the old file.
-     */
-    @SuppressWarnings("unused")
-    public static void downloadFile(String link, String fileName, boolean replaceOldFile) {
-        DOWNLOAD_EXECUTOR.submit(() -> {
-            try {
-                URL url = new URL(link);
-                HttpURLConnection con = (HttpURLConnection) url.openConnection();
-                con.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.54 Safari/537.36");
-                con.setReadTimeout(5000);
-                con.setConnectTimeout(5000);
-
-                //noinspection EmptyTryBlock
-                try (InputStream ignored = con.getInputStream()) {
-                    // Returns if IP address is blocked.
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                    return;
-                }
-
-                try (InputStream inputStream = new BufferedInputStream(con.getInputStream())) {
-                    saveFile(inputStream, fileName, replaceOldFile);
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        });
     }
 
     /**

@@ -175,7 +175,7 @@ public class RepairKit {
 
                         // Create a new executor
                         ExecutorService executor = Executors.newWorkStealingPool();
-                        CountDownLatch latch = new CountDownLatch(6);
+                        CountDownLatch latch = new CountDownLatch(7);
 
                         // Clean junk files
                         executor.submit(() -> {
@@ -231,6 +231,16 @@ public class RepairKit {
                         executor.submit(() -> {
                             try {
                                 runSettingsTweaks();
+                                latch.countDown();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
+                        });
+
+                        // Windows Defender tweaks
+                        executor.submit(() -> {
+                            try {
+                                runWindowsDefenderTweaks();
                                 latch.countDown();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -1263,7 +1273,7 @@ public class RepairKit {
                 for (String feature : features) {
                     if (getCommandOutput("PowerShell -ExecutionPolicy Unrestricted -Command"
                             + " \"Get-WindowsOptionalFeature -FeatureName '" + feature + "' -Online | Select-Object -Property"
-                            + " State\"", false, false).contains("Enabled")) {
+                            + " State\"", false, false).toString().contains("Enabled")) {
                         runCommand("DISM /Online /Disable-Feature /FeatureName:\"" + feature + "\" /NoRestart", false);
                     }
                 }
@@ -1276,11 +1286,11 @@ public class RepairKit {
                         "App.StepsRecorder~~~~*"
                 };
 
+                // Check if the capability (any version) is enabled
                 for (String capability : capabilities) {
-                    // Check if the capability (any version) is enabled
                     if (getCommandOutput("PowerShell -ExecutionPolicy Unrestricted -Command"
                             + " \"Get-WindowsCapability -Name '" + capability + "' -Online | Where-Object State"
-                            + " -eq 'Installed'\"", false, false).contains("Installed")) {
+                            + " -eq 'Installed'\"", false, false).toString().contains("Installed")) {
                         runCommand("DISM /Online /Remove-Capability /CapabilityName:\"" + capability + "\" /NoRestart", false);
                     }
                 }
@@ -1300,5 +1310,165 @@ public class RepairKit {
         // Shut down the executor
         executor.shutdown();
         log.info("Settings tweaks completed in " + (System.currentTimeMillis() - startTime) + "ms.");
+    }
+
+    /**
+     * Runs various tweaks to Windows Defender.
+     */
+    private static void runWindowsDefenderTweaks() {
+        // Enables Windows Firewall
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-NetFirewallProfile"
+                + " -Profile Domain,Private,Public -Enabled True\"", false);
+
+        // Enables Real-Time Monitoring
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -DisableRealtimeMonitoring 0\"", false);
+
+        // Enables Cloud-Based Protection
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -MAPSReporting 2\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -SubmitSamplesConsent 3\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -CloudBlockLevel 4\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -CloudExtendedTimeout 10\"", false);
+
+        // Enables Network Protection
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -EnableNetworkProtection 1\"", false);
+
+        // Enables Behavior Monitoring
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -DisableBehaviorMonitoring 0\"", false);
+
+        // Enables PUA Protection
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -PUAProtection 1\"", false);
+
+        // Enables Block at First Sight
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -DisableBlockAtFirstSeen 0\"", false);
+
+        // Enables Windows Defender to scan every file type
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -DisableEmailScanning 0\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -DisableIOAVProtection 0\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -DisableScriptScanning 0\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -DisableArchiveScanning 0\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -DisableRemovableDriveScanning 0\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -DisableScanningNetworkFiles 0\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -DisableScanningMappedNetworkDrivesForFullScan 0\"", false);
+
+        // Disables CPU-related settings
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -EnableLowCpuPriority 0\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -ScanAvgCPULoadFactor 50\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -SignatureBlobUpdateInterval 120\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -EnableFileHashComputation 0\"", false);
+
+        // Sets the default actions for each threat level
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -LowThreatDefaultAction Block\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -ModerateThreatDefaultAction Clean\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -HighThreatDefaultAction Quarantine\"", false);
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+                + " -SevereThreatDefaultAction Remove\"", false);
+
+        // ASR: Block abuse of exploited vulnerable signed drivers
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+                + " -AttackSurfaceReductionRules_Ids 56a863a9-875e-4185-98a7-b882c64b5ce5"
+                + " -AttackSurfaceReductionRules_Actions Warn\"", false);
+
+        // ASR: Block Adobe Reader from creating child processes
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+                + " -AttackSurfaceReductionRules_Ids 7674ba52-37eb-4a4f-a9a1-f0f9a1619a2c"
+                + " -AttackSurfaceReductionRules_Actions Enabled\"", false);
+
+        // ASR: Block all Office applications from creating child processes
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+                + " -AttackSurfaceReductionRules_Ids d4f940ab-401b-4efc-aadc-ad5f3c50688a"
+                + " -AttackSurfaceReductionRules_Actions Enabled\"", false);
+
+        // ASR: Block credential stealing from the Windows local security authority subsystem
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+                + " -AttackSurfaceReductionRules_Ids 9e6c4e1f-7d60-472f-ba1a-a39ef669e4b2"
+                + " -AttackSurfaceReductionRules_Actions Disabled\"", false);
+
+        // ASR: Block executable content from email client and webmail
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+                + " -AttackSurfaceReductionRules_Ids be9ba2d9-53ea-4cdc-84e5-9b1eeee46550"
+                + " -AttackSurfaceReductionRules_Actions Enabled\"", false);
+
+        // ASR: Block executable files from running unless they meet a prevalence, age, or trusted list criterion
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+                + " -AttackSurfaceReductionRules_Ids 01443614-cd74-433a-b99e-2ecdc07bfc25"
+                + " -AttackSurfaceReductionRules_Actions Disabled\"", false);
+
+        // ASR: Block execution of potentially obfuscated scripts
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+                + " -AttackSurfaceReductionRules_Ids 5beb7efe-fd9a-4556-801d-275e5ffc04cc"
+                + " -AttackSurfaceReductionRules_Actions Enabled\"", false);
+
+        // ASR: Block JavaScript or VBScript from launching downloaded executable content
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+                + " -AttackSurfaceReductionRules_Ids d3e037e1-3eb8-44c8-a917-57927947596d"
+                + " -AttackSurfaceReductionRules_Actions Enabled\"", false);
+
+        // ASR: Block Office applications from creating executable content
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+                + " -AttackSurfaceReductionRules_Ids 3b576869-a4ec-4529-8536-b80a7769e899"
+                + " -AttackSurfaceReductionRules_Actions Enabled\"", false);
+
+        // ASR: Block Office applications from injecting code into other processes
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+                + " -AttackSurfaceReductionRules_Ids 75668c1f-73b5-4cf0-bb93-3ecf5cb7cc84"
+                + " -AttackSurfaceReductionRules_Actions Enabled\"", false);
+
+        // ASR: Block Office communication application from creating child processes
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+                + " -AttackSurfaceReductionRules_Ids 26190899-1602-49e8-8b27-eb1d0a1ce869"
+                + " -AttackSurfaceReductionRules_Actions Enabled\"", false);
+
+        // ASR: Block persistence through WMI event subscription
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+                + " -AttackSurfaceReductionRules_Ids e6db77e5-3df2-4cf1-b95a-636979351e5b"
+                + " -AttackSurfaceReductionRules_Actions Enabled\"", false);
+
+        // ASR: Block process creations originating from PSExec and WMI commands
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+                + " -AttackSurfaceReductionRules_Ids d1e49aac-8f56-4280-b9ba-993a6d77406c"
+                + " -AttackSurfaceReductionRules_Actions Disabled\"", false);
+
+        // ASR: Block untrusted and unsigned processes that run from USB
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+                + " -AttackSurfaceReductionRules_Ids b2b3f03d-6a65-4f7b-a9c7-1c7ef74a9ba4"
+                + " -AttackSurfaceReductionRules_Actions Enabled\"", false);
+
+        // ASR: Block Webshell creation for Servers
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+                + " -AttackSurfaceReductionRules_Ids a8f5898e-1dc8-49a9-9878-85004b8a61e6"
+                + " -AttackSurfaceReductionRules_Actions Warn\"", false);
+
+        // ASR: Block Win32 API calls from Office macros
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+                + " -AttackSurfaceReductionRules_Ids 92e97fa1-2edf-4476-bdd6-9dd0b4dddc7b"
+                + " -AttackSurfaceReductionRules_Actions Enabled\"", false);
+
+        // ASR: Use advanced protection against ransomware
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+                + " -AttackSurfaceReductionRules_Ids c1db55ab-c21a-4637-bb3f-a12568109d35"
+                + " -AttackSurfaceReductionRules_Actions Enabled\"", false);
     }
 }
