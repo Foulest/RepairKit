@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'net.foulest'
-version = '0.4.8'
+version = '0.4.9'
 description = 'RepairKit'
 
 compileJava.options.encoding = 'UTF-8'
@@ -91,6 +91,18 @@ tasks {
     }
 
     build {
+        dependsOn(shadowJar)
+    }
+
+    distZip {
+        dependsOn(shadowJar)
+    }
+
+    distTar {
+        dependsOn(shadowJar)
+    }
+
+    startScripts {
         dependsOn(shadowJar)
     }
 
