@@ -397,7 +397,7 @@ public class RepairKit {
             JOptionPane.showMessageDialog(null,
                     "Warning: Medal is installed and running on your system."
                             + "\nMedal causes issues with Desktop Windows Manager, which affects system performance."
-                            + "\nFinding an alternative to Medal, such as Shadowplay or AMD ReLive is recommended.",
+                            + "\nFinding an alternative to Medal, such as ShadowPlay or AMD ReLive is recommended.",
                     "Software Warning", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -406,6 +406,7 @@ public class RepairKit {
      * Cleans junk files using CCleaner.
      */
     private static void cleanJunkFiles() {
+        log.info("Cleaning junk files...");
         long startTime = System.currentTimeMillis();
 
         // Kills CCleaner
@@ -430,6 +431,7 @@ public class RepairKit {
      * Deletes any existing system policies.
      */
     private static void deleteSystemPolicies() {
+        log.info("Deleting system policies...");
         long startTime = System.currentTimeMillis();
         ExecutorService executor = Executors.newWorkStealingPool();
         CountDownLatch latch = new CountDownLatch(4);
@@ -437,7 +439,6 @@ public class RepairKit {
         executor.submit(() -> {
             deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\MMC");
             deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\Windows\\System");
-            deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Internet Explorer");
             deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Google\\Chrome");
             latch.countDown();
         });
@@ -490,6 +491,7 @@ public class RepairKit {
      * Installs 7-Zip and uninstalls other archivers.
      */
     private static void install7Zip() {
+        log.info("Installing 7-Zip and uninstalling other archivers...");
         Path sevenZipPath = Paths.get("C:\\Program Files\\7-Zip\\7zFM.exe");
         Path tempPath = Paths.get(tempDirectory + "\\7-Zip.exe");
 
@@ -555,6 +557,7 @@ public class RepairKit {
      * Repairs the WMI Repository.
      */
     private static void repairWMIRepository() {
+        log.info("Repairing WMI repository...");
         if (getCommandOutput("winmgmt /verifyrepository", false, false).toString().contains("not consistent")
                 && getCommandOutput("winmgmt /salvagerepository", false, false).toString().contains("not consistent")) {
             runCommand("winmgmt /resetrepository", false);
@@ -565,6 +568,7 @@ public class RepairKit {
      * Runs tweaks to the Windows registry.
      */
     private static void runRegistryTweaks() {
+        log.info("Running registry tweaks...");
         long startTime = System.currentTimeMillis();
         ExecutorService executor = Executors.newWorkStealingPool();
         CountDownLatch latch = new CountDownLatch(19);
@@ -851,6 +855,7 @@ public class RepairKit {
      * Runs various tweaks to the Windows services.
      */
     private static void runServiceTweaks() {
+        log.info("Tweaking services...");
         List<String[]> serviceList = Arrays.asList(
                 new String[]{"DiagTrack", "Connected User Experiences and Telemetry"},
                 new String[]{"MapsBroker", "Downloaded Maps Manager"},
@@ -905,6 +910,7 @@ public class RepairKit {
      * Removes various bloatware applications from the system.
      */
     private static void removeBloatware() {
+        log.info("Removing bloatware...");
         long startTime = System.currentTimeMillis();
         String command = "PowerShell -ExecutionPolicy Unrestricted -Command \"(Get-AppxPackage).ForEach({ $_.Name })\"";
         List<String> output = getCommandOutput(command, false, false);
@@ -1270,6 +1276,7 @@ public class RepairKit {
      * Runs tweaks to Windows settings.
      */
     private static void runSettingsTweaks() {
+        log.info("Tweaking Windows settings...");
         long startTime = System.currentTimeMillis();
         ExecutorService executor = Executors.newWorkStealingPool();
         CountDownLatch latch = new CountDownLatch(4);
@@ -1392,6 +1399,7 @@ public class RepairKit {
      * Runs various tweaks to Windows Defender.
      */
     private static void runWindowsDefenderTweaks() {
+        log.info("Tweaking Windows Defender...");
         long startTime = System.currentTimeMillis();
         ExecutorService executor = Executors.newWorkStealingPool();
         CountDownLatch latch = new CountDownLatch(5);

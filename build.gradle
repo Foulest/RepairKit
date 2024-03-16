@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'net.foulest'
-version = '0.5.2'
+version = '0.5.3'
 description = 'RepairKit'
 
 compileJava.options.encoding = 'UTF-8'
