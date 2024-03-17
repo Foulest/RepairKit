@@ -48,12 +48,6 @@ Quickly access essential Windows utilities like:
 - Task Manager
 - Windows Defender
 
-## Useful Links
-
-- [Contribution Guidelines](https://github.com/Foulest/RepairKit/wiki/Contribution-Guidelines)
-- [Disclaimer](https://github.com/Foulest/RepairKit/wiki/Disclaimer)
-- [Installation](https://github.com/Foulest/RepairKit/wiki/Installation)
-
 ## Getting Help
 
 For support or queries, please open an issue in the [Issues section](https://github.com/Foulest/RepairKit/issues).
