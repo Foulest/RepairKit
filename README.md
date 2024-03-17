@@ -4,8 +4,7 @@
 [![CodeQL Badge](https://github.com/Foulest/RepairKit/actions/workflows/codeql.yml/badge.svg)](https://github.com/Foulest/RepairKit/actions/workflows/codeql.yml)
 [![JitPack Badge](https://jitpack.io/v/Foulest/RepairKit.svg)](https://jitpack.io/#Foulest/RepairKit)
 
-**RepairKit** is a comprehensive, Java-based Windows repair and maintenance software. It's designed to offer a suite of
-tools for maintaining optimal performance and health of your Windows PC.
+**RepairKit** is a comprehensive, Java-based Windows repair and maintenance software.
 
 ![RepairKit Software Image](https://i.imgur.com/lZhBpMo.png)
 
