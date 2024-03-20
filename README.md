@@ -32,7 +32,6 @@ Access a curated suite of software with just one click, including:
 - **[HWMonitor](https://cpuid.com/softwares/hwmonitor.html)**: Monitor hardware temperatures and specs.
 - **[Emsisoft Scan](https://emsisoft.com/en/home/emergency-kit)**: Scan for malware using Emsisoft Emergency Kit.
 - **[uBlock Origin](https://ublockorigin.com)**: Link to the powerful ad-blocker extension.
-  browser extension.
 - **[TrafficLight](https://bitdefender.com/solutions/trafficlight.html)**: Link to Bitdefender's TrafficLight
 - **[NVCleanstall](https://techpowerup.com/download/techpowerup-nvcleanstall)**: A lightweight NVIDIA graphics card
   driver updater.
