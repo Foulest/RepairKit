@@ -1,6 +1,5 @@
 package net.foulest.repairkit.util;
 
-import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -11,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-@Log
 public class CommandUtil {
 
     /**
@@ -56,7 +54,7 @@ public class CommandUtil {
             output.add(line);
 
             if (display && !line.trim().isEmpty()) {
-                log.info(line);
+                System.out.println(line);
             }
         });
         return output.isEmpty() ? Collections.singletonList("") : output;

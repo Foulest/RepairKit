@@ -17,6 +17,7 @@ Automatically perform a comprehensive system cleanup and repair, including:
 - Cleaning junk files with **[CCleaner](https://ccleaner.com)**.
 - Tweaking Windows services and registry.
 - Adjusting Windows & Defender settings.
+- Scanning for malware with Windows Defender.
 - Removing pre-installed bloatware.
 - Repairing the WMI repository.
 

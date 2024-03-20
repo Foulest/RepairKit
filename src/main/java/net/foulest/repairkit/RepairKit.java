@@ -1396,7 +1396,7 @@ public class RepairKit {
     }
 
     /**
-     * Runs various tweaks to Windows Defender.
+     * Runs various tweaks to Windows Defender and initiates a Quick Scan.
      */
     private static void runWindowsDefenderTweaks() {
         log.info("Tweaking Windows Defender...");
@@ -1508,5 +1508,17 @@ public class RepairKit {
         // Shut down the executor
         executor.shutdown();
         log.info("Windows Defender tweaks completed in " + (System.currentTimeMillis() - startTime) + "ms.");
+
+        // Updates Windows Defender signatures
+        log.info("Updating Windows Defender signatures...");
+        startTime = System.currentTimeMillis();
+        runCommand("\"C:\\Program Files\\Windows Defender\\MpCmdRun.exe\" -SignatureUpdate", false);
+        log.info("Windows Defender signatures updated in " + (System.currentTimeMillis() - startTime) + "ms.");
+
+        // Runs a quick scan with Windows Defender
+        log.info("Running a quick scan with Windows Defender...");
+        startTime = System.currentTimeMillis();
+        runCommand("\"C:\\Program Files\\Windows Defender\\MpCmdRun.exe\" -Scan -ScanType 1", false);
+        log.info("Quick scan with Windows Defender completed in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
 }
