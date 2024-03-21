@@ -45,6 +45,7 @@ public class RepairKit {
         checkOperatingSystemCompatibility();
         setupShutdownHook();
         checkForWindowsUpdate();
+        checkForMedal();
 
         SwingUtilities.invokeLater(() -> {
             JFrame frame = createMainFrame();
@@ -86,6 +87,20 @@ public class RepairKit {
     }
 
     /**
+     * Checks if Medal is installed.
+     * Medal causes issues with Desktop Window Manager.
+     */
+    private static void checkForMedal() {
+        if (isProcessRunning("medal.exe")) {
+            JOptionPane.showMessageDialog(null,
+                    "Warning: Medal is installed and running on your system."
+                            + "\nMedal causes issues with Desktop Windows Manager, which affects system performance."
+                            + "\nFinding an alternative to Medal, such as ShadowPlay or AMD ReLive is recommended.",
+                    "Software Warning", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /**
      * Sets the program's shutdown hook.
      */
     private static void setupShutdownHook() {
@@ -106,9 +121,6 @@ public class RepairKit {
 
         // Deletes pre-existing RepairKit files.
         runCommand("rd /s /q " + tempDirectory.getPath(), false);
-
-        // Checks if Medal is installed.
-        checkForMedal();
 
         // Creates the main frame.
         frame.setContentPane(panelMain);
@@ -386,20 +398,6 @@ public class RepairKit {
                 "start windowsdefender:");
         buttonSecurity.setBounds(162, 310, 152, 25);
         addComponents(panelMain, buttonSecurity);
-    }
-
-    /**
-     * Checks if Medal is installed.
-     * Medal causes issues with Desktop Window Manager.
-     */
-    private static void checkForMedal() {
-        if (isProcessRunning("medal.exe")) {
-            JOptionPane.showMessageDialog(null,
-                    "Warning: Medal is installed and running on your system."
-                            + "\nMedal causes issues with Desktop Windows Manager, which affects system performance."
-                            + "\nFinding an alternative to Medal, such as ShadowPlay or AMD ReLive is recommended.",
-                    "Software Warning", JOptionPane.ERROR_MESSAGE);
-        }
     }
 
     /**
