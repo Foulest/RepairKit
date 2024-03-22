@@ -109,7 +109,7 @@ public class RepairKit {
         }
 
         // Checks if the system is booting in Safe Mode.
-        if (getCommandOutput("wmic COMPUTERSYSTEM GET BootupState", false, false).contains("safe")) {
+        if (getCommandOutput("wmic COMPUTERSYSTEM GET BootupState", false, false).toString().contains("safe")) {
             playSound("win.sound.hand");
             JOptionPane.showMessageDialog(null,
                     "Your system is booting in Safe Mode."
