@@ -42,11 +42,15 @@ public class RepairKit {
      * @param args The program's arguments.
      */
     public static void main(String @NotNull [] args) {
+        // Checks for incompatibility issues.
         checkOperatingSystemCompatibility();
-        setupShutdownHook();
         checkForWindowsUpdate();
         checkForMedal();
 
+        // Sets up the shutdown hook.
+        setupShutdownHook();
+
+        // Creates the main frame.
         SwingUtilities.invokeLater(() -> {
             JFrame frame = createMainFrame();
             frame.setVisible(true);
