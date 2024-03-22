@@ -6,7 +6,7 @@
 
 **RepairKit** is an all-in-one Java-based Windows repair and maintenance toolkit.
 
-![RepairKit Software Image](https://i.imgur.com/lZhBpMo.png)
+![RepairKit Software Image](https://i.imgur.com/BmIabGu.png)
 
 ## Features
 
@@ -34,9 +34,9 @@ Access a curated suite of software with just one click, including:
 - **[uBlock Origin](https://ublockorigin.com)**: Link to the powerful ad-blocker extension.
 - **[TrafficLight](https://bitdefender.com/solutions/trafficlight.html)**: Link to Bitdefender's TrafficLight browser
   extension.
-- **[NVCleanstall](https://techpowerup.com/download/techpowerup-nvcleanstall)**: A lightweight NVIDIA graphics card
-  driver updater.
-- **[Process Explorer](https://learn.microsoft.com/en-us/sysinternals/downloads/process-explorer)**: A powerful
+- **[Autoruns](https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns)**: An alternative to Windows
+  Startup Manager.
+- **[Process Explorer](https://learn.microsoft.com/en-us/sysinternals/downloads/process-explorer)**: An
   alternative to Windows Task Manager.
 
 ### 3. **Quick Windows Access Buttons**

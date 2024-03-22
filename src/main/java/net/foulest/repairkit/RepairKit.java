@@ -31,9 +31,10 @@ import static net.foulest.repairkit.util.SwingUtil.*;
 @Log
 public class RepairKit {
 
-    private static final Set<String> SUPPORTED_OS_NAMES = new HashSet<>(Arrays.asList("Windows 10", "Windows 11"));
     private static final JFrame frame = new JFrame("RepairKit");
     private static final JPanel panelMain = new JPanel(null);
+    private static boolean safeMode = false;
+    private static boolean outdatedOperatingSystem = false;
     private static boolean windowsUpdateInProgress = false;
 
     /**
@@ -44,11 +45,18 @@ public class RepairKit {
     public static void main(String @NotNull [] args) {
         // Checks for incompatibility issues.
         checkOperatingSystemCompatibility();
-        checkForWindowsUpdate();
-        checkForMedal();
+
+        // Checks for Windows Update and Medal.
+        if (!safeMode) {
+            checkForWindowsUpdate();
+            checkForMedal();
+        }
 
         // Sets up the shutdown hook.
         setupShutdownHook();
+
+        // Sets up necessary app registry keys.
+        setAppRegistryKeys();
 
         // Creates the main frame.
         SwingUtilities.invokeLater(() -> {
@@ -63,13 +71,51 @@ public class RepairKit {
     private static void checkOperatingSystemCompatibility() {
         String osName = System.getProperty("os.name");
 
-        if (!SUPPORTED_OS_NAMES.contains(osName)) {
+        // Checks if the operating system is 32-bit.
+        if (!System.getProperty("os.arch").contains("64")) {
+            playSound("win.sound.hand");
             JOptionPane.showMessageDialog(null,
-                    "Your operating system" + (osName != null ? ", " + osName + ", " : " ")
-                            + "is outdated, unknown, or not Windows based."
-                            + "\nThis software only works on up-to-date Windows operating systems."
+                    "Your operating system is 32-bit."
+                            + "\nThis program is designed for 64-bit operating systems."
+                            + "\nPlease upgrade to a 64-bit operating system to use this program."
                     , "Incompatible Operating System", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
+        }
+
+        // Checks if the operating system is outdated (older than Windows 10).
+        if (!osName.equalsIgnoreCase("Windows 10")
+                && !osName.equalsIgnoreCase("Windows 11")) {
+            if (osName.equalsIgnoreCase("Windows 8.1")
+                    || osName.equalsIgnoreCase("Windows 8")
+                    || osName.equalsIgnoreCase("Windows 7")
+                    || osName.equalsIgnoreCase("Windows Vista")
+                    || osName.equalsIgnoreCase("Windows XP")) {
+                playSound("win.sound.hand");
+                JOptionPane.showMessageDialog(null,
+                        "Your operating system, " + osName + ", "
+                                + "is outdated and no longer supported."
+                                + "\nFeatures of this program may not work correctly or at all."
+                        , "Outdated Operating System", JOptionPane.ERROR_MESSAGE);
+                outdatedOperatingSystem = true;
+            } else {
+                playSound("win.sound.hand");
+                JOptionPane.showMessageDialog(null,
+                        "Your operating system, " + osName + ", "
+                                + "is outdated, unknown, or not Windows based."
+                                + "\n"
+                        , "Incompatible Operating System", JOptionPane.ERROR_MESSAGE);
+                System.exit(0);
+            }
+        }
+
+        // Checks if the system is booting in Safe Mode.
+        if (getCommandOutput("wmic COMPUTERSYSTEM GET BootupState", false, false).contains("safe")) {
+            playSound("win.sound.hand");
+            JOptionPane.showMessageDialog(null,
+                    "Your system is booting in Safe Mode."
+                            + "\nFeatures of this program may not work correctly or at all."
+                    , "Safe Mode Detected", JOptionPane.ERROR_MESSAGE);
+            safeMode = true;
         }
     }
 
@@ -84,6 +130,7 @@ public class RepairKit {
                 && isProcessRunning("TrustedInstaller.exe")
                 && isProcessRunning("wuauclt.exe")) {
             windowsUpdateInProgress = true;
+            playSound("win.sound.asterisk");
             JOptionPane.showMessageDialog(null, "Windows Update is running on your system."
                             + "\nCertain tweaks will not be applied until the Windows Update is finished."
                     , "Software Warning", JOptionPane.WARNING_MESSAGE);
@@ -96,11 +143,12 @@ public class RepairKit {
      */
     private static void checkForMedal() {
         if (isProcessRunning("medal.exe")) {
+            playSound("win.sound.asterisk");
             JOptionPane.showMessageDialog(null,
                     "Warning: Medal is installed and running on your system."
                             + "\nMedal causes issues with Desktop Windows Manager, which affects system performance."
                             + "\nFinding an alternative to Medal, such as ShadowPlay or AMD ReLive is recommended.",
-                    "Software Warning", JOptionPane.ERROR_MESSAGE);
+                    "Software Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -112,6 +160,31 @@ public class RepairKit {
         Runtime.getRuntime().addShutdownHook(new Thread(() ->
                 runCommand("rd /s /q " + tempDirectory.getPath(), false))
         );
+    }
+
+    /**
+     * Sets necessary app registry keys.
+     */
+    private static void setAppRegistryKeys() {
+        // Autoruns
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "CheckVirusTotal", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "EulaAccepted", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideEmptyEntries", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideMicrosoftEntries", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideVirusTotalCleanEntries", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideWindowsEntries", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "ScanOnlyPerUserLocations", 0);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "SubmitUnknownImages", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "VerifyCodeSignatures", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns\\VirusTotal", "VirusTotalTermsAccepted", 1);
+
+        // Process Explorer
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "ConfirmKill", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "EulaAccepted", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VerifySignatures", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VirusTotalCheck", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VirusTotalSubmitUnknown", 1);
+        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer\\VirusTotal", "VirusTotalTermsAccepted", 1);
     }
 
     /**
@@ -184,10 +257,14 @@ public class RepairKit {
                 "Performs various fixes and maintenance tasks.", () -> {
                     try {
                         // Deletes any system policies.
-                        deleteSystemPolicies();
+                        if (!outdatedOperatingSystem) {
+                            deleteSystemPolicies();
+                        }
 
                         // Installs 7-Zip and uninstalls other programs.
-                        install7Zip();
+                        if (!safeMode) {
+                            install7Zip();
+                        }
 
                         // Create a new executor
                         ExecutorService executor = Executors.newWorkStealingPool();
@@ -226,7 +303,10 @@ public class RepairKit {
                         // Remove pre-installed bloatware
                         executor.submit(() -> {
                             try {
-                                removeBloatware();
+                                if (!outdatedOperatingSystem) {
+                                    removeBloatware();
+                                }
+
                                 latch.countDown();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -236,7 +316,10 @@ public class RepairKit {
                         // Registry tweaks
                         executor.submit(() -> {
                             try {
-                                runRegistryTweaks();
+                                if (!outdatedOperatingSystem) {
+                                    runRegistryTweaks();
+                                }
+
                                 latch.countDown();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -246,7 +329,10 @@ public class RepairKit {
                         // Settings tweaks
                         executor.submit(() -> {
                             try {
-                                runSettingsTweaks();
+                                if (!outdatedOperatingSystem) {
+                                    runSettingsTweaks();
+                                }
+
                                 latch.countDown();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -256,7 +342,10 @@ public class RepairKit {
                         // Windows Defender tweaks
                         executor.submit(() -> {
                             try {
-                                runWindowsDefenderTweaks();
+                                if (!outdatedOperatingSystem) {
+                                    runWindowsDefenderTweaks();
+                                }
+
                                 latch.countDown();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -294,6 +383,24 @@ public class RepairKit {
         // FanControl Button
         JButton buttonFanControl = createActionButton("FanControl",
                 "Allows control over system fans.", () -> {
+                    if (outdatedOperatingSystem) {
+                        playSound("win.sound.hand");
+                        JOptionPane.showMessageDialog(null,
+                                "FanControl cannot be run on outdated operating systems."
+                                        + "\nPlease upgrade to Windows 10 or 11 to use this feature."
+                                , "Outdated Operating System", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (safeMode) {
+                        playSound("win.sound.hand");
+                        JOptionPane.showMessageDialog(null,
+                                "FanControl cannot be run in Safe Mode."
+                                        + "\nPlease restart your system in normal mode to use this feature."
+                                , "Safe Mode Detected", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
                     try {
                         String fanControlPath = getCommandOutput("wmic process where name=\"FanControl.exe\""
                                 + " get ExecutablePath /value", false, false).toString();
@@ -323,10 +430,22 @@ public class RepairKit {
         addComponents(panelMain, buttonCPUZ);
 
         // TreeSize Button
-        JButton buttonWinDirStat = createAppButton("TreeSize", "Displays system files organized by size.",
-                "TreeSize.zip", "TreeSize.exe", true, tempDirectory.getPath());
-        buttonWinDirStat.setBounds(5, 130, 152, 25);
-        addComponents(panelMain, buttonWinDirStat);
+        JButton buttonTreeSize;
+        if (outdatedOperatingSystem) {
+            buttonTreeSize = createActionButton("TreeSize",
+                    "Displays system files organized by size.", () -> {
+                        playSound("win.sound.hand");
+                        JOptionPane.showMessageDialog(null,
+                                "TreeSize cannot be run on outdated operating systems."
+                                        + "\nPlease upgrade to Windows 10 or 11 to use this feature."
+                                , "Outdated Operating System", JOptionPane.ERROR_MESSAGE);
+                    });
+        } else {
+            buttonTreeSize = createAppButton("TreeSize", "Displays system files organized by size.",
+                    "TreeSize.zip", "TreeSize.exe", true, tempDirectory.getPath());
+        }
+        buttonTreeSize.setBounds(5, 130, 152, 25);
+        addComponents(panelMain, buttonTreeSize);
 
         // Everything Button
         JButton buttonEverything = createAppButton("Everything", "Displays all files on your system.",
@@ -341,14 +460,33 @@ public class RepairKit {
         addComponents(panelMain, buttonHWMonitor);
 
         // Emsisoft Scan Button
-        JButton buttonEmsisoft = createAppButton("Emsisoft Scan", "Scans your system for malware.",
-                "Emsisoft.zip", "Emsisoft.exe", true, tempDirectory.getPath());
+        JButton buttonEmsisoft;
+        if (outdatedOperatingSystem) {
+            buttonEmsisoft = createActionButton("Emsisoft Scan",
+                    "Scans your system for malware.", () -> {
+                        playSound("win.sound.hand");
+                        JOptionPane.showMessageDialog(null,
+                                "Emsisoft Scan cannot be run on outdated operating systems."
+                                        + "\nPlease upgrade to Windows 10 or 11 to use this feature."
+                                , "Outdated Operating System", JOptionPane.ERROR_MESSAGE);
+                    });
+        } else {
+            buttonEmsisoft = createAppButton("Emsisoft Scan", "Scans your system for malware.",
+                    "Emsisoft.zip", "Emsisoft.exe", true, tempDirectory.getPath());
+        }
         buttonEmsisoft.setBounds(162, 160, 152, 25);
         addComponents(panelMain, buttonEmsisoft);
 
+        // Autoruns Button
+        JButton buttonAutoruns = createAppButton("Autoruns", "Displays startup items.",
+                "Autoruns.zip", "Autoruns.exe",
+                true, tempDirectory.getPath());
+        buttonAutoruns.setBounds(5, 220, 152, 25);
+        addComponents(panelMain, buttonAutoruns);
+
         // Process Explorer Button
         JButton buttonProcessExplorer = createAppButton("Process Explorer", "Displays system processes.",
-                "ProcessExplorer.zip", "ProcessExplorer.exe", "/accepteula",
+                "ProcessExplorer.zip", "ProcessExplorer.exe",
                 true, tempDirectory.getPath());
         buttonProcessExplorer.setBounds(162, 220, 152, 25);
         addComponents(panelMain, buttonProcessExplorer);
@@ -372,22 +510,27 @@ public class RepairKit {
         buttonTrafficLight.setBounds(162, 190, 152, 25);
         addComponents(panelMain, buttonTrafficLight);
 
-        // NVCleanstall Button
-        JButton buttonNVCleanstallExtension = createLinkButton("NVCleanstall",
-                "A lightweight NVIDIA graphics card driver updater.",
-                "start https://techpowerup.com/download/techpowerup-nvcleanstall");
-        buttonNVCleanstallExtension.setBounds(5, 220, 152, 25);
-        addComponents(panelMain, buttonNVCleanstallExtension);
-
         // Apps & Features Button
-        JButton buttonAppsFeatures = createLinkButton("Apps & Features",
-                "start ms-settings:appsfeatures");
+        JButton buttonAppsFeatures;
+        if (!outdatedOperatingSystem) {
+            buttonAppsFeatures = createLinkButton("Apps & Features",
+                    "start ms-settings:appsfeatures");
+        } else {
+            buttonAppsFeatures = createLinkButton("Apps & Features",
+                    "appwiz.cpl");
+        }
         buttonAppsFeatures.setBounds(5, 280, 152, 25);
         addComponents(panelMain, buttonAppsFeatures);
 
         // Windows Update Button
-        JButton buttonCheckForUpdates = createLinkButton("Windows Update",
-                "start ms-settings:windowsupdate");
+        JButton buttonCheckForUpdates;
+        if (outdatedOperatingSystem) {
+            buttonCheckForUpdates = createLinkButton("Windows Update",
+                    "control /name Microsoft.WindowsUpdate");
+        } else {
+            buttonCheckForUpdates = createLinkButton("Windows Update",
+                    "start ms-settings:windowsupdate");
+        }
         buttonCheckForUpdates.setBounds(162, 280, 152, 25);
         addComponents(panelMain, buttonCheckForUpdates);
 
@@ -398,8 +541,14 @@ public class RepairKit {
         addComponents(panelMain, buttonTaskManager);
 
         // Windows Defender Button
-        JButton buttonSecurity = createLinkButton("Windows Defender",
-                "start windowsdefender:");
+        JButton buttonSecurity;
+        if (outdatedOperatingSystem) {
+            buttonSecurity = createLinkButton("Windows Defender",
+                    "control /name Microsoft.WindowsDefender");
+        } else {
+            buttonSecurity = createLinkButton("Windows Defender",
+                    "start windowsdefender:");
+        }
         buttonSecurity.setBounds(162, 310, 152, 25);
         addComponents(panelMain, buttonSecurity);
     }
@@ -425,6 +574,9 @@ public class RepairKit {
 
         // Runs CCleaner
         runCommand(tempDirectory + "\\CCleaner\\CCleaner /AUTO", false);
+
+        // Deletes the CCleaner scheduled task
+        runCommand("schtasks /delete /tn \"CCleanerSkipUAC - Windows\" /F", false);
 
         log.info("Cleaned junk files in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
@@ -495,7 +647,7 @@ public class RepairKit {
     private static void install7Zip() {
         log.info("Installing 7-Zip and uninstalling other archivers...");
         Path sevenZipPath = Paths.get("C:\\Program Files\\7-Zip\\7zFM.exe");
-        Path tempPath = Paths.get(tempDirectory + "\\7-Zip.exe");
+        Path tempPath = Paths.get(tempDirectory + "\\7-Zip\\7-Zip.exe");
 
         List<UninstallData> uninstallDataList = Arrays.asList(
                 new UninstallData("C:\\ProgramData\\WinZip", null),
@@ -528,6 +680,7 @@ public class RepairKit {
                             runCommand(data.uninstallCommand, false);
                             runCommand("rd /s /q \"" + data.directoryPath + "\"", true);
                         } else {
+                            playSound("win.sound.hand");
                             JOptionPane.showMessageDialog(null,
                                     "Please manually uninstall the program in " + data.directoryPath + " via Installed Apps.",
                                     "Error Uninstalling", JOptionPane.ERROR_MESSAGE);
@@ -535,15 +688,19 @@ public class RepairKit {
                     }
                 });
 
+                // Deletes Bandizip files.
                 runCommand("del /s /q \"" + System.getenv("APPDATA")
                         + "\\Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar\\Tombstones\\Bandizip.lnk\"", true);
+
+                // Deletes PeaZip files.
                 runCommand("rd /s /q \"%AppData%\\PeaZip", true);
 
                 // Installs 7-Zip.
                 if (shouldInstall7Zip) {
                     if (!Files.exists(tempPath)) {
-                        try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/7-Zip.exe")) {
-                            saveFile(Objects.requireNonNull(input), "7-Zip.exe", false);
+                        try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/7-Zip.zip")) {
+                            saveFile(Objects.requireNonNull(input), "7-Zip.zip", true);
+                            unzipFile(tempDirectory + "\\7-Zip.zip", tempDirectory.getPath() + "\\7-Zip");
                         } catch (IOException ex) {
                             ex.printStackTrace();
                         }
