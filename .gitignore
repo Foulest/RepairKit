@@ -69,12 +69,6 @@ release.properties
 *.msm
 *.msp
 
-# Archive files
-*.7z
-*.rar
-*.tar.gz
-*.zip
-
 # Log and temporary files
 *.ctxt
 *.lnk
