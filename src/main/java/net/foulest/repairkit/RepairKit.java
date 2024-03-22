@@ -525,6 +525,15 @@ public class RepairKit {
         // Windows Update Button
         JButton buttonCheckForUpdates;
         if (outdatedOperatingSystem) {
+            if (safeMode) {
+                playSound("win.sound.hand");
+                JOptionPane.showMessageDialog(null,
+                        "Windows Defender cannot be run in Safe Mode."
+                                + "\nPlease restart your system in normal mode to use this feature."
+                        , "Safe Mode Detected", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             buttonCheckForUpdates = createLinkButton("Windows Update",
                     "control /name Microsoft.WindowsUpdate");
         } else {
@@ -543,6 +552,15 @@ public class RepairKit {
         // Windows Defender Button
         JButton buttonSecurity;
         if (outdatedOperatingSystem) {
+            if (safeMode) {
+                playSound("win.sound.hand");
+                JOptionPane.showMessageDialog(null,
+                        "Windows Defender cannot be run in Safe Mode."
+                                + "\nPlease restart your system in normal mode to use this feature."
+                        , "Safe Mode Detected", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
             buttonSecurity = createLinkButton("Windows Defender",
                     "control /name Microsoft.WindowsDefender");
         } else {
