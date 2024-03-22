@@ -1,0 +1,2 @@
+JAVA_VERSION="11.0.22"
+MODULES="java.base java.datatransfer java.xml java.prefs java.desktop java.logging"
