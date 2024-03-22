@@ -47,6 +47,7 @@ launch4j {
 
     // Java runtime information
     jreMinVersion = '1.8.0'
+    bundledJrePath = 'jre'
     initialHeapSize = 128
     maxHeapSize = 1024
 
@@ -78,8 +79,29 @@ tasks {
         }
     }
 
+    // Zip the launch4j directory for distribution
+    tasks.register('zipLaunch4jDir', Zip) {
+        dependsOn(createExe)
+        from "${projectDir}/build/launch4j"
+        archiveFileName = "${project.name}-${project.version}.zip"
+        destinationDirectory = file("${projectDir}/build")
+    }
+
     createExe {
         dependsOn(shadowJar)
+
+        doLast {
+            // Copy the JRE to the launch4j directory
+            copy {
+                from "${projectDir}/jre"
+                into "${projectDir}/build/launch4j/jre"
+            }
+
+            // Delete the lib folder in the launch4j directory
+            delete "${projectDir}/build/launch4j/lib"
+        }
+
+        finalizedBy(zipLaunch4jDir)
     }
 
     compileJava {
@@ -104,12 +126,6 @@ tasks {
 
     startShadowScripts {
         dependsOn(jar)
-    }
-
-    processResources {
-        filesMatching('**/*.yml') {
-            expand(project.properties)
-        }
     }
 
     tasks.register('sourceJar', Jar) {
