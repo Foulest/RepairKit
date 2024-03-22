@@ -23,7 +23,7 @@ Automatically perform a comprehensive system cleanup and repair, including:
 
 ### 2. **Bundled Software Suite**
 
-Access a curated suite of software with just one click, including:
+Access essential software tools for system maintenance, including:
 
 - **[FanControl](https://getfancontrol.com)**: Configure your system fans and their speeds.
 - **[CPU-Z](https://cpuid.com/softwares/cpu-z.html)**: Identify your system hardware details.
@@ -41,7 +41,7 @@ Access a curated suite of software with just one click, including:
 
 ### 3. **Quick Windows Access Buttons**
 
-Quickly access essential Windows utilities like:
+Quickly access important Windows utilities like:
 
 - Apps & Features
 - Windows Update
