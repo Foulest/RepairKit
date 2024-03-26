@@ -159,8 +159,6 @@ public class RepairKit {
         // Clears the files used by RepairKit on shutdown.
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             runCommand("rd /s /q \"" + tempDirectory.getPath() + "\"", false);
-            runCommand("del /s /q \"" + System.getenv("APPDATA")
-                    + "\\Microsoft\\Windows\\Start Menu\\Programs\\TreeSize.lnk\"", false);
         }));
     }
 
