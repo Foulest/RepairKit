@@ -95,34 +95,6 @@ public class SwingUtil {
     }
 
     /**
-     * Creates a link button without tooltip text.
-     *
-     * @param buttonText Text to display on the button.
-     * @param command    Command to run when the button is clicked.
-     */
-    public static @NotNull JButton createLinkButton(String buttonText, String command) {
-        JButton button = new JButton(buttonText);
-        button.setToolTipText("");
-        button.setBackground(new Color(200, 200, 200));
-        button.addActionListener(actionEvent -> runCommand(command, true));
-        return button;
-    }
-
-    /**
-     * Creates a link button.
-     *
-     * @param buttonText  Text to display on the button.
-     * @param toolTipText Text to display when hovering over the button.
-     */
-    public static @NotNull JButton createLinkButton(String buttonText, String toolTipText, String command) {
-        JButton button = new JButton(buttonText);
-        button.setToolTipText(toolTipText);
-        button.setBackground(new Color(200, 200, 200));
-        button.addActionListener(actionEvent -> runCommand(command, true));
-        return button;
-    }
-
-    /**
      * Creates a label.
      *
      * @param labelText Text to display on the label.
@@ -166,15 +138,17 @@ public class SwingUtil {
                                          String launchArgs, boolean isZipped, String extractionPath) {
         Path path = Paths.get(extractionPath, appExecutable);
 
-        if (!Files.exists(path)) {
-            try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/" + appResource)) {
-                saveFile(Objects.requireNonNull(input), appResource, false);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+        synchronized (RepairKit.class) {
+            if (!Files.exists(path)) {
+                try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/" + appResource)) {
+                    saveFile(Objects.requireNonNull(input), appResource, false);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
 
-            if (isZipped) {
-                unzipFile(tempDirectory + "\\" + appResource, extractionPath);
+                if (isZipped) {
+                    unzipFile(tempDirectory + "\\" + appResource, extractionPath);
+                }
             }
         }
 

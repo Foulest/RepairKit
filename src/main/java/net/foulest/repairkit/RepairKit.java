@@ -20,8 +20,7 @@ import java.util.concurrent.Executors;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
-import static net.foulest.repairkit.util.CommandUtil.runCommand;
+import static net.foulest.repairkit.util.CommandUtil.*;
 import static net.foulest.repairkit.util.FileUtil.*;
 import static net.foulest.repairkit.util.ProcessUtil.isProcessRunning;
 import static net.foulest.repairkit.util.RegistryUtil.*;
@@ -109,7 +108,8 @@ public class RepairKit {
         }
 
         // Checks if the system is booting in Safe Mode.
-        if (getCommandOutput("wmic COMPUTERSYSTEM GET BootupState", false, false).toString().contains("safe")) {
+        if (getCommandOutput("wmic COMPUTERSYSTEM GET BootupState",
+                false, false).toString().contains("safe")) {
             playSound("win.sound.hand");
             JOptionPane.showMessageDialog(null,
                     "Your system is booting in Safe Mode."
@@ -157,9 +157,11 @@ public class RepairKit {
      */
     private static void setupShutdownHook() {
         // Clears the files used by RepairKit on shutdown.
-        Runtime.getRuntime().addShutdownHook(new Thread(() ->
-                runCommand("rd /s /q " + tempDirectory.getPath(), false))
-        );
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            runCommand("rd /s /q \"" + tempDirectory.getPath() + "\"", false);
+            runCommand("del /s /q \"" + System.getenv("APPDATA")
+                    + "\\Microsoft\\Windows\\Start Menu\\Programs\\TreeSize.lnk\"", false);
+        }));
     }
 
     /**
@@ -216,8 +218,8 @@ public class RepairKit {
         setMainPanel();
         setLabels();
         setRepairButtons();
-        setAppButtons();
-        setLinkButtons();
+        setUsefulProgramsButtons();
+        setSystemShortcutButtons();
     }
 
     /**
@@ -365,7 +367,9 @@ public class RepairKit {
 
                         // Displays a message dialog
                         playSound("win.sound.exclamation");
-                        JOptionPane.showMessageDialog(null, "System issues repaired successfully.", "Finished", JOptionPane.QUESTION_MESSAGE);
+                        JOptionPane.showMessageDialog(null,
+                                "System issues repaired successfully.",
+                                "Finished", JOptionPane.QUESTION_MESSAGE);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -377,9 +381,45 @@ public class RepairKit {
     }
 
     /**
-     * Sets the program's app buttons.
+     * Sets the program's useful programs buttons.
      */
-    private static void setAppButtons() {
+    private static void setUsefulProgramsButtons() {
+        // CPU-Z Button
+        JButton buttonCPUZ = createAppButton("CPU-Z", "Displays system hardware information.",
+                "CPU-Z.zip", "CPU-Z.exe", true, tempDirectory.getPath());
+        buttonCPUZ.setBounds(5, 100, 152, 25);
+        addComponents(panelMain, buttonCPUZ);
+
+        // HWMonitor Button
+        JButton buttonHWMonitor = createAppButton("HWMonitor", "Displays system hardware information.",
+                "HWMonitor.zip", "HWMonitor.exe", true, tempDirectory.getPath());
+        buttonHWMonitor.setBounds(162, 100, 152, 25);
+        addComponents(panelMain, buttonHWMonitor);
+
+        // TreeSize Button
+        JButton buttonTreeSize;
+        if (outdatedOperatingSystem) {
+            buttonTreeSize = createActionButton("TreeSize",
+                    "Displays system files organized by size.", () -> {
+                        playSound("win.sound.hand");
+                        JOptionPane.showMessageDialog(null,
+                                "TreeSize cannot be run on outdated operating systems."
+                                        + "\nPlease upgrade to Windows 10 or 11 to use this feature."
+                                , "Outdated Operating System", JOptionPane.ERROR_MESSAGE);
+                    });
+        } else {
+            buttonTreeSize = createAppButton("TreeSize", "Displays system files organized by size.",
+                    "TreeSize.zip", "TreeSize.exe", true, tempDirectory.getPath());
+        }
+        buttonTreeSize.setBounds(5, 130, 152, 25);
+        addComponents(panelMain, buttonTreeSize);
+
+        // Everything Button
+        JButton buttonEverything = createAppButton("Everything", "Displays all files on your system.",
+                "Everything.zip", "Everything.exe", true, tempDirectory.getPath());
+        buttonEverything.setBounds(162, 130, 152, 25);
+        addComponents(panelMain, buttonEverything);
+
         // FanControl Button
         JButton buttonFanControl = createActionButton("FanControl",
                 "Allows control over system fans.", () -> {
@@ -420,44 +460,16 @@ public class RepairKit {
                     }
                 });
         buttonFanControl.setBackground(new Color(200, 200, 200));
-        buttonFanControl.setBounds(5, 100, 152, 25);
+        buttonFanControl.setBounds(5, 160, 152, 25);
         addComponents(panelMain, buttonFanControl);
 
-        // CPU-Z Button
-        JButton buttonCPUZ = createAppButton("CPU-Z", "Displays system hardware information.",
-                "CPU-Z.zip", "CPU-Z.exe", true, tempDirectory.getPath());
-        buttonCPUZ.setBounds(162, 100, 152, 25);
-        addComponents(panelMain, buttonCPUZ);
-
-        // TreeSize Button
-        JButton buttonTreeSize;
-        if (outdatedOperatingSystem) {
-            buttonTreeSize = createActionButton("TreeSize",
-                    "Displays system files organized by size.", () -> {
-                        playSound("win.sound.hand");
-                        JOptionPane.showMessageDialog(null,
-                                "TreeSize cannot be run on outdated operating systems."
-                                        + "\nPlease upgrade to Windows 10 or 11 to use this feature."
-                                , "Outdated Operating System", JOptionPane.ERROR_MESSAGE);
-                    });
-        } else {
-            buttonTreeSize = createAppButton("TreeSize", "Displays system files organized by size.",
-                    "TreeSize.zip", "TreeSize.exe", true, tempDirectory.getPath());
-        }
-        buttonTreeSize.setBounds(5, 130, 152, 25);
-        addComponents(panelMain, buttonTreeSize);
-
-        // Everything Button
-        JButton buttonEverything = createAppButton("Everything", "Displays all files on your system.",
-                "Everything.zip", "Everything.exe", true, tempDirectory.getPath());
-        buttonEverything.setBounds(162, 130, 152, 25);
-        addComponents(panelMain, buttonEverything);
-
-        // HWMonitor Button
-        JButton buttonHWMonitor = createAppButton("HWMonitor", "Displays system hardware information.",
-                "HWMonitor.zip", "HWMonitor.exe", true, tempDirectory.getPath());
-        buttonHWMonitor.setBounds(5, 160, 152, 25);
-        addComponents(panelMain, buttonHWMonitor);
+        // NVCleanstall Button
+        JButton buttonNVCleanstall = createActionButton("NVCleanstall",
+                "A lightweight NVIDIA graphics card driver updater.", () -> {
+                    runCommand("start https://techpowerup.com/download/techpowerup-nvcleanstall", false);
+                });
+        buttonNVCleanstall.setBounds(162, 160, 152, 25);
+        addComponents(panelMain, buttonNVCleanstall);
 
         // Emsisoft Scan Button
         JButton buttonEmsisoft;
@@ -474,8 +486,17 @@ public class RepairKit {
             buttonEmsisoft = createAppButton("Emsisoft Scan", "Scans your system for malware.",
                     "Emsisoft.zip", "Emsisoft.exe", true, tempDirectory.getPath());
         }
-        buttonEmsisoft.setBounds(162, 160, 152, 25);
+        buttonEmsisoft.setBounds(5, 190, 152, 25);
         addComponents(panelMain, buttonEmsisoft);
+
+        // Browser Extensions Button
+        JButton buttonBrowserExtensions = createActionButton("Browser Extensions",
+                "Opens links to recommended browser extensions.", () -> {
+                    runCommand("start https://ublockorigin.com", false);
+                    runCommand("start https://bitdefender.com/solutions/trafficlight.html", false);
+                });
+        buttonBrowserExtensions.setBounds(162, 190, 152, 25);
+        addComponents(panelMain, buttonBrowserExtensions);
 
         // Autoruns Button
         JButton buttonAutoruns = createAppButton("Autoruns", "Displays startup items.",
@@ -493,82 +514,70 @@ public class RepairKit {
     }
 
     /**
-     * Sets the program's link buttons.
+     * Sets the system shortcut buttons.
      */
-    private static void setLinkButtons() {
-        // uBlock Origin Button
-        JButton buttonUBlockOrigin = createLinkButton("uBlock Origin",
-                "Blocks ads and trackers across all websites.",
-                "start https://ublockorigin.com");
-        buttonUBlockOrigin.setBounds(5, 190, 152, 25);
-        addComponents(panelMain, buttonUBlockOrigin);
-
-        // TrafficLight Extension Button
-        JButton buttonTrafficLight = createLinkButton("TrafficLight",
-                "Blocks malicious websites and phishing attacks.",
-                "start https://bitdefender.com/solutions/trafficlight.html");
-        buttonTrafficLight.setBounds(162, 190, 152, 25);
-        addComponents(panelMain, buttonTrafficLight);
-
+    private static void setSystemShortcutButtons() {
         // Apps & Features Button
-        JButton buttonAppsFeatures;
-        if (!outdatedOperatingSystem) {
-            buttonAppsFeatures = createLinkButton("Apps & Features",
-                    "start ms-settings:appsfeatures");
-        } else {
-            buttonAppsFeatures = createLinkButton("Apps & Features",
-                    "appwiz.cpl");
-        }
+        JButton buttonAppsFeatures = createActionButton("Apps & Features",
+                "Opens the Apps & Features settings.", () -> {
+                    if (!outdatedOperatingSystem) {
+                        runCommand("start ms-settings:appsfeatures", false);
+                    } else {
+                        runCommand("appwiz.cpl", false);
+                    }
+                });
         buttonAppsFeatures.setBounds(5, 280, 152, 25);
         addComponents(panelMain, buttonAppsFeatures);
 
         // Windows Update Button
-        JButton buttonCheckForUpdates;
-        if (outdatedOperatingSystem) {
-            if (safeMode) {
-                playSound("win.sound.hand");
-                JOptionPane.showMessageDialog(null,
-                        "Windows Defender cannot be run in Safe Mode."
-                                + "\nPlease restart your system in normal mode to use this feature."
-                        , "Safe Mode Detected", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        JButton buttonCheckForUpdates = createActionButton("Check for Updates",
+                "Checks for Windows updates.", () -> {
+                    if (outdatedOperatingSystem) {
+                        if (safeMode) {
+                            playSound("win.sound.hand");
+                            JOptionPane.showMessageDialog(null,
+                                    "Windows Update cannot be run in Safe Mode."
+                                            + "\nPlease restart your system in normal mode to use this feature."
+                                    , "Safe Mode Detected", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
 
-            buttonCheckForUpdates = createLinkButton("Windows Update",
-                    "control /name Microsoft.WindowsUpdate");
-        } else {
-            buttonCheckForUpdates = createLinkButton("Windows Update",
-                    "start ms-settings:windowsupdate");
-        }
+                        runCommand("control /name Microsoft.WindowsUpdate", false);
+                    } else {
+                        runCommand("start ms-settings:windowsupdate", false);
+                    }
+                });
         buttonCheckForUpdates.setBounds(162, 280, 152, 25);
         addComponents(panelMain, buttonCheckForUpdates);
 
         // Task Manager Button
-        JButton buttonTaskManager = createLinkButton("Task Manager",
-                "taskmgr");
+        JButton buttonTaskManager = createActionButton("Task Manager",
+                "Opens the Task Manager.", () -> {
+                    runCommand("taskmgr", false);
+                });
         buttonTaskManager.setBounds(5, 310, 152, 25);
         addComponents(panelMain, buttonTaskManager);
 
         // Windows Defender Button
-        JButton buttonSecurity;
-        if (outdatedOperatingSystem) {
-            if (safeMode) {
-                playSound("win.sound.hand");
-                JOptionPane.showMessageDialog(null,
-                        "Windows Defender cannot be run in Safe Mode."
-                                + "\nPlease restart your system in normal mode to use this feature."
-                        , "Safe Mode Detected", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        JButton buttonWindowsDefender = createActionButton("Windows Defender",
+                "Opens Windows Defender.", () -> {
+                    if (outdatedOperatingSystem) {
+                        if (safeMode) {
+                            playSound("win.sound.hand");
+                            JOptionPane.showMessageDialog(null,
+                                    "Windows Defender cannot be run in Safe Mode."
+                                            + "\nPlease restart your system in normal mode to use this feature."
+                                    , "Safe Mode Detected", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
 
-            buttonSecurity = createLinkButton("Windows Defender",
-                    "control /name Microsoft.WindowsDefender");
-        } else {
-            buttonSecurity = createLinkButton("Windows Defender",
-                    "start windowsdefender:");
-        }
-        buttonSecurity.setBounds(162, 310, 152, 25);
-        addComponents(panelMain, buttonSecurity);
+                        runCommand("control /name Microsoft.WindowsDefender", false);
+                    } else {
+                        runCommand("start windowsdefender:", false);
+                    }
+                });
+        buttonWindowsDefender.setBounds(162, 310, 152, 25);
+        addComponents(panelMain, buttonWindowsDefender);
     }
 
     /**
@@ -578,23 +587,21 @@ public class RepairKit {
         log.info("Cleaning junk files...");
         long startTime = System.currentTimeMillis();
 
-        // Kills CCleaner
+        // Kills any existing CCleaner processes.
         runCommand("taskkill /F /IM CCleaner.exe", false);
         runCommand("rd /s /q \"" + tempDirectory + "\\CCleaner\"", false);
 
-        // Extracts CCleaner
+        // Extracts and runs CCleaner.
         try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/CCleaner.zip")) {
             saveFile(Objects.requireNonNull(input), "CCleaner.zip", true);
             unzipFile(tempDirectory + "\\CCleaner.zip", tempDirectory.getPath() + "\\CCleaner");
+            runCommand(tempDirectory + "\\CCleaner\\CCleaner /AUTO", false);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
 
-        // Runs CCleaner
-        runCommand(tempDirectory + "\\CCleaner\\CCleaner /AUTO", false);
-
-        // Deletes the CCleaner scheduled task
-        runCommand("schtasks /delete /tn \"CCleanerSkipUAC - Windows\" /F", false);
+        // Deletes the CCleaner scheduled task.
+        runPowerShellCommand("Get-ScheduledTask -TaskName \"CCleanerSkipUAC - *\" | Unregister-ScheduledTask -Confirm:$false", true);
 
         log.info("Cleaned junk files in " + (System.currentTimeMillis() - startTime) + "ms.");
     }
@@ -711,7 +718,7 @@ public class RepairKit {
                         + "\\Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar\\Tombstones\\Bandizip.lnk\"", true);
 
                 // Deletes PeaZip files.
-                runCommand("rd /s /q \"%AppData%\\PeaZip", true);
+                runCommand("rd /s /q \"" + System.getenv("APPDATA") + "\\PeaZip", true);
 
                 // Installs 7-Zip.
                 if (shouldInstall7Zip) {
@@ -796,7 +803,6 @@ public class RepairKit {
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\MediaPlayer\\Preferences", "UsageTracking", 0);
             setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\'DeviceCensus.exe'", "Debugger", "%windir%\\System32\\taskkill.exe");
             setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\'CompatTelRunner.exe'", "Debugger", "%windir%\\System32\\taskkill.exe");
-            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\EdgeUpdate", "DoNotUpdateToEdgeWithChromium", 1);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Remote Assistance", "fAllowToGetHelp", 0);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Remote Assistance", "fAllowFullControl", 0);
             latch.countDown();
@@ -921,8 +927,10 @@ public class RepairKit {
             setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Virtualization", "MinVmVersionForCpuBasedMitigations", "1.0");
 
             if (cpuName.contains("Intel")) {
-                setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverride", 0);
+                setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverride", 8);
             } else if (cpuName.contains("AMD")) {
+                setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverride", 72);
+            } else if (cpuName.contains("ARM")) {
                 setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverride", 64);
             }
             latch.countDown();
@@ -1089,8 +1097,7 @@ public class RepairKit {
     private static void removeBloatware() {
         log.info("Removing bloatware...");
         long startTime = System.currentTimeMillis();
-        String command = "PowerShell -ExecutionPolicy Unrestricted -Command \"(Get-AppxPackage).ForEach({ $_.Name })\"";
-        List<String> output = getCommandOutput(command, false, false);
+        List<String> output = getPowerShellCommandOutput("(Get-AppxPackage).ForEach({ $_.Name })", false, false);
         Set<String> installedPackages = new HashSet<>(output);
 
         String[] appPackages = {
@@ -1427,8 +1434,7 @@ public class RepairKit {
         for (String appPackage : packagesToRemove) {
             executor.submit(() -> {
                 try {
-                    runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Get-AppxPackage '"
-                            + appPackage + "' | Remove-AppxPackage\"", false);
+                    runPowerShellCommand("Get-AppxPackage '" + appPackage + "' | Remove-AppxPackage", false);
                 } finally {
                     latch.countDown();
                 }
@@ -1531,9 +1537,8 @@ public class RepairKit {
                 };
 
                 for (String feature : features) {
-                    if (getCommandOutput("PowerShell -ExecutionPolicy Unrestricted -Command"
-                            + " \"Get-WindowsOptionalFeature -FeatureName '" + feature + "' -Online | Select-Object -Property"
-                            + " State\"", false, false).toString().contains("Enabled")) {
+                    if (getPowerShellCommandOutput("Get-WindowsOptionalFeature -FeatureName '" + feature
+                            + "' -Online | Select-Object -Property State", false, false).toString().contains("Enabled")) {
                         runCommand("DISM /Online /Disable-Feature /FeatureName:\"" + feature + "\" /NoRestart", false);
                     }
                 }
@@ -1548,9 +1553,8 @@ public class RepairKit {
 
                 // Check if the capability (any version) is enabled
                 for (String capability : capabilities) {
-                    if (getCommandOutput("PowerShell -ExecutionPolicy Unrestricted -Command"
-                            + " \"Get-WindowsCapability -Name '" + capability + "' -Online | Where-Object State"
-                            + " -eq 'Installed'\"", false, false).toString().contains("Installed")) {
+                    if (getPowerShellCommandOutput("Get-WindowsCapability -Name '" + capability
+                            + "' -Online | Where-Object State -eq 'Installed'", false, false).toString().contains("Installed")) {
                         runCommand("DISM /Online /Remove-Capability /CapabilityName:\"" + capability + "\" /NoRestart", false);
                     }
                 }
@@ -1583,14 +1587,15 @@ public class RepairKit {
 
         executor.submit(() -> {
             // Sets Windows Firewall to recommended settings
-            runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-NetFirewallProfile"
-                    + " -Profile Domain,Private,Public -Enabled True\"", false);
+            runPowerShellCommand("Set-NetFirewallProfile"
+                    + " -Profile Domain,Private,Public"
+                    + " -Enabled True", false);
             latch.countDown();
         });
 
         executor.submit(() -> {
             // Sets Windows Defender to recommended settings
-            runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Set-MpPreference"
+            runPowerShellCommand("Set-MpPreference"
                     + " -DisableRealtimeMonitoring 0"
                     + " -MAPSReporting 2"
                     + " -SubmitSamplesConsent 3"
@@ -1614,8 +1619,7 @@ public class RepairKit {
                     + " -LowThreatDefaultAction Block"
                     + " -ModerateThreatDefaultAction Clean"
                     + " -HighThreatDefaultAction Quarantine"
-                    + " -SevereThreatDefaultAction Remove"
-                    + "\"", false);
+                    + " -SevereThreatDefaultAction Remove", false);
             latch.countDown();
         });
 
@@ -1632,7 +1636,7 @@ public class RepairKit {
             // ASR: Block untrusted and unsigned processes that run from USB
             // ASR: Block Win32 API calls from Office macros
             // ASR: Use advanced protection against ransomware
-            runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+            runPowerShellCommand("Add-MpPreference"
                     + " -AttackSurfaceReductionRules_Ids "
                     + "7674ba52-37eb-4a4f-a9a1-f0f9a1619a2c,"
                     + "d4f940ab-401b-4efc-aadc-ad5f3c50688a,"
@@ -1646,7 +1650,7 @@ public class RepairKit {
                     + "b2b3f03d-6a65-4f7b-a9c7-1c7ef74a9ba4,"
                     + "92e97fa1-2edf-4476-bdd6-9dd0b4dddc7b,"
                     + "c1db55ab-c21a-4637-bb3f-a12568109d35"
-                    + " -AttackSurfaceReductionRules_Actions Enabled\"", false);
+                    + " -AttackSurfaceReductionRules_Actions Enabled", false);
             latch.countDown();
         });
 
@@ -1654,23 +1658,23 @@ public class RepairKit {
             // ASR: Don't block credential stealing from the Windows local security authority subsystem
             // ASR: Don't block executable files from running unless they meet a prevalence, age, or trusted list criterion
             // ASR: Don't block process creations originating from PSExec and WMI commands
-            runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+            runPowerShellCommand("Add-MpPreference"
                     + " -AttackSurfaceReductionRules_Ids "
                     + "9e6c4e1f-7d60-472f-ba1a-a39ef669e4b2,"
                     + "01443614-cd74-433a-b99e-2ecdc07bfc25,"
                     + "d1e49aac-8f56-4280-b9ba-993a6d77406c"
-                    + " -AttackSurfaceReductionRules_Actions Disabled\"", false);
+                    + " -AttackSurfaceReductionRules_Actions Disabled", false);
             latch.countDown();
         });
 
         executor.submit(() -> {
             // ASR: Warn against abuse of exploited vulnerable signed drivers
             // ASR: Warn against Webshell creation for Servers
-            runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"Add-MpPreference"
+            runPowerShellCommand("Add-MpPreference"
                     + " -AttackSurfaceReductionRules_Ids "
                     + "56a863a9-875e-4185-98a7-b882c64b5ce5,"
                     + "a8f5898e-1dc8-49a9-9878-85004b8a61e6"
-                    + " -AttackSurfaceReductionRules_Actions Warn\"", false);
+                    + " -AttackSurfaceReductionRules_Actions Warn", false);
             latch.countDown();
         });
 

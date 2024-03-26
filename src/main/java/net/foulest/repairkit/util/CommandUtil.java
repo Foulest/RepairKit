@@ -40,27 +40,6 @@ public class CommandUtil {
     }
 
     /**
-     * Runs a command and returns the output.
-     *
-     * @param command Command to run.
-     * @param display Whether to display the output.
-     * @param async   Whether to run the command asynchronously.
-     * @return The output of the command.
-     */
-    public static @NotNull List<String> getCommandOutput(String command, boolean display, boolean async) {
-        List<String> output = new ArrayList<>();
-
-        runCommand(command, async, line -> {
-            output.add(line);
-
-            if (display && !line.trim().isEmpty()) {
-                System.out.println(line);
-            }
-        });
-        return output.isEmpty() ? Collections.singletonList("") : output;
-    }
-
-    /**
      * Runs a command.
      *
      * @param command      Command to run.
@@ -98,8 +77,71 @@ public class CommandUtil {
         }
     }
 
+    /**
+     * Runs a PowerShell command.
+     *
+     * @param command Command to run.
+     * @param async   Whether to run the command asynchronously.
+     */
+    public static void runPowerShellCommand(String command, boolean async) {
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"" + command + "\"", async);
+    }
+
+    /**
+     * Runs a PowerShell command.
+     *
+     * @param command Command to run.
+     * @param async   Whether to run the command asynchronously.
+     */
+    public static void runPowerShellCommand(String command, boolean async,
+                                            LineConsumer lineConsumer) {
+        runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"" + command + "\"", async, lineConsumer);
+    }
+
+    /**
+     * Runs a command and returns the output.
+     *
+     * @param command The command to run.
+     * @param display Whether to display the output.
+     * @param async   Whether to run the command asynchronously.
+     * @return The output of the command.
+     */
+    public static @NotNull List<String> getCommandOutput(String command, boolean display, boolean async) {
+        List<String> output = new ArrayList<>();
+
+        runCommand(command, async, line -> {
+            output.add(line);
+
+            if (display && !line.trim().isEmpty()) {
+                System.out.println(line);
+            }
+        });
+        return output.isEmpty() ? Collections.singletonList("") : output;
+    }
+
+    /**
+     * Runs a PowerShell command and returns the output.
+     *
+     * @param command The command to run.
+     * @param display Whether to display the output.
+     * @param async   Whether to run the command asynchronously.
+     * @return The output of the command.
+     */
+    public static @NotNull List<String> getPowerShellCommandOutput(String command, boolean display, boolean async) {
+        List<String> output = new ArrayList<>();
+
+        runPowerShellCommand(command, async, line -> {
+            output.add(line);
+
+            if (display && !line.trim().isEmpty()) {
+                System.out.println(line);
+            }
+        });
+        return output.isEmpty() ? Collections.singletonList("") : output;
+    }
+
     @FunctionalInterface
-    private interface LineConsumer {
+    public interface LineConsumer {
 
         void consume(String line);
     }
