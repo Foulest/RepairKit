@@ -14,7 +14,6 @@
 
 Automatically perform a comprehensive system cleanup and repair, including:
 
-- Cleaning junk files with **[CCleaner](https://ccleaner.com)**.
 - Adjusting Windows & Defender settings.
 - Scanning for malware with Windows Defender.
 - Tweaking Windows services and registry.

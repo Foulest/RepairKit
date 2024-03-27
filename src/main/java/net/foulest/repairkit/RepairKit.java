@@ -2,18 +2,14 @@ package net.foulest.repairkit;
 
 import com.sun.jna.platform.win32.WinReg;
 import lombok.extern.java.Log;
-import net.foulest.repairkit.util.type.UninstallData;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
-import java.util.*;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -21,7 +17,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static net.foulest.repairkit.util.CommandUtil.*;
-import static net.foulest.repairkit.util.FileUtil.*;
+import static net.foulest.repairkit.util.FileUtil.tempDirectory;
 import static net.foulest.repairkit.util.ProcessUtil.isProcessRunning;
 import static net.foulest.repairkit.util.RegistryUtil.*;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
@@ -54,9 +50,9 @@ public class RepairKit {
         // Deletes pre-existing RepairKit files.
         runCommand("rd /s /q " + tempDirectory.getPath(), false);
 
-        // Deletes RepairKit files on shutdown.
+        // Deletes all temporary files on shutdown.
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            runCommand("rd /s /q \"" + tempDirectory.getPath() + "\"", false);
+            runCommand("rd /s /q \"" + System.getenv("TEMP") + "\"", false);
         }));
 
         // Sets up necessary app registry keys.
@@ -233,29 +229,21 @@ public class RepairKit {
         JButton buttonRepairs = createActionButton("Run Automatic Repairs",
                 "Performs various fixes and maintenance tasks.", () -> {
                     try {
-                        // Deletes any system policies.
-                        if (!outdatedOperatingSystem) {
-                            deleteSystemPolicies();
+                        if (outdatedOperatingSystem) {
+                            playSound("win.sound.hand");
+                            JOptionPane.showMessageDialog(null,
+                                    "Automatic repairs cannot be run on outdated operating systems."
+                                            + "\nPlease upgrade to Windows 10 or 11 to use this feature."
+                                    , "Outdated Operating System", JOptionPane.ERROR_MESSAGE);
+                            return;
                         }
 
-                        // Installs 7-Zip and uninstalls other programs.
-                        if (!safeMode) {
-                            install7Zip();
-                        }
+                        // Deletes any system policies.
+                        deleteSystemPolicies();
 
                         // Create a new executor
                         ExecutorService executor = Executors.newWorkStealingPool();
-                        CountDownLatch latch = new CountDownLatch(7);
-
-                        // Clean junk files
-                        executor.submit(() -> {
-                            try {
-                                cleanJunkFiles();
-                                latch.countDown();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                        });
+                        CountDownLatch latch = new CountDownLatch(6);
 
                         // Repair WMI repository
                         executor.submit(() -> {
@@ -280,9 +268,7 @@ public class RepairKit {
                         // Remove pre-installed bloatware
                         executor.submit(() -> {
                             try {
-                                if (!outdatedOperatingSystem) {
-                                    removeBloatware();
-                                }
+                                removeBloatware();
                                 latch.countDown();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -292,9 +278,7 @@ public class RepairKit {
                         // Registry tweaks
                         executor.submit(() -> {
                             try {
-                                if (!outdatedOperatingSystem) {
-                                    runRegistryTweaks();
-                                }
+                                runRegistryTweaks();
                                 latch.countDown();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -304,9 +288,7 @@ public class RepairKit {
                         // Settings tweaks
                         executor.submit(() -> {
                             try {
-                                if (!outdatedOperatingSystem) {
-                                    runSettingsTweaks();
-                                }
+                                runSettingsTweaks();
                                 latch.countDown();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -316,9 +298,7 @@ public class RepairKit {
                         // Windows Defender tweaks
                         executor.submit(() -> {
                             try {
-                                if (!outdatedOperatingSystem) {
-                                    runWindowsDefenderTweaks();
-                                }
+                                runWindowsDefenderTweaks();
                                 latch.countDown();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -552,32 +532,6 @@ public class RepairKit {
     }
 
     /**
-     * Cleans junk files using CCleaner.
-     */
-    private static void cleanJunkFiles() {
-        log.info("Cleaning junk files...");
-        long startTime = System.currentTimeMillis();
-
-        // Kills any existing CCleaner processes.
-        runCommand("taskkill /F /IM CCleaner.exe", false);
-        runCommand("rd /s /q \"" + tempDirectory + "\\CCleaner\"", false);
-
-        // Extracts and runs CCleaner.
-        try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/CCleaner.zip")) {
-            saveFile(Objects.requireNonNull(input), "CCleaner.zip", true);
-            unzipFile(tempDirectory + "\\CCleaner.zip", tempDirectory.getPath() + "\\CCleaner");
-            runCommand(tempDirectory + "\\CCleaner\\CCleaner /AUTO", false);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        // Deletes the CCleaner scheduled task.
-        runPowerShellCommand("Get-ScheduledTask -TaskName \"CCleanerSkipUAC - *\" | Unregister-ScheduledTask -Confirm:$false", true);
-
-        log.info("Cleaned junk files in " + (System.currentTimeMillis() - startTime) + "ms.");
-    }
-
-    /**
      * Deletes any existing system policies.
      */
     private static void deleteSystemPolicies() {
@@ -597,7 +551,7 @@ public class RepairKit {
             deleteRegistryValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\NonEnum", "{645FF040-5081-101B-9F08-00AA002F954E}");
             deleteRegistryValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", "DisableRegistryTools");
             deleteRegistryValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System", "DisableTaskMgr");
-            deleteRegistryValue(WinReg.HKEY_CURRENT_USER, "Software\\Microsoft\\Windows\\System", "DisableCMD");
+            deleteRegistryValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\System", "DisableCMD");
             deleteRegistryValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "DisallowCpl");
             deleteRegistryValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "NoFolderOptions");
             deleteRegistryValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows NT\\System Restore", "DisableConfig");
@@ -638,77 +592,6 @@ public class RepairKit {
     }
 
     /**
-     * Installs 7-Zip and uninstalls other archivers.
-     */
-    private static void install7Zip() {
-        log.info("Installing 7-Zip and uninstalling other archivers...");
-        Path sevenZipPath = Paths.get("C:\\Program Files\\7-Zip\\7zFM.exe");
-        Path tempPath = Paths.get(tempDirectory + "\\7-Zip\\7-Zip.exe");
-
-        List<UninstallData> uninstallDataList = Arrays.asList(
-                new UninstallData("C:\\ProgramData\\WinZip", null),
-                new UninstallData("C:\\Program Files (x86)\\CAM Development", "\"C:\\Program Files (x86)\\CAM Development\\CAM UnZip 5\\Setup\\unins000.exe\""),
-                new UninstallData("C:\\Program Files\\PowerArchiver", "\"C:\\Program Files\\PowerArchiver\\unins000.exe\""),
-                new UninstallData("C:\\Program Files (x86)\\IZArc", "\"C:\\Program Files (x86)\\IZArc\\unins000.exe\""),
-                new UninstallData("C:\\Program Files (x86)\\ZipGenius 6", "\"C:\\Program Files (x86)\\ZipGenius 6\\unins000.exe\""),
-                new UninstallData("C:\\Program Files\\WinRAR", "\"C:\\Program Files\\WinRAR\\uninstall.exe\" /S"),
-                new UninstallData("C:\\Program Files (x86)\\WinRAR", "\"C:\\Program Files (x86)\\WinRAR\\uninstall.exe\" /S"),
-                new UninstallData("C:\\Program Files\\Bandizip", "\"C:\\Program Files\\Bandizip\\uninstall\" /S"),
-                new UninstallData("C:\\Program Files\\PeaZip", "\"C:\\Program Files\\PeaZip\\unins000.exe\""),
-                new UninstallData("C:\\Program Files (x86)\\NCH Software\\ExpressZip", null),
-                new UninstallData("C:\\Program Files (x86)\\B1 Free Archiver", null),
-                new UninstallData(System.getenv("LOCALAPPDATA") + "\\Trend Micro\\UnzipOne", System.getenv("LOCALAPPDATA") + "\\Trend Micro\\UnzipOne\\unins000.exe\"")
-        );
-
-        boolean shouldInstall7Zip = !Files.exists(sevenZipPath);
-        boolean shouldUninstallOthers = uninstallDataList.stream()
-                .anyMatch(data -> Files.exists(Paths.get(data.directoryPath)));
-
-        if (shouldInstall7Zip || shouldUninstallOthers) {
-            int choice = JOptionPane.showConfirmDialog(null,
-                    "Install 7-Zip and remove other .zip programs? (Recommended)", "Install 7-Zip",
-                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-            if (choice == JOptionPane.YES_OPTION) {
-                uninstallDataList.forEach(data -> {
-                    if (Files.exists(Paths.get(data.directoryPath))) {
-                        if (data.uninstallCommand != null) {
-                            runCommand(data.uninstallCommand, false);
-                            runCommand("rd /s /q \"" + data.directoryPath + "\"", true);
-                        } else {
-                            playSound("win.sound.hand");
-                            JOptionPane.showMessageDialog(null,
-                                    "Please manually uninstall the program in " + data.directoryPath + " via Installed Apps.",
-                                    "Error Uninstalling", JOptionPane.ERROR_MESSAGE);
-                        }
-                    }
-                });
-
-                // Deletes Bandizip files.
-                runCommand("del /s /q \"" + System.getenv("APPDATA")
-                        + "\\Microsoft\\Internet Explorer\\Quick Launch\\User Pinned\\TaskBar\\Tombstones\\Bandizip.lnk\"", true);
-
-                // Deletes PeaZip files.
-                runCommand("rd /s /q \"" + System.getenv("APPDATA") + "\\PeaZip", true);
-
-                // Installs 7-Zip.
-                if (shouldInstall7Zip) {
-                    if (!Files.exists(tempPath)) {
-                        try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/7-Zip.zip")) {
-                            saveFile(Objects.requireNonNull(input), "7-Zip.zip", true);
-                            unzipFile(tempDirectory + "\\7-Zip.zip", tempDirectory.getPath() + "\\7-Zip");
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-
-                    runCommand(tempPath + " /D=\"C:\\Program Files\\7-Zip\" /S", false);
-                }
-            }
-        }
-    }
-
-    /**
      * Repairs the WMI Repository.
      */
     private static void repairWMIRepository() {
@@ -726,19 +609,20 @@ public class RepairKit {
         log.info("Running registry tweaks...");
         long startTime = System.currentTimeMillis();
         ExecutorService executor = Executors.newWorkStealingPool();
-        CountDownLatch latch = new CountDownLatch(19);
+        CountDownLatch latch = new CountDownLatch(18);
 
         // Disables telemetry and annoyances.
         executor.submit(() -> {
             deleteRegistryValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Siuf\\Rules", "PeriodInNanoSeconds");
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "Control Panel\\International\\User Profile", "HttpAcceptLanguageOptOut", 1);
-            setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Personalization\\Settings", "AcceptedPrivacyPolicy", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\InputPersonalization", "RestrictImplicitInkCollection", 1);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\InputPersonalization", "RestrictImplicitTextCollection", 1);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\InputPersonalization\\TrainedDataStore", "HarvestContacts", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Input\\Settings", "InsightsEnabled", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Input\\TIPC", "Enabled", 0);
+            setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\MediaPlayer\\Preferences", "UsageTracking", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Narrator\\NoRoam", "DetailedFeedback", 0);
+            setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Personalization\\Settings", "AcceptedPrivacyPolicy", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Siuf\\Rules", "NumberOfSIUFInPeriod", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Siuf\\Rules", "PeriodInNanoSeconds", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Speech_OneCore\\Settings\\OnlineSpeechPrivacy", "HasAccepted", 0);
@@ -771,32 +655,33 @@ public class RepairKit {
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\ControlSet001\\Control\\WMI\\Autologger\\AutoLogger-Diagtrack-Listener", "Start", 0);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\ControlSet001\\Services\\DiagTrack", "Start", 4);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\ControlSet001\\Services\\diagnosticshub.standardcollector.service", "Start", 4);
-            setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\MediaPlayer\\Preferences", "UsageTracking", 0);
-            setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\'DeviceCensus.exe'", "Debugger", "%windir%\\System32\\taskkill.exe");
-            setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\'CompatTelRunner.exe'", "Debugger", "%windir%\\System32\\taskkill.exe");
-            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Remote Assistance", "fAllowToGetHelp", 0);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Remote Assistance", "fAllowFullControl", 0);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Remote Assistance", "fAllowToGetHelp", 0);
+            setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\'CompatTelRunner.exe'", "Debugger", "%windir%\\System32\\taskkill.exe");
+            setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\'DeviceCensus.exe'", "Debugger", "%windir%\\System32\\taskkill.exe");
             latch.countDown();
         });
 
         // Patches security vulnerabilities.
         executor.submit(() -> {
-            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Lsa", "NoLMHash", 1);
-            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Installer", "AlwaysInstallElevated", 0);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\SpecialAccounts\\UserList", "Administrator", 0);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\SpecialAccounts\\UserList", "Guest", 0);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows Script Host\\Settings", "Enabled", 0);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\WindowsUpdate\\UX\\Settings", "AllowMUUpdateService", 1);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "NoDriveTypeAutoRun", 255);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\FVE", "UseAdvancedStartup", 1);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer", "NoDataExecutionPrevention", 0);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Installer", "AlwaysInstallElevated", 0);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\SYSTEM", "DisableHHDEP", 0);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\WinRM\\Client", "AllowBasic", 0);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity", "Enabled", 1);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\LSA", "RestrictAnonymous", 1);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Lsa", "LmCompatibilityLevel", 5);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Lsa", "NoLMHash", 1);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel", "DisableExceptionChainValidation", 0);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel", "RestrictAnonymousSAM", 1);
-            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Services\\LanManServer\\Parameters", "RestrictNullSessAccess", 1);
-            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "NoDriveTypeAutoRun", 255);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Terminal Server", "fDenyTSConnections", 1);
-            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\SpecialAccounts\\UserList", "Guest", 0);
-            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\SpecialAccounts\\UserList", "Administrator", 0);
-            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\FVE", "UseAdvancedStartup", 1);
-            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows Script Host\\Settings", "Enabled", 0);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Services\\LanManServer\\Parameters", "RestrictNullSessAccess", 1);
             latch.countDown();
         });
 
@@ -855,11 +740,11 @@ public class RepairKit {
         // Disables Windows error reporting.
         executor.submit(() -> {
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting", "Disabled", 1);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting", "DontSendAdditionalData", 1);
+            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting", "LoggingDisabled", 1);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\Consent", "DefaultConsent", 0);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\Consent", "DefaultOverrideBehavior", 1);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\Consent", "DefaultOverrideBehavior", 1);
-            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting", "DontSendAdditionalData", 1);
-            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting", "LoggingDisabled", 1);
             latch.countDown();
         });
 
@@ -871,20 +756,14 @@ public class RepairKit {
             latch.countDown();
         });
 
-        // Enables updates for other Microsoft products.
-        executor.submit(() -> {
-            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\WindowsUpdate\\UX\\Settings", "AllowMUUpdateService", 1);
-            latch.countDown();
-        });
-
         // Disables certain File Explorer features.
         executor.submit(() -> {
-            setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "HideFileExt", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer", "ShowFrequent", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "DontUsePowerShellOnWinX", 1);
+            setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "HideFileExt", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "ShowSyncProviderNotifications", 0);
-            setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "Start_TrackProgs", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "Start_TrackDocs", 0);
+            setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced", "Start_TrackProgs", 0);
             setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\AutoplayHandlers", "DisableAutoplay", 1);
             setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FolderDescriptions\\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\\PropertyBag", "ThisPCPolicy", "Hide");
             setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FolderDescriptions\\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\\PropertyBag", "ThisPCPolicy", "Hide");
@@ -1107,6 +986,7 @@ public class RepairKit {
                 "Microsoft.SkypeApp",
                 "Microsoft.Todos",
                 "Microsoft.Wallet",
+                "Microsoft.Windows.Ai.Copilot.Provider",
                 "Microsoft.Windows.Phone",
                 "Microsoft.WindowsFeedbackHub",
                 "Microsoft.WindowsMaps",
@@ -1444,13 +1324,13 @@ public class RepairKit {
             runCommand("schtasks /Change /ENABLE /TN \"\\Microsoft\\Windows\\Defrag\\ScheduledDefrag\"", true);
 
             // Disables various telemetry tasks.
+            runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser\" /disable", true);
             runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\ProgramDataUpdater\" /disable", true);
+            runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\StartupAppTask\" /disable", true);
             runCommand("schtasks /change /TN \"Microsoft\\Windows\\Customer Experience Improvement Program\\Consolidator\" /disable", true);
             runCommand("schtasks /change /TN \"Microsoft\\Windows\\Customer Experience Improvement Program\\UsbCeip\" /disable", true);
-            runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\StartupAppTask\" /disable", true);
-            runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser\" /disable", true);
-            runCommand("schtasks /change /TN \"Microsoft\\Windows\\Windows Error Reporting\\QueueReporting\" /disable", true);
             runCommand("schtasks /change /TN \"Microsoft\\Windows\\Device Information\\Device\" /disable", true);
+            runCommand("schtasks /change /TN \"Microsoft\\Windows\\Windows Error Reporting\\QueueReporting\" /disable", true);
             runCommand("setx DOTNET_CLI_TELEMETRY_OPTOUT 1", true);
             runCommand("setx POWERSHELL_TELEMETRY_OPTOUT 1", true);
 
@@ -1497,14 +1377,14 @@ public class RepairKit {
             // Patches security vulnerabilities.
             if (!windowsUpdateInProgress) {
                 String[] features = {
-                        "SMB1Protocol",
-                        "SMB1Protocol-Client",
-                        "SMB1Protocol-Server",
-                        "SMB1Protocol-Deprecation",
-                        "TelnetClient",
                         "Internet-Explorer-Optional-amd64",
                         "MicrosoftWindowsPowerShellV2",
                         "MicrosoftWindowsPowerShellV2Root",
+                        "SMB1Protocol",
+                        "SMB1Protocol-Client",
+                        "SMB1Protocol-Deprecation",
+                        "SMB1Protocol-Server",
+                        "TelnetClient",
                 };
 
                 for (String feature : features) {
@@ -1515,11 +1395,11 @@ public class RepairKit {
                 }
 
                 String[] capabilities = {
-                        "Print.Fax.Scan~~~~*",
-                        "Microsoft.Windows.WordPad~~~~*",
-                        "MathRecognizer~~~~*",
+                        "App.StepsRecorder~~~~*",
                         "Browser.InternetExplorer~~~~*",
-                        "App.StepsRecorder~~~~*"
+                        "MathRecognizer~~~~*",
+                        "Microsoft.Windows.WordPad~~~~*",
+                        "Print.Fax.Scan~~~~*",
                 };
 
                 // Check if the capability (any version) is enabled
@@ -1567,30 +1447,30 @@ public class RepairKit {
         executor.submit(() -> {
             // Sets Windows Defender to recommended settings
             runPowerShellCommand("Set-MpPreference"
-                    + " -DisableRealtimeMonitoring 0"
-                    + " -MAPSReporting 2"
-                    + " -SubmitSamplesConsent 3"
                     + " -CloudBlockLevel 4"
                     + " -CloudExtendedTimeout 10"
-                    + " -EnableNetworkProtection 1"
+                    + " -DisableArchiveScanning 0"
                     + " -DisableBehaviorMonitoring 0"
-                    + " -PUAProtection 1"
                     + " -DisableBlockAtFirstSeen 0"
                     + " -DisableEmailScanning 0"
                     + " -DisableIOAVProtection 0"
-                    + " -DisableScriptScanning 0"
-                    + " -DisableArchiveScanning 0"
+                    + " -DisableRealtimeMonitoring 0"
                     + " -DisableRemovableDriveScanning 0"
-                    + " -DisableScanningNetworkFiles 0"
                     + " -DisableScanningMappedNetworkDrivesForFullScan 0"
-                    + " -EnableLowCpuPriority 0"
-                    + " -ScanAvgCPULoadFactor 50"
-                    + " -SignatureBlobUpdateInterval 120"
+                    + " -DisableScanningNetworkFiles 0"
+                    + " -DisableScriptScanning 0"
                     + " -EnableFileHashComputation 0"
-                    + " -LowThreatDefaultAction Block"
-                    + " -ModerateThreatDefaultAction Clean"
+                    + " -EnableLowCpuPriority 0"
+                    + " -EnableNetworkProtection 1"
                     + " -HighThreatDefaultAction Quarantine"
-                    + " -SevereThreatDefaultAction Remove", false);
+                    + " -LowThreatDefaultAction Block"
+                    + " -MAPSReporting 2"
+                    + " -ModerateThreatDefaultAction Clean"
+                    + " -PUAProtection 1"
+                    + " -ScanAvgCPULoadFactor 50"
+                    + " -SevereThreatDefaultAction Remove"
+                    + " -SignatureBlobUpdateInterval 120"
+                    + " -SubmitSamplesConsent 3", false);
             latch.countDown();
         });
 
@@ -1609,18 +1489,18 @@ public class RepairKit {
             // ASR: Use advanced protection against ransomware
             runPowerShellCommand("Add-MpPreference"
                     + " -AttackSurfaceReductionRules_Ids "
-                    + "7674ba52-37eb-4a4f-a9a1-f0f9a1619a2c,"
-                    + "d4f940ab-401b-4efc-aadc-ad5f3c50688a,"
-                    + "be9ba2d9-53ea-4cdc-84e5-9b1eeee46550,"
-                    + "5beb7efe-fd9a-4556-801d-275e5ffc04cc,"
-                    + "d3e037e1-3eb8-44c8-a917-57927947596d,"
-                    + "3b576869-a4ec-4529-8536-b80a7769e899,"
-                    + "75668c1f-73b5-4cf0-bb93-3ecf5cb7cc84,"
                     + "26190899-1602-49e8-8b27-eb1d0a1ce869,"
-                    + "e6db77e5-3df2-4cf1-b95a-636979351e5b,"
-                    + "b2b3f03d-6a65-4f7b-a9c7-1c7ef74a9ba4,"
+                    + "3b576869-a4ec-4529-8536-b80a7769e899,"
+                    + "5beb7efe-fd9a-4556-801d-275e5ffc04cc,"
+                    + "75668c1f-73b5-4cf0-bb93-3ecf5cb7cc84,"
+                    + "7674ba52-37eb-4a4f-a9a1-f0f9a1619a2c,"
                     + "92e97fa1-2edf-4476-bdd6-9dd0b4dddc7b,"
-                    + "c1db55ab-c21a-4637-bb3f-a12568109d35"
+                    + "b2b3f03d-6a65-4f7b-a9c7-1c7ef74a9ba4,"
+                    + "be9ba2d9-53ea-4cdc-84e5-9b1eeee46550,"
+                    + "c1db55ab-c21a-4637-bb3f-a12568109d35,"
+                    + "d3e037e1-3eb8-44c8-a917-57927947596d,"
+                    + "d4f940ab-401b-4efc-aadc-ad5f3c50688a,"
+                    + "e6db77e5-3df2-4cf1-b95a-636979351e5b"
                     + " -AttackSurfaceReductionRules_Actions Enabled", false);
             latch.countDown();
         });
@@ -1631,8 +1511,8 @@ public class RepairKit {
             // ASR: Don't block process creations originating from PSExec and WMI commands
             runPowerShellCommand("Add-MpPreference"
                     + " -AttackSurfaceReductionRules_Ids "
-                    + "9e6c4e1f-7d60-472f-ba1a-a39ef669e4b2,"
                     + "01443614-cd74-433a-b99e-2ecdc07bfc25,"
+                    + "9e6c4e1f-7d60-472f-ba1a-a39ef669e4b2,"
                     + "d1e49aac-8f56-4280-b9ba-993a6d77406c"
                     + " -AttackSurfaceReductionRules_Actions Disabled", false);
             latch.countDown();
