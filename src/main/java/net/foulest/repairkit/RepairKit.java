@@ -51,17 +51,45 @@ public class RepairKit {
             checkForMedal();
         }
 
-        // Sets up the shutdown hook.
-        setupShutdownHook();
+        // Deletes pre-existing RepairKit files.
+        runCommand("rd /s /q " + tempDirectory.getPath(), false);
+
+        // Deletes RepairKit files on shutdown.
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            runCommand("rd /s /q \"" + tempDirectory.getPath() + "\"", false);
+        }));
 
         // Sets up necessary app registry keys.
         setAppRegistryKeys();
 
         // Creates the main frame.
-        SwingUtilities.invokeLater(() -> {
-            JFrame frame = createMainFrame();
-            frame.setVisible(true);
-        });
+        SwingUtilities.invokeLater(RepairKit::createMainFrame);
+    }
+
+    /**
+     * Creates the main frame of the program.
+     */
+    private static void createMainFrame() {
+        // Sets the panel's properties.
+        panelMain.setPreferredSize(new Dimension(320, 355));
+        panelMain.setBackground(new Color(43, 43, 43));
+        panelMain.setDoubleBuffered(true);
+
+        // Sets the program's labels.
+        setLabels();
+
+        // Sets the program's buttons.
+        setRepairButtons();
+        setUsefulProgramsButtons();
+        setSystemShortcutButtons();
+
+        // Creates the main frame.
+        frame.add(panelMain);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setResizable(false);
+        frame.setVisible(true);
     }
 
     /**
@@ -153,16 +181,6 @@ public class RepairKit {
     }
 
     /**
-     * Sets the program's shutdown hook.
-     */
-    private static void setupShutdownHook() {
-        // Clears the files used by RepairKit on shutdown.
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            runCommand("rd /s /q \"" + tempDirectory.getPath() + "\"", false);
-        }));
-    }
-
-    /**
      * Sets necessary app registry keys.
      */
     private static void setAppRegistryKeys() {
@@ -185,47 +203,6 @@ public class RepairKit {
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VirusTotalCheck", 1);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VirusTotalSubmitUnknown", 1);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer\\VirusTotal", "VirusTotalTermsAccepted", 1);
-    }
-
-    /**
-     * Creates the main frame of the program.
-     *
-     * @return The main frame of the program.
-     */
-    private static JFrame createMainFrame() {
-        // Sets the program's GUI elements.
-        setGUIElements();
-
-        // Deletes pre-existing RepairKit files.
-        runCommand("rd /s /q " + tempDirectory.getPath(), false);
-
-        // Creates the main frame.
-        frame.setContentPane(panelMain);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setLocationRelativeTo(null);
-        frame.setResizable(false);
-        frame.setVisible(true);
-        return frame;
-    }
-
-    /**
-     * Sets the program's GUI elements.
-     */
-    private static void setGUIElements() {
-        setMainPanel();
-        setLabels();
-        setRepairButtons();
-        setUsefulProgramsButtons();
-        setSystemShortcutButtons();
-    }
-
-    /**
-     * Sets the main panel of the program.
-     */
-    private static void setMainPanel() {
-        panelMain.setPreferredSize(new Dimension(320, 355));
-        panelMain.setBackground(new Color(43, 43, 43));
     }
 
     /**
@@ -306,7 +283,6 @@ public class RepairKit {
                                 if (!outdatedOperatingSystem) {
                                     removeBloatware();
                                 }
-
                                 latch.countDown();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -319,7 +295,6 @@ public class RepairKit {
                                 if (!outdatedOperatingSystem) {
                                     runRegistryTweaks();
                                 }
-
                                 latch.countDown();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -332,7 +307,6 @@ public class RepairKit {
                                 if (!outdatedOperatingSystem) {
                                     runSettingsTweaks();
                                 }
-
                                 latch.countDown();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -345,7 +319,6 @@ public class RepairKit {
                                 if (!outdatedOperatingSystem) {
                                     runWindowsDefenderTweaks();
                                 }
-
                                 latch.countDown();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
