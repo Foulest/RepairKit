@@ -48,11 +48,11 @@ public class RepairKit {
         }
 
         // Deletes pre-existing RepairKit files.
-        runCommand("rd /s /q " + tempDirectory.getPath(), false);
+        runCommand("rd /s /q \"" + tempDirectory.getPath() + "\"", false);
 
-        // Deletes all temporary files on shutdown.
+        // Deletes RepairKit files on shutdown.
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            runCommand("rd /s /q \"" + System.getenv("TEMP") + "\"", false);
+            runCommand("rd /s /q \"" + tempDirectory.getPath() + "\"", false);
         }));
 
         // Sets up necessary app registry keys.
@@ -103,6 +103,7 @@ public class RepairKit {
                             + "\nPlease upgrade to a 64-bit operating system to use this program."
                     , "Incompatible Operating System", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
+            return;
         }
 
         // Checks if the operating system is outdated (older than Windows 10).
@@ -128,6 +129,7 @@ public class RepairKit {
                                 + "\n"
                         , "Incompatible Operating System", JOptionPane.ERROR_MESSAGE);
                 System.exit(0);
+                return;
             }
         }
 
