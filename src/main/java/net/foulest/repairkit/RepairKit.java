@@ -201,6 +201,11 @@ public class RepairKit {
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VirusTotalCheck", 1);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VirusTotalSubmitUnknown", 1);
         setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer\\VirusTotal", "VirusTotalTermsAccepted", 1);
+
+        // Sophos Scan & Clean
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "Registered", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "NoCookieScan", 1);
+        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "EULA37", 1);
     }
 
     /**
@@ -451,7 +456,7 @@ public class RepairKit {
 
                     try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/NVCleanstall.zip")) {
                         saveFile(Objects.requireNonNull(input), "NVCleanstall.zip", true);
-                        unzipFile(tempDirectory + "\\NVCleanstall.zip", tempDirectory.getPath() + "\\Sophos");
+                        unzipFile(tempDirectory + "\\NVCleanstall.zip", tempDirectory.getPath());
                         runCommand(tempDirectory + "\\NVCleanstall.exe", true);
                     } catch (IOException ex) {
                         ex.printStackTrace();
@@ -479,15 +484,16 @@ public class RepairKit {
         addComponents(panelMain, buttonEmsisoft);
 
         // Sophos Scan Button
-        JButton buttonSophos = createActionButton("Sophos Scan", "Scans for malware with Sophos.", () -> {
-            try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/Sophos.zip")) {
-                saveFile(Objects.requireNonNull(input), "Sophos.zip", true);
-                unzipFile(tempDirectory + "\\Sophos.zip", tempDirectory.getPath() + "\\Sophos");
-                runCommand(tempDirectory + "\\Sophos.exe /scan", true);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        });
+        JButton buttonSophos = createActionButton("Sophos Scan",
+                "Scans for malware with Sophos.", () -> {
+                    try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/Sophos.zip")) {
+                        saveFile(Objects.requireNonNull(input), "Sophos.zip", true);
+                        unzipFile(tempDirectory + "\\Sophos.zip", tempDirectory.getPath());
+                        runCommand("start \"\" \"" + tempDirectory + "\\Sophos.exe\"", true);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                });
         buttonSophos.setBounds(162, 250, 152, 25);
         addComponents(panelMain, buttonSophos);
 
