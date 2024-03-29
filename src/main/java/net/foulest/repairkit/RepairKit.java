@@ -438,8 +438,25 @@ public class RepairKit {
         addComponents(panelMain, buttonFanControl);
 
         // NVCleanstall Button
-        JButton buttonNVCleanstall = createAppButton("NVCleanstall", "A lightweight NVIDIA graphics card driver updater.",
-                "NVCleanstall.zip", "NVCleanstall.exe", true, tempDirectory.getPath());
+        JButton buttonNVCleanstall = createActionButton("NVCleanstall",
+                "A lightweight NVIDIA graphics card driver updater.", () -> {
+                    if (outdatedOperatingSystem) {
+                        playSound("win.sound.hand");
+                        JOptionPane.showMessageDialog(null,
+                                "NVCleanstall cannot be run on outdated operating systems."
+                                        + "\nPlease upgrade to Windows 10 or 11 to use this feature."
+                                , "Outdated Operating System", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/NVCleanstall.zip")) {
+                        saveFile(Objects.requireNonNull(input), "NVCleanstall.zip", true);
+                        unzipFile(tempDirectory + "\\NVCleanstall.zip", tempDirectory.getPath() + "\\Sophos");
+                        runCommand(tempDirectory + "\\NVCleanstall.exe", true);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                });
         buttonNVCleanstall.setBounds(162, 190, 152, 25);
         addComponents(panelMain, buttonNVCleanstall);
 
@@ -466,7 +483,7 @@ public class RepairKit {
             try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/Sophos.zip")) {
                 saveFile(Objects.requireNonNull(input), "Sophos.zip", true);
                 unzipFile(tempDirectory + "\\Sophos.zip", tempDirectory.getPath() + "\\Sophos");
-                runCommand(tempDirectory + "\\Sophos\\Sophos.exe /scan", false);
+                runCommand(tempDirectory + "\\Sophos.exe /scan", true);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -477,7 +494,7 @@ public class RepairKit {
         // uBlock Origin Button
         JButton buttonUBlockOrigin = createActionButton("uBlock Origin",
                 "Link to the ad-blocker browser extension.", () -> {
-                    runCommand("start https://ublockorigin.com", false);
+                    runCommand("start https://ublockorigin.com", true);
                 });
         buttonUBlockOrigin.setBounds(5, 280, 152, 25);
         addComponents(panelMain, buttonUBlockOrigin);
@@ -485,7 +502,7 @@ public class RepairKit {
         // TrafficLight Button
         JButton buttonTrafficLight = createActionButton("TrafficLight",
                 "Link to BitDefender's TrafficLight extension.", () -> {
-                    runCommand("start https://bitdefender.com/solutions/trafficlight.html", false);
+                    runCommand("start https://bitdefender.com/solutions/trafficlight.html", true);
                 });
         buttonTrafficLight.setBounds(162, 280, 152, 25);
         addComponents(panelMain, buttonTrafficLight);
@@ -499,9 +516,9 @@ public class RepairKit {
         JButton buttonAppsFeatures = createActionButton("Apps & Features",
                 "Opens the Apps & Features settings.", () -> {
                     if (!outdatedOperatingSystem) {
-                        runCommand("start ms-settings:appsfeatures", false);
+                        runCommand("start ms-settings:appsfeatures", true);
                     } else {
-                        runCommand("appwiz.cpl", false);
+                        runCommand("appwiz.cpl", true);
                     }
                 });
         buttonAppsFeatures.setBounds(5, 340, 152, 25);
@@ -520,9 +537,9 @@ public class RepairKit {
                             return;
                         }
 
-                        runCommand("control /name Microsoft.WindowsUpdate", false);
+                        runCommand("control /name Microsoft.WindowsUpdate", true);
                     } else {
-                        runCommand("start ms-settings:windowsupdate", false);
+                        runCommand("start ms-settings:windowsupdate", true);
                     }
                 });
         buttonCheckForUpdates.setBounds(162, 340, 152, 25);
@@ -531,7 +548,7 @@ public class RepairKit {
         // Task Manager Button
         JButton buttonTaskManager = createActionButton("Task Manager",
                 "Opens the Task Manager.", () -> {
-                    runCommand("taskmgr", false);
+                    runCommand("taskmgr", true);
                 });
         buttonTaskManager.setBounds(5, 370, 152, 25);
         addComponents(panelMain, buttonTaskManager);
@@ -549,9 +566,9 @@ public class RepairKit {
                             return;
                         }
 
-                        runCommand("control /name Microsoft.WindowsDefender", false);
+                        runCommand("control /name Microsoft.WindowsDefender", true);
                     } else {
-                        runCommand("start windowsdefender:", false);
+                        runCommand("start windowsdefender:", true);
                     }
                 });
         buttonWindowsDefender.setBounds(162, 370, 152, 25);
