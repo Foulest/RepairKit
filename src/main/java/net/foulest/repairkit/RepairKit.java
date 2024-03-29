@@ -6,10 +6,10 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static net.foulest.repairkit.util.CommandUtil.*;
-import static net.foulest.repairkit.util.FileUtil.tempDirectory;
+import static net.foulest.repairkit.util.FileUtil.*;
 import static net.foulest.repairkit.util.ProcessUtil.isProcessRunning;
 import static net.foulest.repairkit.util.RegistryUtil.*;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
@@ -67,7 +67,7 @@ public class RepairKit {
      */
     private static void createMainFrame() {
         // Sets the panel's properties.
-        panelMain.setPreferredSize(new Dimension(320, 355));
+        panelMain.setPreferredSize(new Dimension(320, 410));
         panelMain.setBackground(new Color(43, 43, 43));
         panelMain.setDoubleBuffered(true);
 
@@ -217,9 +217,14 @@ public class RepairKit {
                 new Color(225, 225, 225), 5, 75, 150, 20);
         addComponents(panelMain, labelUsefulPrograms);
 
+        // Security Software Label
+        JLabel labelSecuritySoftware = createLabel("Security Software",
+                new Color(225, 225, 225), 5, 225, 150, 20);
+        addComponents(panelMain, labelSecuritySoftware);
+
         // System Shortcuts Label
         JLabel labelSystemShortcuts = createLabel("System Shortcuts",
-                new Color(225, 225, 225), 5, 255, 150, 20);
+                new Color(225, 225, 225), 5, 315, 150, 20);
         addComponents(panelMain, labelSystemShortcuts);
     }
 
@@ -247,7 +252,7 @@ public class RepairKit {
                         ExecutorService executor = Executors.newWorkStealingPool();
                         CountDownLatch latch = new CountDownLatch(6);
 
-                        // Repair WMI repository
+                        // Repairs the WMI repository
                         executor.submit(() -> {
                             try {
                                 repairWMIRepository();
@@ -267,10 +272,12 @@ public class RepairKit {
                             }
                         });
 
-                        // Remove pre-installed bloatware
+                        // Removes pre-installed bloatware
                         executor.submit(() -> {
                             try {
-                                removeBloatware();
+                                if (!safeMode) {
+                                    removeBloatware();
+                                }
                                 latch.countDown();
                             } catch (Exception ex) {
                                 ex.printStackTrace();
@@ -349,6 +356,20 @@ public class RepairKit {
         buttonHWMonitor.setBounds(162, 100, 152, 25);
         addComponents(panelMain, buttonHWMonitor);
 
+        // Autoruns Button
+        JButton buttonAutoruns = createAppButton("Autoruns", "Displays startup items.",
+                "Autoruns.zip", "Autoruns.exe",
+                true, tempDirectory.getPath());
+        buttonAutoruns.setBounds(5, 130, 152, 25);
+        addComponents(panelMain, buttonAutoruns);
+
+        // Process Explorer Button
+        JButton buttonProcessExplorer = createAppButton("Process Explorer", "Displays system processes.",
+                "ProcessExplorer.zip", "ProcessExplorer.exe",
+                true, tempDirectory.getPath());
+        buttonProcessExplorer.setBounds(162, 130, 152, 25);
+        addComponents(panelMain, buttonProcessExplorer);
+
         // TreeSize Button
         JButton buttonTreeSize;
         if (outdatedOperatingSystem) {
@@ -364,13 +385,13 @@ public class RepairKit {
             buttonTreeSize = createAppButton("TreeSize", "Displays system files organized by size.",
                     "TreeSize.zip", "TreeSize.exe", true, tempDirectory.getPath());
         }
-        buttonTreeSize.setBounds(5, 130, 152, 25);
+        buttonTreeSize.setBounds(5, 160, 152, 25);
         addComponents(panelMain, buttonTreeSize);
 
         // Everything Button
         JButton buttonEverything = createAppButton("Everything", "Displays all files on your system.",
                 "Everything.zip", "Everything.exe", true, tempDirectory.getPath());
-        buttonEverything.setBounds(162, 130, 152, 25);
+        buttonEverything.setBounds(162, 160, 152, 25);
         addComponents(panelMain, buttonEverything);
 
         // FanControl Button
@@ -413,15 +434,13 @@ public class RepairKit {
                     }
                 });
         buttonFanControl.setBackground(new Color(200, 200, 200));
-        buttonFanControl.setBounds(5, 160, 152, 25);
+        buttonFanControl.setBounds(5, 190, 152, 25);
         addComponents(panelMain, buttonFanControl);
 
         // NVCleanstall Button
-        JButton buttonNVCleanstall = createActionButton("NVCleanstall",
-                "A lightweight NVIDIA graphics card driver updater.", () -> {
-                    runCommand("start https://techpowerup.com/download/techpowerup-nvcleanstall", false);
-                });
-        buttonNVCleanstall.setBounds(162, 160, 152, 25);
+        JButton buttonNVCleanstall = createAppButton("NVCleanstall", "A lightweight NVIDIA graphics card driver updater.",
+                "NVCleanstall.zip", "NVCleanstall.exe", true, tempDirectory.getPath());
+        buttonNVCleanstall.setBounds(162, 190, 152, 25);
         addComponents(panelMain, buttonNVCleanstall);
 
         // Emsisoft Scan Button
@@ -436,34 +455,40 @@ public class RepairKit {
                                 , "Outdated Operating System", JOptionPane.ERROR_MESSAGE);
                     });
         } else {
-            buttonEmsisoft = createAppButton("Emsisoft Scan", "Scans your system for malware.",
+            buttonEmsisoft = createAppButton("Emsisoft Scan", "Scans for malware with Emsisoft.",
                     "Emsisoft.zip", "Emsisoft.exe", true, tempDirectory.getPath());
         }
-        buttonEmsisoft.setBounds(5, 190, 152, 25);
+        buttonEmsisoft.setBounds(5, 250, 152, 25);
         addComponents(panelMain, buttonEmsisoft);
 
-        // Browser Extensions Button
-        JButton buttonBrowserExtensions = createActionButton("Browser Extensions",
-                "Opens links to recommended browser extensions.", () -> {
+        // Sophos Scan Button
+        JButton buttonSophos = createActionButton("Sophos Scan", "Scans for malware with Sophos.", () -> {
+            try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/Sophos.zip")) {
+                saveFile(Objects.requireNonNull(input), "Sophos.zip", true);
+                unzipFile(tempDirectory + "\\Sophos.zip", tempDirectory.getPath() + "\\Sophos");
+                runCommand(tempDirectory + "\\Sophos\\Sophos.exe /scan", false);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        });
+        buttonSophos.setBounds(162, 250, 152, 25);
+        addComponents(panelMain, buttonSophos);
+
+        // uBlock Origin Button
+        JButton buttonUBlockOrigin = createActionButton("uBlock Origin",
+                "Link to the ad-blocker browser extension.", () -> {
                     runCommand("start https://ublockorigin.com", false);
+                });
+        buttonUBlockOrigin.setBounds(5, 280, 152, 25);
+        addComponents(panelMain, buttonUBlockOrigin);
+
+        // TrafficLight Button
+        JButton buttonTrafficLight = createActionButton("TrafficLight",
+                "Link to BitDefender's TrafficLight extension.", () -> {
                     runCommand("start https://bitdefender.com/solutions/trafficlight.html", false);
                 });
-        buttonBrowserExtensions.setBounds(162, 190, 152, 25);
-        addComponents(panelMain, buttonBrowserExtensions);
-
-        // Autoruns Button
-        JButton buttonAutoruns = createAppButton("Autoruns", "Displays startup items.",
-                "Autoruns.zip", "Autoruns.exe",
-                true, tempDirectory.getPath());
-        buttonAutoruns.setBounds(5, 220, 152, 25);
-        addComponents(panelMain, buttonAutoruns);
-
-        // Process Explorer Button
-        JButton buttonProcessExplorer = createAppButton("Process Explorer", "Displays system processes.",
-                "ProcessExplorer.zip", "ProcessExplorer.exe",
-                true, tempDirectory.getPath());
-        buttonProcessExplorer.setBounds(162, 220, 152, 25);
-        addComponents(panelMain, buttonProcessExplorer);
+        buttonTrafficLight.setBounds(162, 280, 152, 25);
+        addComponents(panelMain, buttonTrafficLight);
     }
 
     /**
@@ -479,7 +504,7 @@ public class RepairKit {
                         runCommand("appwiz.cpl", false);
                     }
                 });
-        buttonAppsFeatures.setBounds(5, 280, 152, 25);
+        buttonAppsFeatures.setBounds(5, 340, 152, 25);
         addComponents(panelMain, buttonAppsFeatures);
 
         // Windows Update Button
@@ -500,7 +525,7 @@ public class RepairKit {
                         runCommand("start ms-settings:windowsupdate", false);
                     }
                 });
-        buttonCheckForUpdates.setBounds(162, 280, 152, 25);
+        buttonCheckForUpdates.setBounds(162, 340, 152, 25);
         addComponents(panelMain, buttonCheckForUpdates);
 
         // Task Manager Button
@@ -508,7 +533,7 @@ public class RepairKit {
                 "Opens the Task Manager.", () -> {
                     runCommand("taskmgr", false);
                 });
-        buttonTaskManager.setBounds(5, 310, 152, 25);
+        buttonTaskManager.setBounds(5, 370, 152, 25);
         addComponents(panelMain, buttonTaskManager);
 
         // Windows Defender Button
@@ -529,7 +554,7 @@ public class RepairKit {
                         runCommand("start windowsdefender:", false);
                     }
                 });
-        buttonWindowsDefender.setBounds(162, 310, 152, 25);
+        buttonWindowsDefender.setBounds(162, 370, 152, 25);
         addComponents(panelMain, buttonWindowsDefender);
     }
 
@@ -1544,10 +1569,12 @@ public class RepairKit {
         log.info("Windows Defender tweaks completed in " + (System.currentTimeMillis() - startTime) + "ms.");
 
         // Updates Windows Defender signatures
-        log.info("Updating Windows Defender signatures...");
-        startTime = System.currentTimeMillis();
-        runCommand("\"C:\\Program Files\\Windows Defender\\MpCmdRun.exe\" -SignatureUpdate", false);
-        log.info("Windows Defender signatures updated in " + (System.currentTimeMillis() - startTime) + "ms.");
+        if (!safeMode) {
+            log.info("Updating Windows Defender signatures...");
+            startTime = System.currentTimeMillis();
+            runCommand("\"C:\\Program Files\\Windows Defender\\MpCmdRun.exe\" -SignatureUpdate", false);
+            log.info("Windows Defender signatures updated in " + (System.currentTimeMillis() - startTime) + "ms.");
+        }
 
         // Runs a quick scan with Windows Defender
         log.info("Running a quick scan with Windows Defender...");
