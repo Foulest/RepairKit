@@ -6,7 +6,7 @@
 
 **RepairKit** is an all-in-one Java-based Windows repair and maintenance toolkit.
 
-![RepairKit Software Image](https://i.imgur.com/maf6pXn.png)
+![RepairKit Software Image](https://i.imgur.com/s3rAk62.png)
 
 ## Features
 
@@ -26,19 +26,21 @@ Access essential software tools for system maintenance, including:
 
 - **[CPU-Z](https://cpuid.com/softwares/cpu-z.html)**: Identify your system hardware details.
 - **[HWMonitor](https://cpuid.com/softwares/hwmonitor.html)**: Monitor hardware temperatures and specs.
+- **[Autoruns](https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns)**: An alternative to Windows Startup
+  Manager.
+- **[Process Explorer](https://learn.microsoft.com/en-us/sysinternals/downloads/process-explorer)**: An alternative to
+  Windows Task Manager.
 - **[TreeSize](https://jam-software.com/treesize_free)**: Analyze and manage disk contents.
 - **[Everything](https://voidtools.com)**: An ultra-fast file search engine.
 - **[FanControl](https://getfancontrol.com)**: Configure your system fans and their speeds.
 - **[NVCleanstall](https://techpowerup.com/download/techpowerup-nvcleanstall)**: A lightweight NVIDIA graphics card
   driver updater.
 - **[Emsisoft Scan](https://emsisoft.com/en/home/emergency-kit)**: Scan for malware using Emsisoft Emergency Kit.
+- **[Sophos Scan](https://www.sophos.com/en-us/free-tools/virus-removal-tool)**: Scan for malware using Sophos Scan &
+  Clean.
 - **[uBlock Origin](https://ublockorigin.com)**: Link to the powerful ad-blocker browser extension.
 - **[TrafficLight](https://bitdefender.com/solutions/trafficlight.html)**: Link to Bitdefender's TrafficLight browser
   extension.
-- **[Autoruns](https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns)**: An alternative to Windows
-  Startup Manager.
-- **[Process Explorer](https://learn.microsoft.com/en-us/sysinternals/downloads/process-explorer)**: An
-  alternative to Windows Task Manager.
 
 ### 3. **Quick Windows Access Buttons**
 
