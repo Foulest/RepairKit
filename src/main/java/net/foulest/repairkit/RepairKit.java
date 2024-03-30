@@ -147,10 +147,9 @@ public class RepairKit {
 
     /**
      * Checks if Windows Update is running.
+     * Windows Update causes problems with DISM.
      */
     private static void checkForWindowsUpdate() {
-        // Checks if Windows Update is running.
-        // Windows Update causes problems with DISM.
         if (isProcessRunning("WmiPrvSE.exe")
                 && isProcessRunning("TiWorker.exe")
                 && isProcessRunning("TrustedInstaller.exe")
@@ -646,9 +645,11 @@ public class RepairKit {
      */
     private static void repairWMIRepository() {
         log.info("Repairing WMI repository...");
+
         if (getCommandOutput("winmgmt /verifyrepository", false, false).toString().contains("not consistent")
                 && getCommandOutput("winmgmt /salvagerepository", false, false).toString().contains("not consistent")) {
             runCommand("winmgmt /resetrepository", false);
+            log.info("Repaired WMI repository.");
         }
     }
 
@@ -724,7 +725,6 @@ public class RepairKit {
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\Installer", "AlwaysInstallElevated", 0);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\SYSTEM", "DisableHHDEP", 0);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\WinRM\\Client", "AllowBasic", 0);
-            setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity", "Enabled", 1);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\LSA", "RestrictAnonymous", 1);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Lsa", "LmCompatibilityLevel", 5);
             setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Lsa", "NoLMHash", 1);
