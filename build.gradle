@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'net.foulest'
-version = '0.6.6'
+version = '1.0.0'
 description = 'RepairKit'
 
 compileJava.options.encoding = 'UTF-8'
@@ -43,7 +43,7 @@ launch4j {
     // Executable file information
     outfile = "${project.name}-${project.version}.exe"
     mainClassName = "${project.group}.repairkit.RepairKit"
-    icon = "${projectDir}/RepairKit.ico"
+    icon = "${projectDir}/src/main/resources/icons/RepairKit.ico"
 
     // Java runtime information
     jreMinVersion = '1.8.0'
@@ -87,6 +87,19 @@ tasks {
         destinationDirectory = file("${projectDir}/build")
     }
 
+    // Create a properties file with the version number
+    tasks.register('createProperties') {
+        dependsOn processResources
+
+        doLast {
+            new File("${projectDir}/build/resources/main/version.properties").withWriter { w ->
+                Properties p = new Properties()
+                p['version'] = project.version.toString()
+                p.store w, null
+            }
+        }
+    }
+
     createExe {
         dependsOn(shadowJar)
 
@@ -106,6 +119,10 @@ tasks {
 
     compileJava {
         dependsOn(clean)
+    }
+
+    classes {
+        dependsOn createProperties
     }
 
     build {

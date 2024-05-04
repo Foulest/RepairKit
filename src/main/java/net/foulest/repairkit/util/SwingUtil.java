@@ -1,5 +1,6 @@
 package net.foulest.repairkit.util;
 
+import lombok.NonNull;
 import net.foulest.repairkit.RepairKit;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,15 +19,23 @@ import static net.foulest.repairkit.util.FileUtil.*;
 public class SwingUtil {
 
     /**
-     * Adds components to a panel.
+     * Creates an action button without a tooltip.
      *
-     * @param panel      Panel to add components to.
-     * @param components Components to add.
+     * @param buttonText Text to display on the button.
+     * @param action    Action to run when the button is clicked.
      */
-    public static void addComponents(JPanel panel, Component @NotNull ... components) {
-        for (Component component : components) {
-            panel.add(component);
-        }
+    public static @NonNull JButton createActionButton(String buttonText, Runnable action) {
+        JButton button = new JButton(buttonText);
+        button.setBackground(new Color(200, 200, 200));
+
+        button.addActionListener(actionEvent -> {
+            try {
+                action.run();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        });
+        return button;
     }
 
     /**
@@ -77,11 +86,15 @@ public class SwingUtil {
      * @param extractionPath Path to extract the resource to.
      * @param launchArgs     Arguments to launch the application with.
      */
-    public static @NotNull JButton createAppButton(String buttonText, String toolTipText,
+    public static @NotNull JButton createAppButton(String buttonText, @NotNull String toolTipText,
                                                    String appResource, String appExecutable,
                                                    String launchArgs, boolean isZipped, String extractionPath) {
         JButton button = new JButton(buttonText);
-        button.setToolTipText(toolTipText);
+
+        if (!toolTipText.isEmpty()) {
+            button.setToolTipText(toolTipText);
+        }
+
         button.setBackground(new Color(200, 200, 200));
 
         button.addActionListener(actionEvent -> {
@@ -92,24 +105,6 @@ public class SwingUtil {
             }
         });
         return button;
-    }
-
-    /**
-     * Creates a label.
-     *
-     * @param labelText Text to display on the label.
-     * @param textColor Color of the text.
-     * @param x         X position of the label.
-     * @param y         Y position of the label.
-     * @param width     Width of the label.
-     * @param height    Height of the label.
-     */
-    public static @NotNull JLabel createLabel(String labelText, Color textColor,
-                                              int x, int y, int width, int height) {
-        JLabel label = new JLabel(labelText);
-        label.setForeground(textColor);
-        label.setBounds(x, y, width, height);
-        return label;
     }
 
     /**
@@ -140,7 +135,7 @@ public class SwingUtil {
 
         synchronized (RepairKit.class) {
             if (!Files.exists(path)) {
-                try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("resources/" + appResource)) {
+                try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/" + appResource)) {
                     saveFile(Objects.requireNonNull(input), appResource, false);
                 } catch (IOException ex) {
                     ex.printStackTrace();
@@ -153,5 +148,32 @@ public class SwingUtil {
         }
 
         runCommand(path + (launchArgs.isEmpty() ? "" : " " + launchArgs), true);
+    }
+
+    /**
+     * Sets up an application icon.
+     *
+     * @param baseHeight  The base height of the panel.
+     * @param baseWidth   The base width of the panel.
+     * @param imageIcon   The icon to display.
+     * @param panel       The panel to add the icon to.
+     */
+    public static void setupAppIcon(int baseHeight, int baseWidth,
+                                    @NotNull ImageIcon imageIcon,
+                                    @NotNull JPanel panel) {
+        Image scaledImage = imageIcon.getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH);
+        imageIcon = new ImageIcon(scaledImage);
+        JLabel iconLabel = new JLabel(imageIcon);
+        iconLabel.setBounds(baseWidth, baseHeight + 7, 35, 35);
+        panel.add(iconLabel);
+        iconLabel.repaint();
+    }
+
+    public static void setLabelProperties(@NotNull JLabel label, String text, Color foreground, Font font,
+                                          int x, int y, int width, int height) {
+        label.setText(text);
+        label.setForeground(foreground);
+        label.setFont(font);
+        label.setBounds(x, y, width, height);
     }
 }

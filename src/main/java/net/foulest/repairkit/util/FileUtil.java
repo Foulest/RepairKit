@@ -59,7 +59,7 @@ public class FileUtil {
      *
      * @param input          The input stream to save.
      * @param fileName       The name of the file to save.
-     * @param replaceOldFile Whether or not to replace the old file.
+     * @param replaceOldFile Whether to replace the old file.
      */
     public static void saveFile(InputStream input, String fileName, boolean replaceOldFile) {
         Path savedFilePath = Paths.get(String.valueOf(tempDirectory), fileName);
