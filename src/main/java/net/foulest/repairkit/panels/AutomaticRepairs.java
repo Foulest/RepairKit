@@ -25,6 +25,9 @@ public class AutomaticRepairs extends JPanel {
     private final JCheckBox[] progressCheckboxes;
     private final JButton runButton;
 
+    /**
+     * Creates the Automatic Repairs panel.
+     */
     public AutomaticRepairs() {
         setLayout(null);
 
@@ -86,6 +89,9 @@ public class AutomaticRepairs extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
     }
 
+    /**
+     * Runs the automatic repairs.
+     */
     private void runAutomaticRepairs() {
         // Disables the run button.
         runButton.setEnabled(false);
@@ -107,20 +113,13 @@ public class AutomaticRepairs extends JPanel {
                 // Creates a restore point.
                 createRestorePoint();
 
+                // Deletes system policies.
+                deleteSystemPolicies();
+                SwingUtilities.invokeLater(() -> progressCheckboxes[0].setSelected(true));
+
                 // Creates a new executor.
                 ExecutorService executor = Executors.newWorkStealingPool();
-                CountDownLatch latch = new CountDownLatch(7);
-
-                // Deletes system policies.
-                executor.submit(() -> {
-                    try {
-                        deleteSystemPolicies();
-                        latch.countDown();
-                        SwingUtilities.invokeLater(() -> progressCheckboxes[0].setSelected(true));
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
+                CountDownLatch latch = new CountDownLatch(6);
 
                 // Removes pre-installed bloatware.
                 executor.submit(() -> {

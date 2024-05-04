@@ -56,7 +56,7 @@ public class RepairKit extends JFrame {
         mainPanel.add(usefulPrograms, "Useful Programs");
         mainPanel.add(systemShortcuts, "System Shortcuts");
 
-        // Creates the banner and side panels.
+        // Creates the banner panel.
         JPanel bannerPanel = createBannerPanel();
 
         // Adds the panels to the main panel.
@@ -68,6 +68,11 @@ public class RepairKit extends JFrame {
         setLocationRelativeTo(null);
     }
 
+    /**
+     * Creates the banner panel.
+     *
+     * @return The banner panel.
+     */
     private @NotNull JPanel createBannerPanel() {
         // Creates the banner panel.
         JPanel bannerPanel = new JPanel(new BorderLayout());
@@ -370,6 +375,11 @@ public class RepairKit extends JFrame {
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "EULA37", 1);
     }
 
+    /**
+     * Gets the version of the program.
+     *
+     * @return The version of the program.
+     */
     public static String getVersion() {
         Properties properties = new Properties();
 

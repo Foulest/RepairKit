@@ -20,6 +20,9 @@ import static net.foulest.repairkit.util.SwingUtil.*;
 @Log
 public class UsefulPrograms extends JPanel {
 
+    /**
+     * Creates the Useful Programs panel.
+     */
     public UsefulPrograms() {
         setLayout(null);
 
@@ -47,6 +50,9 @@ public class UsefulPrograms extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
     }
 
+    /**
+     * Sets up the CPU-Z section.
+     */
     public void setupCPUZ() {
         int baseHeight = 55;
         int baseWidth = 20;
@@ -75,6 +81,9 @@ public class UsefulPrograms extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the HWMonitor section.
+     */
     public void setupHWMonitor() {
         int baseHeight = 150;
         int baseWidth = 20;
@@ -103,6 +112,9 @@ public class UsefulPrograms extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the Autoruns section.
+     */
     public void setupAutoruns() {
         int baseHeight = 245;
         int baseWidth = 20;
@@ -132,6 +144,9 @@ public class UsefulPrograms extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the Process Explorer section.
+     */
     public void setupProcessExplorer() {
         int baseHeight = 340;
         int baseWidth = 20;
@@ -161,6 +176,9 @@ public class UsefulPrograms extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the TreeSize section.
+     */
     public void setupTreeSize() {
         int baseHeight = 55;
         int baseWidth = 250;
@@ -201,6 +219,9 @@ public class UsefulPrograms extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the Everything section.
+     */
     public void setupEverything() {
         int baseHeight = 150;
         int baseWidth = 250;
@@ -229,6 +250,9 @@ public class UsefulPrograms extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the FanControl section.
+     */
     public void setupFanControl() {
         int baseHeight = 245;
         int baseWidth = 250;
@@ -293,6 +317,9 @@ public class UsefulPrograms extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the NVCleanstall section.
+     */
     public void setupNVCleanstall() {
         int baseHeight = 340;
         int baseWidth = 250;
@@ -338,6 +365,9 @@ public class UsefulPrograms extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the Emsisoft Scan section.
+     */
     public void setupEmsisoftScan() {
         int baseHeight = 55;
         int baseWidth = 480;
@@ -378,6 +408,9 @@ public class UsefulPrograms extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the Sophos Scan section.
+     */
     public void setupSophosScan() {
         int baseHeight = 150;
         int baseWidth = 480;
@@ -414,6 +447,9 @@ public class UsefulPrograms extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the uBlock Origin section.
+     */
     public void setupUBlockOrigin() {
         int baseHeight = 245;
         int baseWidth = 480;
@@ -443,6 +479,9 @@ public class UsefulPrograms extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the TrafficLight section.
+     */
     public void setupTrafficLight() {
         int baseHeight = 340;
         int baseWidth = 480;

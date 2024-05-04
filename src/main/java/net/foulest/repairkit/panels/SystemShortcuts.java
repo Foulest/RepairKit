@@ -15,6 +15,9 @@ import static net.foulest.repairkit.util.SwingUtil.createActionButton;
 @Log
 public class SystemShortcuts extends JPanel {
 
+    /**
+     * Creates the System Shortcuts panel.
+     */
     public SystemShortcuts() {
         setLayout(null);
 
@@ -42,6 +45,9 @@ public class SystemShortcuts extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
     }
 
+    /**
+     * Sets up the Apps & Features section.
+     */
     public void setupAppsFeatures() {
         int baseHeight = 55;
         int baseWidth = 20;
@@ -75,6 +81,9 @@ public class SystemShortcuts extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the Startup Apps section.
+     */
     public void setupStartupApps() {
         int baseHeight = 150;
         int baseWidth = 20;
@@ -108,6 +117,9 @@ public class SystemShortcuts extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the Windows Update section.
+     */
     public void setupWindowsUpdate() {
         int baseHeight = 245;
         int baseWidth = 20;
@@ -150,6 +162,9 @@ public class SystemShortcuts extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the Windows Security section.
+     */
     public void setupWindowsSecurity() {
         int baseHeight = 340;
         int baseWidth = 20;
@@ -192,6 +207,9 @@ public class SystemShortcuts extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the Display Settings section.
+     */
     public void setupDisplaySettings() {
         int baseHeight = 55;
         int baseWidth = 250;
@@ -220,6 +238,9 @@ public class SystemShortcuts extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the Storage Settings section.
+     */
     public void setupStorageSettings() {
         int baseHeight = 150;
         int baseWidth = 250;
@@ -253,6 +274,9 @@ public class SystemShortcuts extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the Sound Settings section.
+     */
     public void setupSoundSettings() {
         int baseHeight = 245;
         int baseWidth = 250;
@@ -286,6 +310,9 @@ public class SystemShortcuts extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the Optional Features section.
+     */
     public void setupOptionalFeatures() {
         int baseHeight = 340;
         int baseWidth = 250;
@@ -319,6 +346,9 @@ public class SystemShortcuts extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the Task Manager section.
+     */
     public void setupTaskManager() {
         int baseHeight = 55;
         int baseWidth = 480;
@@ -347,6 +377,9 @@ public class SystemShortcuts extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the Device Manager section.
+     */
     public void setupDeviceManager() {
         int baseHeight = 150;
         int baseWidth = 480;
@@ -375,6 +408,9 @@ public class SystemShortcuts extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the Disk Cleanup section.
+     */
     public void setupDiskCleanup() {
         int baseHeight = 245;
         int baseWidth = 480;
@@ -403,6 +439,9 @@ public class SystemShortcuts extends JPanel {
         add(appButton);
     }
 
+    /**
+     * Sets up the MSConfig section.
+     */
     public void setupMSConfig() {
         int baseHeight = 340;
         int baseWidth = 480;

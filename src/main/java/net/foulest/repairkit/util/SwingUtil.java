@@ -168,12 +168,4 @@ public class SwingUtil {
         panel.add(iconLabel);
         iconLabel.repaint();
     }
-
-    public static void setLabelProperties(@NotNull JLabel label, String text, Color foreground, Font font,
-                                          int x, int y, int width, int height) {
-        label.setText(text);
-        label.setForeground(foreground);
-        label.setFont(font);
-        label.setBounds(x, y, width, height);
-    }
 }
