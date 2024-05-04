@@ -16,7 +16,7 @@ Automatically perform a comprehensive system cleanup and repair, including:
 - Removing pre-installed bloatware
 - Repairing the WMI repository
 - Running registry, service, and settings tweaks
-- Scanning for malware and with Windows Defender
+- Scanning for malware with Windows Defender
 
 ![Automatic Repairs](https://i.imgur.com/nv0gf88.png)
 
