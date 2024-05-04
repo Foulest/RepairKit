@@ -49,9 +49,10 @@ Access essential software tools for system maintenance, including:
 Quickly access important Windows utilities like:
 
 - Apps & Features
+- Startup Apps
 - Windows Update
+- Windows Security
 - Task Manager
-- Windows Defender
 
 ![System Shortcuts](https://i.imgur.com/lmTsVSv.png)
 
