@@ -1,5 +1,10 @@
 package net.foulest.repairkit.util;
 
+import net.foulest.repairkit.RepairKit;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,6 +12,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Objects;
+import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -81,5 +88,35 @@ public class FileUtil {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    /**
+     * Gets an image icon from a path.
+     *
+     * @param path The path to get the image icon from.
+     * @return The image icon.
+     */
+    @Contract("_ -> new")
+    public static @NotNull ImageIcon getImageIcon(String path) {
+        return new ImageIcon(Objects.requireNonNull(RepairKit.class.getClassLoader().getResource(path)));
+    }
+
+    /**
+     * Gets the version of the program.
+     *
+     * @return The version of the program.
+     */
+    public static String getVersionFromProperties() {
+        Properties properties = new Properties();
+
+        try (InputStream inputStream = RepairKit.class.getResourceAsStream("/version.properties")) {
+            if (inputStream != null) {
+                properties.load(inputStream);
+                return properties.getProperty("version");
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return "Unknown";
     }
 }

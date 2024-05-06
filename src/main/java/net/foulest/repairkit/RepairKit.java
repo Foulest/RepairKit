@@ -9,28 +9,18 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.font.TextAttribute;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
 
 import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
 import static net.foulest.repairkit.util.CommandUtil.runCommand;
-import static net.foulest.repairkit.util.FileUtil.tempDirectory;
+import static net.foulest.repairkit.util.FileUtil.*;
 import static net.foulest.repairkit.util.ProcessUtil.isProcessRunning;
 import static net.foulest.repairkit.util.RegistryUtil.setRegistryIntValue;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
+import static net.foulest.repairkit.util.SwingUtil.*;
 
 public class RepairKit extends JFrame {
 
-    private final JPanel mainPanel;
+    public static JPanel mainPanel;
     @Getter
     private static boolean safeMode = false;
     @Getter
@@ -81,148 +71,61 @@ public class RepairKit extends JFrame {
         bannerPanel.setPreferredSize(new Dimension(getWidth(), 60));
 
         // Creates the RepairKit icon image.
-        ImageIcon imageIcon = new ImageIcon(Objects.requireNonNull(RepairKit.class.getClassLoader().getResource("icons/RepairKit.png")));
+        ImageIcon imageIcon = getImageIcon("icons/RepairKit.png");
         Image scaledImage = imageIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
         imageIcon = new ImageIcon(scaledImage);
         JLabel iconLabel = new JLabel(imageIcon);
         iconLabel.setBounds(10, 10, 40, 40);
-
-        // Creates the primary banner label.
-        JLabel bannerLabelPrimary = new JLabel("RepairKit");
-        bannerLabelPrimary.setForeground(Color.WHITE);
-        bannerLabelPrimary.setFont(new Font("Arial", Font.BOLD, 22));
-        bannerLabelPrimary.setBounds(60, 6, 200, 30);
-
-        // Creates the secondary banner label.
-        JLabel bannerLabelSecondary = new JLabel("by Foulest");
-        bannerLabelSecondary.setForeground(Color.WHITE);
-        bannerLabelSecondary.setFont(new Font("Arial", Font.PLAIN, 14));
-        bannerLabelSecondary.setBounds(60, 31, 100, 20);
-        bannerLabelSecondary.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-        // Creates a custom mouse listener for the label.
-        bannerLabelSecondary.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent event) {
-                try {
-                    Desktop.getDesktop().browse(new URI("https://github.com/Foulest"));
-                } catch (IOException | URISyntaxException ex) {
-                    ex.printStackTrace();
-                }
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent event) {
-                // Underlines the label text when the mouse enters.
-                Font font = bannerLabelSecondary.getFont();
-                Map<TextAttribute, Object> attributes = new HashMap<>(font.getAttributes());
-                attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-                bannerLabelSecondary.setFont(font.deriveFont(attributes));
-            }
-
-            @Override
-            public void mouseExited(MouseEvent event) {
-                // Removes the underline when the mouse exits.
-                Font font = bannerLabelSecondary.getFont();
-                Map<TextAttribute, Object> attributes = new HashMap<>(font.getAttributes());
-                attributes.put(TextAttribute.UNDERLINE, -1);
-                bannerLabelSecondary.setFont(font.deriveFont(attributes));
-            }
-        });
-
-        // Creates the version info label.
-        JLabel versionInfo = new JLabel("Version:");
-        versionInfo.setForeground(Color.WHITE);
-        versionInfo.setFont(new Font("Arial", Font.BOLD, 14));
-        versionInfo.setBounds(675, 5, 60, 30);
-
-        // Creates the version number label.
-        // Grabs the version number from the version.properties file.
-        JLabel versionNumber = new JLabel(getVersion());
-        versionNumber.setForeground(Color.WHITE);
-        versionNumber.setFont(new Font("Arial", Font.PLAIN, 14));
-        versionNumber.setBounds(700, 25, 50, 30);
-        versionNumber.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-
-        // Creates a custom mouse listener for the label.
-        versionNumber.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent event) {
-                try {
-                    Desktop.getDesktop().browse(new URI("https://github.com/Foulest/RepairKit"));
-                } catch (IOException | URISyntaxException ex) {
-                    ex.printStackTrace();
-                }
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent event) {
-                // Underlines the label text when the mouse enters.
-                Font font = versionNumber.getFont();
-                Map<TextAttribute, Object> attributes = new HashMap<>(font.getAttributes());
-                attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-                versionNumber.setFont(font.deriveFont(attributes));
-            }
-
-            @Override
-            public void mouseExited(MouseEvent event) {
-                // Removes the underline when the mouse exits.
-                Font font = versionNumber.getFont();
-                Map<TextAttribute, Object> attributes = new HashMap<>(font.getAttributes());
-                attributes.put(TextAttribute.UNDERLINE, -1);
-                versionNumber.setFont(font.deriveFont(attributes));
-            }
-        });
-
-        // Creates the Automatic Repairs button.
-        JButton automaticRepairs = new JButton("Automatic Repairs");
-        automaticRepairs.setBounds(175, 10, 150, 40);
-        automaticRepairs.setBackground(new Color(0, 120, 215));
-        automaticRepairs.setForeground(Color.WHITE);
-        automaticRepairs.setFocusPainted(false);
-        automaticRepairs.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        automaticRepairs.setFont(new Font("Arial", Font.BOLD, 14));
-        automaticRepairs.addActionListener(actionEvent -> {
-            CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
-            cardLayout.show(mainPanel, "Automatic Repairs");
-        });
-
-        // Creates the Useful Programs button.
-        JButton usefulPrograms = new JButton("Useful Programs");
-        usefulPrograms.setBounds(325, 10, 150, 40);
-        usefulPrograms.setBackground(new Color(0, 120, 215));
-        usefulPrograms.setForeground(Color.WHITE);
-        usefulPrograms.setFocusPainted(false);
-        usefulPrograms.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        usefulPrograms.setFont(new Font("Arial", Font.BOLD, 14));
-        usefulPrograms.addActionListener(actionEvent -> {
-            CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
-            cardLayout.show(mainPanel, "Useful Programs");
-        });
-
-        // Creates the System Shortcuts button.
-        JButton systemShortcuts = new JButton("System Shortcuts");
-        systemShortcuts.setBounds(475, 10, 150, 40);
-        systemShortcuts.setBackground(new Color(0, 120, 215));
-        systemShortcuts.setForeground(Color.WHITE);
-        systemShortcuts.setFocusPainted(false);
-        systemShortcuts.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        systemShortcuts.setFont(new Font("Arial", Font.BOLD, 14));
-        systemShortcuts.addActionListener(actionEvent -> {
-            CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
-            cardLayout.show(mainPanel, "System Shortcuts");
-        });
-
-        // Adds the labels to the banner panel.
-        bannerPanel.add(bannerLabelPrimary);
-        bannerPanel.add(bannerLabelSecondary);
-        bannerPanel.add(automaticRepairs);
-        bannerPanel.add(usefulPrograms);
-        bannerPanel.add(systemShortcuts);
-        bannerPanel.add(versionNumber);
-        bannerPanel.add(versionInfo);
         bannerPanel.add(iconLabel);
         iconLabel.repaint();
+
+        // Creates the primary banner label.
+        JLabel bannerLabelPrimary = createLabel("RepairKit",
+                new Rectangle(60, 6, 200, 30),
+                new Font("Arial", Font.BOLD, 22)
+        );
+        bannerLabelPrimary.setForeground(Color.WHITE);
+        bannerPanel.add(bannerLabelPrimary);
+
+        // Creates the secondary banner label.
+        JLabel bannerLabelSecondary = createLabel("by Foulest",
+                new Rectangle(60, 31, 100, 20),
+                new Font("Arial", Font.PLAIN, 14)
+        );
+        bannerLabelSecondary.setForeground(Color.WHITE);
+        bannerLabelSecondary.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        bannerLabelSecondary.addMouseListener(createHyperlinkLabel(bannerLabelSecondary, "https://github.com/Foulest"));
+        bannerPanel.add(bannerLabelSecondary);
+
+        // Creates the version info label.
+        JLabel versionInfo = createLabel("Version:",
+                new Rectangle(675, 5, 60, 30),
+                new Font("Arial", Font.BOLD, 14)
+        );
+        versionInfo.setForeground(Color.WHITE);
+        bannerPanel.add(versionInfo);
+
+        // Creates the version number label.
+        JLabel versionNumber = createLabel(getVersionFromProperties(),
+                new Rectangle(700, 25, 50, 30),
+                new Font("Arial", Font.PLAIN, 14)
+        );
+        versionNumber.setForeground(Color.WHITE);
+        versionNumber.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        versionNumber.addMouseListener(createHyperlinkLabel(versionNumber, "https://github.com/Foulest/RepairKit"));
+        bannerPanel.add(versionNumber);
+
+        // Creates the Automatic Repairs button.
+        JButton automaticRepairs = createPanelButton("Automatic Repairs", new Rectangle(175, 10, 150, 40));
+        bannerPanel.add(automaticRepairs);
+
+        // Creates the Useful Programs button.
+        JButton usefulPrograms = createPanelButton("Useful Programs", new Rectangle(325, 10, 150, 40));
+        bannerPanel.add(usefulPrograms);
+
+        // Creates the System Shortcuts button.
+        JButton systemShortcuts = createPanelButton("System Shortcuts", new Rectangle(475, 10, 150, 40));
+        bannerPanel.add(systemShortcuts);
         return bannerPanel;
     }
 
@@ -373,24 +276,5 @@ public class RepairKit extends JFrame {
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "Registered", 1);
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "NoCookieScan", 1);
         setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "EULA37", 1);
-    }
-
-    /**
-     * Gets the version of the program.
-     *
-     * @return The version of the program.
-     */
-    public static String getVersion() {
-        Properties properties = new Properties();
-
-        try (InputStream inputStream = RepairKit.class.getResourceAsStream("/version.properties")) {
-            if (inputStream != null) {
-                properties.load(inputStream);
-                return properties.getProperty("version");
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return "Unknown";
     }
 }

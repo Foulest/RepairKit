@@ -2,17 +2,26 @@ package net.foulest.repairkit.util;
 
 import lombok.NonNull;
 import net.foulest.repairkit.RepairKit;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.font.TextAttribute;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
+import static net.foulest.repairkit.RepairKit.mainPanel;
 import static net.foulest.repairkit.util.CommandUtil.runCommand;
 import static net.foulest.repairkit.util.FileUtil.*;
 
@@ -24,9 +33,11 @@ public class SwingUtil {
      * @param buttonText Text to display on the button.
      * @param action    Action to run when the button is clicked.
      */
-    public static @NonNull JButton createActionButton(String buttonText, Runnable action) {
+    public static @NonNull JButton createActionButton(String buttonText, Rectangle bounds,
+                                                      Color backgroundColor, Runnable action) {
         JButton button = new JButton(buttonText);
-        button.setBackground(new Color(200, 200, 200));
+        button.setBounds(bounds);
+        button.setBackground(backgroundColor);
 
         button.addActionListener(actionEvent -> {
             try {
@@ -45,10 +56,12 @@ public class SwingUtil {
      * @param toolTipText Text to display when hovering over the button.
      * @param action      Action to run when the button is clicked.
      */
-    public static @NotNull JButton createActionButton(String buttonText, String toolTipText, Runnable action) {
+    public static @NotNull JButton createActionButton(String buttonText, String toolTipText, Rectangle bounds,
+                                                      Color backgroundColor, Runnable action) {
         JButton button = new JButton(buttonText);
         button.setToolTipText(toolTipText);
-        button.setBackground(new Color(200, 200, 200));
+        button.setBounds(bounds);
+        button.setBackground(backgroundColor);
 
         button.addActionListener(actionEvent -> {
             try {
@@ -70,9 +83,10 @@ public class SwingUtil {
      * @param isZipped      Whether the resource is zipped.
      */
     public static @NotNull JButton createAppButton(String buttonText, String toolTipText,
+                                                   Rectangle bounds, Color color,
                                                    String appResource, String appExecutable,
                                                    boolean isZipped, String extractionPath) {
-        return createAppButton(buttonText, toolTipText, appResource, appExecutable, "", isZipped, extractionPath);
+        return createAppButton(buttonText, toolTipText, bounds, color, appResource, appExecutable, "", isZipped, extractionPath);
     }
 
     /**
@@ -87,6 +101,7 @@ public class SwingUtil {
      * @param launchArgs     Arguments to launch the application with.
      */
     public static @NotNull JButton createAppButton(String buttonText, @NotNull String toolTipText,
+                                                   Rectangle bounds, Color color,
                                                    String appResource, String appExecutable,
                                                    String launchArgs, boolean isZipped, String extractionPath) {
         JButton button = new JButton(buttonText);
@@ -95,7 +110,8 @@ public class SwingUtil {
             button.setToolTipText(toolTipText);
         }
 
-        button.setBackground(new Color(200, 200, 200));
+        button.setBounds(bounds);
+        button.setBackground(color);
 
         button.addActionListener(actionEvent -> {
             try {
@@ -163,9 +179,87 @@ public class SwingUtil {
                                     @NotNull JPanel panel) {
         Image scaledImage = imageIcon.getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH);
         imageIcon = new ImageIcon(scaledImage);
+
         JLabel iconLabel = new JLabel(imageIcon);
         iconLabel.setBounds(baseWidth, baseHeight + 7, 35, 35);
         panel.add(iconLabel);
         iconLabel.repaint();
+    }
+
+    /**
+     * Creates a hyperlink label that opens a URL when clicked.
+     *
+     * @param label The label to make a hyperlink.
+     * @param URL  The URL to open when the label is clicked.
+     * @return The created mouse adapter.
+     */
+    @Contract(value = "_, _ -> new", pure = true)
+    public static @NotNull MouseAdapter createHyperlinkLabel(JLabel label, String URL) {
+        return new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent event) {
+                try {
+                    Desktop.getDesktop().browse(new URI(URL));
+                } catch (IOException | URISyntaxException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent event) {
+                // Underlines the label text when the mouse enters.
+                Font font = label.getFont();
+                Map<TextAttribute, Object> attributes = new HashMap<>(font.getAttributes());
+                attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+                label.setFont(font.deriveFont(attributes));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent event) {
+                // Removes the underline when the mouse exits.
+                Font font = label.getFont();
+                Map<TextAttribute, Object> attributes = new HashMap<>(font.getAttributes());
+                attributes.put(TextAttribute.UNDERLINE, -1);
+                label.setFont(font.deriveFont(attributes));
+            }
+        };
+    }
+
+    /**
+     * Creates a panel button (located at the top of the panel).
+     *
+     * @param name   The name of the button.
+     * @param bounds The bounds of the button.
+     * @return The created button.
+     */
+    public static @NotNull JButton createPanelButton(String name, Rectangle bounds) {
+        JButton button = new JButton(name);
+        button.setBounds(bounds);
+        button.setBackground(new Color(0, 120, 215));
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        button.setFont(new Font("Arial", Font.BOLD, 14));
+
+        button.addActionListener(actionEvent -> {
+            CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
+            cardLayout.show(mainPanel, name);
+        });
+        return button;
+    }
+
+    /**
+     * Creates a label.
+     *
+     * @param text The text to display on the label.
+     * @param bounds The bounds of the label.
+     * @param font The font of the label.
+     * @return The created label.
+     */
+    public static @NotNull JLabel createLabel(String text, Rectangle bounds, Font font) {
+        JLabel label = new JLabel(text);
+        label.setBounds(bounds);
+        label.setFont(font);
+        return label;
     }
 }

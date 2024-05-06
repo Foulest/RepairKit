@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import static net.foulest.repairkit.util.CommandUtil.*;
 import static net.foulest.repairkit.util.RegistryUtil.*;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
+import static net.foulest.repairkit.util.SwingUtil.createLabel;
 
 @Log
 public class AutomaticRepairs extends JPanel {
@@ -29,20 +30,23 @@ public class AutomaticRepairs extends JPanel {
      * Creates the Automatic Repairs panel.
      */
     public AutomaticRepairs() {
+        // Sets the panel's layout to null.
         setLayout(null);
 
         // Creates the title label.
-        JLabel titleLabel = new JLabel("Automatic Repairs");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        titleLabel.setBounds(20, 15, 200, 30);
+        JLabel titleLabel = createLabel("Automatic Repairs",
+                new Rectangle(20, 15, 200, 30),
+                new Font("Arial", Font.BOLD, 18)
+        );
         add(titleLabel);
 
         // Creates the description label.
-        JLabel descriptionLabel = new JLabel("<html>RepairKit will automatically apply registry settings,"
-                + " disable telemetry settings, optimize Windows services, repair the WMI repository, and much"
-                + " more.<br><br>Automatic repairs are recommended to be run once per week.</html>");
-        descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        descriptionLabel.setBounds(20, 40, 500, 100);
+        JLabel descriptionLabel = createLabel("<html>RepairKit will automatically apply registry settings,"
+                        + " disable telemetry settings, optimize Windows services, repair the WMI repository, and much"
+                        + " more.<br><br>Automatic repairs are recommended to be run once per week.</html>",
+                new Rectangle(20, 40, 500, 100),
+                new Font("Arial", Font.PLAIN, 14)
+        );
         descriptionLabel.setMaximumSize(new Dimension(500, Integer.MAX_VALUE));
         add(descriptionLabel);
 
@@ -56,9 +60,10 @@ public class AutomaticRepairs extends JPanel {
         add(runButton);
 
         // Creates the progress label.
-        JLabel progressLabel = new JLabel("Progress:");
-        progressLabel.setFont(new Font("Arial", Font.BOLD, 14));
-        progressLabel.setBounds(20, 205, 200, 30);
+        JLabel progressLabel = createLabel("Progress:",
+                new Rectangle(20, 205, 200, 30),
+                new Font("Arial", Font.BOLD, 14)
+        );
         add(progressLabel);
 
         String[] progressItems = {
