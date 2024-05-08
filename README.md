@@ -9,6 +9,7 @@
 [Softpedia](https://www.softpedia.com/get/System/OS-Enhancements/RepairKit.shtml)
 • [Uptodown](https://repairkit.en.uptodown.com/windows)
 • [AlternativeTo](https://alternativeto.net/software/repairkit/about)
+• [SoftDownload](https://softdownload.com.br/repare-pc-automaticamente-repairkit.html)
 
 ## Features
 
