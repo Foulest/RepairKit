@@ -6,8 +6,9 @@
 
 **RepairKit** is an all-in-one Java-based Windows repair and maintenance toolkit.
 
-[Softpedia](https://www.softpedia.com/get/System/OS-Enhancements/RepairKit.shtml)
+[Softpedia](https://softpedia.com/get/System/OS-Enhancements/RepairKit.shtml)
 • [Uptodown](https://repairkit.en.uptodown.com/windows)
+• [MajorGeeks](https://majorgeeks.com/files/details/repairkit.html)
 • [AlternativeTo](https://alternativeto.net/software/repairkit/about)
 • [SoftDownload](https://softdownload.com.br/repare-pc-automaticamente-repairkit.html)
 
