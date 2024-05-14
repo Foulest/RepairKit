@@ -140,9 +140,17 @@ public class CommandUtil {
         return output.isEmpty() ? Collections.singletonList("") : output;
     }
 
+    /**
+     * Consumer for consuming lines.
+     */
     @FunctionalInterface
     public interface LineConsumer {
 
+        /**
+         * Consumes a line.
+         *
+         * @param line The line to consume.
+         */
         void consume(String line);
     }
 }

@@ -20,6 +20,8 @@ import static net.foulest.repairkit.util.SwingUtil.*;
 
 public class RepairKit extends JFrame {
 
+    // TODO: Adjust RepairKit's code to scale with high DPI displays.
+
     public static JPanel mainPanel;
     @Getter
     private static boolean safeMode = false;
@@ -28,6 +30,9 @@ public class RepairKit extends JFrame {
     @Getter
     private static boolean windowsUpdateInProgress = false;
 
+    /**
+     * Creates a new instance of the program.
+     */
     public RepairKit() {
         // Sets the window properties.
         setTitle("RepairKit");
