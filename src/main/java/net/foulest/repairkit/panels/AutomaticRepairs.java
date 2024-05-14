@@ -43,7 +43,7 @@ public class AutomaticRepairs extends JPanel {
         // Creates the description label.
         JLabel descriptionLabel = createLabel("<html>RepairKit will automatically apply registry settings,"
                         + " disable telemetry settings, optimize Windows services, repair the WMI repository, and much"
-                        + " more.<br><br>Automatic repairs are recommended to be run once per week.</html>",
+                        + " more.<br><br>Automatic repairs are recommended to be run once per month.</html>",
                 new Rectangle(20, 40, 500, 100),
                 new Font("Arial", Font.PLAIN, 14)
         );
