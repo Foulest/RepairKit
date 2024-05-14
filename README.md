@@ -69,8 +69,9 @@ Not sure how to download and run RepairKit? Follow these steps:
 1. Download the latest version of RepairKit from
    the [Releases page](https://github.com/Foulest/RepairKit/releases/latest) (look for the `RepairKit.zip` file
    under `Assets`).
-2. Extract the ZIP file to a folder on your computer.
-3. Run `RepairKit.exe` as an administrator.
+2. Extract the ZIP file to a folder on your computer. You can use a program like [7-Zip](https://7-zip.org) to extract the
+   contents.
+3. Run `RepairKit-X.X.X.exe` as an administrator. 
 4. If Windows Defender SmartScreen blocks the app, click `More info` and then `Run anyway`.
 5. Click `Yes` on the User Account Control prompt.
 
