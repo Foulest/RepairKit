@@ -67,8 +67,7 @@ Quickly access important Windows utilities like:
 Not sure how to download and run RepairKit? Follow these steps:
 
 1. Download the latest version of RepairKit from
-   the [Releases page](https://github.com/Foulest/RepairKit/releases/latest) (look for the `RepairKit.zip` file
-   under `Assets`).
+   the [Releases page](https://github.com/Foulest/RepairKit/releases/latest) (look for the `RepairKit-X.X.X.zip` file).
 2. Extract the ZIP file to a folder on your computer. You can use a program like [7-Zip](https://7-zip.org) to extract the
    contents.
 3. Double-click the `RepairKit-X.X.X.exe` file to run the program.
