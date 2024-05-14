@@ -71,7 +71,7 @@ Not sure how to download and run RepairKit? Follow these steps:
    under `Assets`).
 2. Extract the ZIP file to a folder on your computer. You can use a program like [7-Zip](https://7-zip.org) to extract the
    contents.
-3. Double-click the `RepairKit.exe` file to run the program.
+3. Double-click the `RepairKit-X.X.X.exe` file to run the program.
 4. If Windows Defender SmartScreen blocks the app, click `More info` and then `Run anyway`.
 5. Click `Yes` on the User Account Control prompt.
 
