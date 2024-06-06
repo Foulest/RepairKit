@@ -21,11 +21,11 @@ Automatically perform a comprehensive system cleanup and repair, including:
 
 - Deleting restrictive system policies
 - Removing pre-installed bloatware
-- Repairing the WMI repository
+- Repairing various disk issues
 - Running registry, service, and settings tweaks
 - Scanning for malware with Windows Defender
 
-![Automatic Repairs](https://i.imgur.com/nv0gf88.png)
+![Automatic Repairs](https://i.imgur.com/0Sl5DD0.png)
 
 ### **Useful Programs**
 
@@ -49,7 +49,7 @@ Access essential software tools for system maintenance, including:
 - **[TrafficLight](https://bitdefender.com/solutions/trafficlight.html)**: Link to Bitdefender's TrafficLight browser
   extension.
 
-![Useful Programs](https://i.imgur.com/qrubaPA.png)
+![Useful Programs](https://i.imgur.com/s1aS0BI.png)
 
 ### **System Shortcuts**
 
@@ -61,7 +61,7 @@ Quickly access important Windows utilities like:
 - Windows Security
 - Task Manager
 
-![System Shortcuts](https://i.imgur.com/lmTsVSv.png)
+![System Shortcuts](https://i.imgur.com/rPYvwan.png)
 
 ## Download and Run
 
@@ -69,13 +69,21 @@ Not sure how to download and run RepairKit? Follow these steps:
 
 1. Download the latest version of RepairKit from
    the [Releases page](https://github.com/Foulest/RepairKit/releases/latest) (click the `RepairKit-X.X.X.zip` file).
-2. Extract the ZIP file to a folder on your computer. You can use a program like [7-Zip](https://7-zip.org) to extract the
+2. Extract the ZIP file to a folder on your computer. You can use a program like [7-Zip](https://7-zip.org) to extract
+   the
    contents.
 3. Double-click the `RepairKit-X.X.X.exe` file to run the program.
 4. If Windows Defender SmartScreen blocks the app, click `More info` and then `Run anyway`.
 5. Click `Yes` on the User Account Control prompt.
 
 RepairKit will now open, and you can start using its features.
+
+## Compiling
+
+1. Clone the repository.
+2. Open a command prompt/terminal to the repository directory.
+3. Run `gradlew createExe` on Windows, or `./gradlew createExe` on macOS or Linux.
+4. The built `RepairKit-X.X.X.zip` file will be in the `build` folder.
 
 ## Getting Help
 

@@ -1,6 +1,5 @@
 ## The FreeType Project: Freetype v2.13.0
 
-
 ### FreeType Notice
 
 ```
@@ -19,6 +18,7 @@ which fits your needs best.
 ```
 
 ### FreeType License
+
 ```
 
 Copyright (C) 1996-2023 by David Turner, Robert Wilhelm, and Werner Lemberg.
@@ -556,6 +556,7 @@ Public License instead of this License.
 ```
 
 ### Additional Freetype Attributions
+
 ```
 
 ---------------------------------
@@ -615,6 +616,7 @@ and you accept them fully.
 ```
 
 ### MIT License
+
 ```
 
 ---------------------------------

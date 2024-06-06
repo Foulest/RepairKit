@@ -1,3 +1,20 @@
+/*
+  RepairKit - an all-in-one Java-based Windows repair and maintenance toolkit.
+  Copyright (C) 2024 Foulest (https://github.com/Foulest)
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
 package net.foulest.repairkit.panels;
 
 import com.sun.jna.platform.win32.WinReg;
@@ -42,8 +59,8 @@ public class AutomaticRepairs extends JPanel {
 
         // Creates the description label.
         JLabel descriptionLabel = createLabel("<html>RepairKit will automatically apply registry settings,"
-                        + " disable telemetry settings, optimize Windows services, repair the WMI repository, and much"
-                        + " more.<br><br>Automatic repairs are recommended to be run once per month.</html>",
+                        + " disable telemetry settings, optimize Windows services, remove bloatware, repair disk"
+                        + " issues, and more.<br><br>Automatic repairs are recommended to be run once per month.</html>",
                 new Rectangle(20, 40, 500, 100),
                 new Font("Arial", Font.PLAIN, 14)
         );
@@ -69,7 +86,7 @@ public class AutomaticRepairs extends JPanel {
         String[] progressItems = {
                 "Delete System Policies",
                 "Remove Bloatware",
-                "Repair WMI Repository",
+                "Repair Disk Issues",
                 "Run Registry Tweaks",
                 "Run Service Tweaks",
                 "Run Settings Tweaks",
@@ -139,17 +156,6 @@ public class AutomaticRepairs extends JPanel {
                     }
                 });
 
-                // Repairs the WMI repository.
-                executor.submit(() -> {
-                    try {
-                        repairWMIRepository();
-                        latch.countDown();
-                        SwingUtilities.invokeLater(() -> progressCheckboxes[2].setSelected(true));
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                });
-
                 // Runs registry tweaks.
                 executor.submit(() -> {
                     try {
@@ -178,6 +184,12 @@ public class AutomaticRepairs extends JPanel {
                         runSettingsTweaks();
                         latch.countDown();
                         SwingUtilities.invokeLater(() -> progressCheckboxes[5].setSelected(true));
+
+                        // Repairs disk issues.
+                        // This has to be done after the DISM tweaks in the settings tweaks.
+                        repairDiskIssues();
+                        latch.countDown();
+                        SwingUtilities.invokeLater(() -> progressCheckboxes[2].setSelected(true));
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
@@ -662,15 +674,27 @@ public class AutomaticRepairs extends JPanel {
     }
 
     /**
-     * Repairs the WMI Repository.
+     * Repairs various disk issues.
      */
-    private static void repairWMIRepository() {
+    private static void repairDiskIssues() {
         log.info("Repairing WMI repository...");
 
         if (getCommandOutput("winmgmt /verifyrepository", false, false).toString().contains("not consistent")
                 && getCommandOutput("winmgmt /salvagerepository", false, false).toString().contains("not consistent")) {
             runCommand("winmgmt /resetrepository", false);
             log.info("Repaired WMI repository.");
+        } else {
+            log.info("WMI repository is already consistent.");
+        }
+
+        log.info("Repairing disk issues with SFC...");
+
+        if (getCommandOutput("sfc /scannow", false, false).toString().contains("Windows Resource Protection found")) {
+            log.info("Found disk issues with SFC. Repairing with DISM...");
+            runCommand("DISM /Online /Cleanup-Image /RestoreHealth", false);
+            log.info("Repaired disk issues with DISM.");
+        } else {
+            log.info("No disk issues found with SFC.");
         }
     }
 

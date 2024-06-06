@@ -1,3 +1,20 @@
+/*
+  RepairKit - an all-in-one Java-based Windows repair and maintenance toolkit.
+  Copyright (C) 2024 Foulest (https://github.com/Foulest)
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
 package net.foulest.repairkit;
 
 import com.sun.jna.platform.win32.WinReg;
@@ -248,7 +265,7 @@ public class RepairKit extends JFrame {
             JOptionPane.showMessageDialog(null,
                     "Warning: Medal is installed and running on your system."
                             + "\nMedal causes issues with Desktop Windows Manager, which affects system performance."
-                            + "\nFinding an alternative to Medal, such as ShadowPlay or AMD ReLive is recommended.",
+                            + "\nFinding an alternative to Medal, such as ShadowPlay or AMD ReLive, is recommended.",
                     "Software Warning", JOptionPane.WARNING_MESSAGE);
         }
     }

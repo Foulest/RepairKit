@@ -8,8 +8,9 @@ assignees: ''
 ---
 
 **Before you submit this issue, please make sure you have done the following:**
+
 - [ ] I am using the latest version of RepairKit
-- [ ] I am using Windows 10 or higher
+- [ ] I am using Windows 10 or higher as my operating system
 - [ ] I have searched the issue tracker for a similar issue
 - [ ] I have excluded RepairKit from my antivirus software
 
@@ -24,6 +25,7 @@ A clear and concise description of what actually happened.
 
 **To Reproduce**
 Steps to reproduce the behavior:
+
 1. Go to '...'
 2. Click on '....'
 3. Scroll down to '....'

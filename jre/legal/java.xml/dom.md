@@ -1,6 +1,7 @@
 ## DOM Level 3 Core Specification v1.0
 
 ### W3C Software Notice
+
 <pre>
 Copyright © 2004 World Wide Web Consortium, (Massachusetts Institute of Technology,
 European Research Consortium for Informatics and Mathematics, Keio University).
@@ -16,6 +17,7 @@ case of the Java language binding, the package names can no longer be in the
 </pre>
 
 ### W3C License
+
 <pre>
 
 W3C SOFTWARE NOTICE AND LICENSE

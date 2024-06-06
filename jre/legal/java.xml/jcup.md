@@ -21,11 +21,12 @@ resulting from loss of use, data or profits, whether in an action of
 contract, negligence or other tortious action, arising out of or in
 connection with the use or performance of this software.
 ```
+
 ---
+
 ```
 This is an open source license. It is also GPL-Compatible (see entry for
 "Standard ML of New Jersey"). The portions of CUP output which are hard-coded
 into the CUP source code are (naturally) covered by this same license, as is
 the CUP runtime code linked with the generated parser.
 ```
-

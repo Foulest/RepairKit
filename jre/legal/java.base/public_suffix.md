@@ -1,6 +1,7 @@
 ## Mozilla Public Suffix List
 
 ### Public Suffix Notice
+
 ```
 You are receiving a copy of the Mozilla Public Suffix List in the following
 file: <java-home>/lib/security/public_suffix_list.dat. The terms of the
@@ -21,6 +22,7 @@ for the specific language governing rights and limitations under the License.
 ```
 
 ### MPL v2.0
+
 ```
 Mozilla Public License Version 2.0
 ==================================

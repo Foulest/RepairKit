@@ -1,6 +1,7 @@
 ## Independent JPEG Group: JPEG release 6b
 
 ### JPEG License
+
 <pre>
 
 Must reproduce following license in documentation and/or other materials
