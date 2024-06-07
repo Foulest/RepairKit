@@ -22,6 +22,7 @@ import lombok.Getter;
 import net.foulest.repairkit.panels.AutomaticRepairs;
 import net.foulest.repairkit.panels.SystemShortcuts;
 import net.foulest.repairkit.panels.UsefulPrograms;
+import net.foulest.repairkit.util.UpdateUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -74,6 +75,9 @@ public class RepairKit extends JFrame {
         // Adds the panels to the main panel.
         add(bannerPanel, BorderLayout.NORTH);
         add(mainPanel, BorderLayout.CENTER);
+
+        // Checks for updates.
+        UpdateUtil.checkForUpdates();
 
         // Packs and centers the frame.
         pack();

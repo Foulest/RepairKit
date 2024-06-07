@@ -91,6 +91,8 @@ grant codeBase "jrt:/java.xml.crypto" {
     permission java.security.SecurityPermission
                    "com.sun.org.apache.xml.internal.security.register";
     permission java.security.SecurityPermission
+                   "getProperty.jdk.xml.dsig.hereFunctionSupported";
+    permission java.security.SecurityPermission
                    "getProperty.jdk.xml.dsig.secureValidationPolicy";
     permission java.lang.RuntimePermission
                    "accessClassInPackage.com.sun.org.apache.xml.internal.*";
@@ -236,3 +238,31 @@ grant codeBase "jrt:/jdk.crypto.mscapi" {
     permission java.security.SecurityPermission "authProvider.SunMSCAPI";
     permission java.util.PropertyPermission "*", "read";
 };
+grant codeBase "jrt:/javafx.base" {
+    permission java.security.AllPermission;
+};
+
+grant codeBase "jrt:/javafx.controls" {
+    permission java.security.AllPermission;
+};
+
+grant codeBase "jrt:/javafx.fxml" {
+    permission java.security.AllPermission;
+};
+
+grant codeBase "jrt:/javafx.graphics" {
+    permission java.security.AllPermission;
+};
+
+grant codeBase "jrt:/javafx.media" {
+    permission java.security.AllPermission;
+};
+
+grant codeBase "jrt:/javafx.swing" {
+    permission java.security.AllPermission;
+};
+
+grant codeBase "jrt:/javafx.web" {
+    permission java.security.AllPermission;
+};
+

@@ -1,2 +1,2 @@
-JAVA_VERSION="11.0.22"
-MODULES="java.base java.datatransfer java.xml java.prefs java.desktop java.logging"
+JAVA_VERSION="11.0.23"
+MODULES="java.base java.datatransfer java.xml java.prefs java.desktop java.logging java.net.http java.security.sasl jdk.crypto.ec"
