@@ -169,7 +169,7 @@ public class SwingUtil {
         synchronized (RepairKit.class) {
             if (!Files.exists(path)) {
                 try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/" + appResource)) {
-                    saveFile(Objects.requireNonNull(input), appResource, false);
+                    saveFile(Objects.requireNonNull(input), tempDirectory + "\\" + appResource, false);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
@@ -258,11 +258,18 @@ public class SwingUtil {
         button.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         button.setFont(new Font("Arial", Font.BOLD, 14));
 
-        button.addActionListener(actionEvent -> {
-            CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
-            cardLayout.show(mainPanel, name);
-        });
+        button.addActionListener(actionEvent -> performPanelButtonAction(name));
         return button;
+    }
+
+    /**
+     * Performs an action when a panel button is clicked.
+     *
+     * @param name The name of the panel to switch to.
+     */
+    public static void performPanelButtonAction(String name) {
+        CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
+        cardLayout.show(mainPanel, name);
     }
 
     /**

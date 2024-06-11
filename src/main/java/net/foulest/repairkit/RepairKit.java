@@ -89,7 +89,8 @@ public class RepairKit extends JFrame {
      *
      * @return The banner panel.
      */
-    private @NotNull JPanel createBannerPanel() {
+    @NotNull
+    public JPanel createBannerPanel() {
         // Creates the banner panel.
         JPanel bannerPanel = new JPanel(new BorderLayout());
         bannerPanel.setLayout(null);

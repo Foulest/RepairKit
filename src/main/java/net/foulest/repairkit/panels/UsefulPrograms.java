@@ -407,7 +407,7 @@ public class UsefulPrograms extends JPanel {
                     }
 
                     try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/NVCleanstall.zip")) {
-                        saveFile(Objects.requireNonNull(input), "NVCleanstall.zip", true);
+                        saveFile(Objects.requireNonNull(input), tempDirectory + "\\NVCleanstall.zip", true);
                         unzipFile(tempDirectory + "\\NVCleanstall.zip", tempDirectory.getPath());
                         runCommand(tempDirectory + "\\NVCleanstall.exe", true);
                     } catch (IOException ex) {
@@ -499,7 +499,7 @@ public class UsefulPrograms extends JPanel {
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/Sophos.zip")) {
-                        saveFile(Objects.requireNonNull(input), "Sophos.zip", true);
+                        saveFile(Objects.requireNonNull(input), tempDirectory + "\\Sophos.zip", true);
                         unzipFile(tempDirectory + "\\Sophos.zip", tempDirectory.getPath());
                         runCommand("start \"\" \"" + tempDirectory + "\\Sophos.exe\"", true);
                     } catch (IOException ex) {

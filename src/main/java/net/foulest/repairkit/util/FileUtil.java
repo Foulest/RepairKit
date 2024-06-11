@@ -82,11 +82,11 @@ public class FileUtil {
      * Saves a file.
      *
      * @param input          The input stream to save.
-     * @param fileName       The name of the file to save.
+     * @param path           The path to save the file to.
      * @param replaceOldFile Whether to replace the old file.
      */
-    public static void saveFile(InputStream input, String fileName, boolean replaceOldFile) {
-        Path savedFilePath = Paths.get(String.valueOf(tempDirectory), fileName);
+    public static void saveFile(InputStream input, String path, boolean replaceOldFile) {
+        Path savedFilePath = Paths.get(path);
 
         try {
             if (Files.exists(savedFilePath)) {

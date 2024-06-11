@@ -71,7 +71,7 @@ public class UpdateUtil {
      *
      * @return The latest release version or null if an error occurred.
      */
-    private static @Nullable String getLatestReleaseVersion() {
+    public static @Nullable String getLatestReleaseVersion() {
         try {
             URL url = new URL(REPO_API_URL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -99,7 +99,7 @@ public class UpdateUtil {
      * @param jsonResponse The JSON response.
      * @return The version or null if not found.
      */
-    private static @Nullable String extractVersion(String jsonResponse) {
+    public static @Nullable String extractVersion(String jsonResponse) {
         String versionRegex = "\"tag_name\":\"(.*?)\"";
         Pattern pattern = Pattern.compile(versionRegex);
         Matcher matcher = pattern.matcher(jsonResponse);
