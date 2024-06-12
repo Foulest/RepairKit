@@ -48,7 +48,7 @@ dependencies {
     // https://mvnrepository.com/artifact/org.mockito/mockito-core
     // https://mvnrepository.com/artifact/org.mockito/mockito-inline
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '4.11.0'
-    testImplementation group: 'org.mockito', name: 'mockito-inline', version: '4.11.0'
+    testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
 }
 
 test {
