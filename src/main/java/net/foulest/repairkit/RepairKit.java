@@ -40,8 +40,6 @@ import static net.foulest.repairkit.util.SwingUtil.*;
 
 public class RepairKit extends JFrame {
 
-    // TODO: Adjust RepairKit's code to scale with high DPI displays.
-
     @Getter
     @Setter
     private static JPanel mainPanel;
