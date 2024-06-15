@@ -24,6 +24,7 @@ import javax.swing.*;
 import java.awt.*;
 
 import static net.foulest.repairkit.util.CommandUtil.runCommand;
+import static net.foulest.repairkit.util.ConstantUtil.*;
 import static net.foulest.repairkit.util.FileUtil.getImageIcon;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
 import static net.foulest.repairkit.util.SwingUtil.*;
@@ -41,7 +42,7 @@ public class SystemShortcuts extends JPanel {
         // Creates the title label.
         JLabel titleLabel = createLabel("System Shortcuts",
                 new Rectangle(20, 15, 200, 30),
-                new Font("Arial", Font.BOLD, 18)
+                new Font(ARIAL, Font.BOLD, 18)
         );
         add(titleLabel);
 
@@ -73,14 +74,14 @@ public class SystemShortcuts extends JPanel {
         // Adds a title label for Apps & Features.
         JLabel title = createLabel("Apps & Features",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for Apps & Features.
         JLabel description = createLabel("Manage installed programs.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -111,14 +112,14 @@ public class SystemShortcuts extends JPanel {
         // Adds a title label for Startup Apps.
         JLabel title = createLabel("Startup Apps",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for Startup Apps.
         JLabel description = createLabel("Manage startup programs.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -149,14 +150,14 @@ public class SystemShortcuts extends JPanel {
         // Adds a title label for Windows Update.
         JLabel title = createLabel("Windows Update",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for Windows Update.
         JLabel description = createLabel("Check for updates.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -169,11 +170,8 @@ public class SystemShortcuts extends JPanel {
                 new Color(200, 200, 200), () -> {
                     if (RepairKit.isOutdatedOperatingSystem()) {
                         if (RepairKit.isSafeMode()) {
-                            playSound("win.sound.hand");
-                            JOptionPane.showMessageDialog(null,
-                                    "Windows Update cannot be run in Safe Mode."
-                                            + "\nPlease restart your system in normal mode to use this feature."
-                                    , "Safe Mode Detected", JOptionPane.ERROR_MESSAGE);
+                            playSound(ERROR_SOUND);
+                            JOptionPane.showMessageDialog(null, SAFE_MODE_MESSAGE, SAFE_MODE_TITLE, JOptionPane.ERROR_MESSAGE);
                             return;
                         }
                         runCommand("control /name Microsoft.WindowsUpdate", true);
@@ -195,14 +193,14 @@ public class SystemShortcuts extends JPanel {
         // Adds a title label for Windows Security.
         JLabel title = createLabel("Windows Security",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for Windows Security.
         JLabel description = createLabel("Manage security settings.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -215,13 +213,11 @@ public class SystemShortcuts extends JPanel {
                 new Color(200, 200, 200), () -> {
                     if (RepairKit.isOutdatedOperatingSystem()) {
                         if (RepairKit.isSafeMode()) {
-                            playSound("win.sound.hand");
-                            JOptionPane.showMessageDialog(null,
-                                    "Windows Defender cannot be run in Safe Mode."
-                                            + "\nPlease restart your system in normal mode to use this feature."
-                                    , "Safe Mode Detected", JOptionPane.ERROR_MESSAGE);
+                            playSound(ERROR_SOUND);
+                            JOptionPane.showMessageDialog(null, SAFE_MODE_MESSAGE, SAFE_MODE_TITLE, JOptionPane.ERROR_MESSAGE);
                             return;
                         }
+
                         runCommand("control /name Microsoft.WindowsDefender", true);
                     } else {
                         runCommand("start windowsdefender:", true);
@@ -241,14 +237,14 @@ public class SystemShortcuts extends JPanel {
         // Adds a title label for Display Settings.
         JLabel title = createLabel("Display Settings",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for Display Settings.
         JLabel description = createLabel("Manage display settings.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -274,14 +270,14 @@ public class SystemShortcuts extends JPanel {
         // Adds a title label for Storage Settings.
         JLabel title = createLabel("Storage Settings",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for Storage Settings.
         JLabel description = createLabel("Manage storage settings.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -312,14 +308,14 @@ public class SystemShortcuts extends JPanel {
         // Adds a title label for Sound Settings.
         JLabel title = createLabel("Sound Settings",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for Sound Settings.
         JLabel description = createLabel("Manage sound settings.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -350,14 +346,14 @@ public class SystemShortcuts extends JPanel {
         // Adds a title label for Optional Features.
         JLabel title = createLabel("Optional Features",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for Optional Features.
         JLabel description = createLabel("Manage optional features.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -388,14 +384,14 @@ public class SystemShortcuts extends JPanel {
         // Adds a title label for Task Manager.
         JLabel title = createLabel("Task Manager",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for Task Manager.
         JLabel description = createLabel("Manage running processes.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -421,14 +417,14 @@ public class SystemShortcuts extends JPanel {
         // Adds a title label for Device Manager.
         JLabel title = createLabel("Device Manager",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for Device Manager.
         JLabel description = createLabel("Manage hardware devices.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -454,14 +450,14 @@ public class SystemShortcuts extends JPanel {
         // Adds a title label for Disk Cleanup.
         JLabel title = createLabel("Disk Cleanup",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for Disk Cleanup.
         JLabel description = createLabel("Clean up disk space.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -487,14 +483,14 @@ public class SystemShortcuts extends JPanel {
         // Adds a title label for MSConfig.
         JLabel title = createLabel("MSConfig",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for MSConfig.
         JLabel description = createLabel("System configuration utility.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 

@@ -17,6 +17,8 @@
  */
 package net.foulest.repairkit.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import net.foulest.repairkit.RepairKit;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +36,7 @@ import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FileUtil {
 
     public static final File tempDirectory = new File(System.getenv("TEMP") + "\\RepairKit");

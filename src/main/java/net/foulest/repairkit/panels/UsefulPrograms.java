@@ -28,6 +28,7 @@ import java.util.Objects;
 
 import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
 import static net.foulest.repairkit.util.CommandUtil.runCommand;
+import static net.foulest.repairkit.util.ConstantUtil.*;
 import static net.foulest.repairkit.util.FileUtil.*;
 import static net.foulest.repairkit.util.ProcessUtil.isProcessRunning;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
@@ -46,7 +47,7 @@ public class UsefulPrograms extends JPanel {
         // Creates the title label.
         JLabel titleLabel = createLabel("Useful Programs",
                 new Rectangle(20, 15, 200, 30),
-                new Font("Arial", Font.BOLD, 18)
+                new Font(ARIAL, Font.BOLD, 18)
         );
         add(titleLabel);
 
@@ -78,14 +79,14 @@ public class UsefulPrograms extends JPanel {
         // Adds a title label for CPU-Z.
         JLabel title = createLabel("CPU-Z",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for CPU-Z.
         JLabel description = createLabel("Version: 2.09.0",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -114,14 +115,14 @@ public class UsefulPrograms extends JPanel {
         // Adds a title label for the HWMonitor.
         JLabel title = createLabel("HWMonitor",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for HWMonitor.
         JLabel description = createLabel("Version: 1.53.0",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -150,14 +151,14 @@ public class UsefulPrograms extends JPanel {
         // Adds a title label for Autoruns.
         JLabel title = createLabel("Autoruns",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for Autoruns.
         JLabel description = createLabel("Version: 14.11",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -186,14 +187,14 @@ public class UsefulPrograms extends JPanel {
         // Adds a title label for Process Explorer.
         JLabel title = createLabel("Process Explorer",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for Process Explorer.
         JLabel description = createLabel("Version: 17.06",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -222,14 +223,14 @@ public class UsefulPrograms extends JPanel {
         // Adds a title label for TreeSize.
         JLabel title = createLabel("TreeSize",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for TreeSize.
         JLabel description = createLabel("Version: 4.6.3.520",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -243,11 +244,8 @@ public class UsefulPrograms extends JPanel {
                     "Displays system files organized by size.",
                     new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                     new Color(200, 200, 200), () -> {
-                        playSound("win.sound.hand");
-                        JOptionPane.showMessageDialog(null,
-                                "TreeSize cannot be run on outdated operating systems."
-                                        + "\nPlease upgrade to Windows 10 or 11 to use this feature."
-                                , "Outdated Operating System", JOptionPane.ERROR_MESSAGE);
+                        playSound(ERROR_SOUND);
+                        JOptionPane.showMessageDialog(null, OUTDATED_OS_MESSAGE, OUTDATED_OS_TITLE, JOptionPane.ERROR_MESSAGE);
                     }
             );
         } else {
@@ -273,14 +271,14 @@ public class UsefulPrograms extends JPanel {
         // Adds a title label for Everything.
         JLabel title = createLabel("Everything",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for Everything.
         JLabel description = createLabel("Version: 1.4.1.1024",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -309,14 +307,14 @@ public class UsefulPrograms extends JPanel {
         // Adds a title label for FanControl.
         JLabel title = createLabel("FanControl",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for FanControl.
-        JLabel description = createLabel("Version: Auto-Updated",
+        JLabel description = createLabel(VERSION_AUTO_UPDATED,
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -329,20 +327,14 @@ public class UsefulPrograms extends JPanel {
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     if (RepairKit.isOutdatedOperatingSystem()) {
-                        playSound("win.sound.hand");
-                        JOptionPane.showMessageDialog(null,
-                                "FanControl cannot be run on outdated operating systems."
-                                        + "\nPlease upgrade to Windows 10 or 11 to use this feature."
-                                , "Outdated Operating System", JOptionPane.ERROR_MESSAGE);
+                        playSound(ERROR_SOUND);
+                        JOptionPane.showMessageDialog(null, OUTDATED_OS_MESSAGE, OUTDATED_OS_TITLE, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
                     if (RepairKit.isSafeMode()) {
-                        playSound("win.sound.hand");
-                        JOptionPane.showMessageDialog(null,
-                                "FanControl cannot be run in Safe Mode."
-                                        + "\nPlease restart your system in normal mode to use this feature."
-                                , "Safe Mode Detected", JOptionPane.ERROR_MESSAGE);
+                        playSound(ERROR_SOUND);
+                        JOptionPane.showMessageDialog(null, SAFE_MODE_MESSAGE, SAFE_MODE_TITLE, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
@@ -378,14 +370,14 @@ public class UsefulPrograms extends JPanel {
         // Adds a title label for NVCleanstall.
         JLabel title = createLabel("NVCleanstall",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for NVCleanstall.
         JLabel description = createLabel("Version: 1.16.0",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -398,11 +390,8 @@ public class UsefulPrograms extends JPanel {
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     if (RepairKit.isOutdatedOperatingSystem()) {
-                        playSound("win.sound.hand");
-                        JOptionPane.showMessageDialog(null,
-                                "NVCleanstall cannot be run on outdated operating systems."
-                                        + "\nPlease upgrade to Windows 10 or 11 to use this feature."
-                                , "Outdated Operating System", JOptionPane.ERROR_MESSAGE);
+                        playSound(ERROR_SOUND);
+                        JOptionPane.showMessageDialog(null, OUTDATED_OS_MESSAGE, OUTDATED_OS_TITLE, JOptionPane.ERROR_MESSAGE);
                         return;
                     }
 
@@ -428,14 +417,14 @@ public class UsefulPrograms extends JPanel {
         // Adds a title label for Emsisoft Scan.
         JLabel title = createLabel("Emsisoft Scan",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for Emsisoft Scan.
-        JLabel description = createLabel("Version: Auto-Updated",
+        JLabel description = createLabel(VERSION_AUTO_UPDATED,
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -449,11 +438,8 @@ public class UsefulPrograms extends JPanel {
                     "Scans for malware with Emsisoft.",
                     new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                     new Color(200, 200, 200), () -> {
-                        playSound("win.sound.hand");
-                        JOptionPane.showMessageDialog(null,
-                                "Emsisoft Scan cannot be run on outdated operating systems."
-                                        + "\nPlease upgrade to Windows 10 or 11 to use this feature."
-                                , "Outdated Operating System", JOptionPane.ERROR_MESSAGE);
+                        playSound(ERROR_SOUND);
+                        JOptionPane.showMessageDialog(null, OUTDATED_OS_MESSAGE, OUTDATED_OS_TITLE, JOptionPane.ERROR_MESSAGE);
                     }
             );
         } else {
@@ -479,14 +465,14 @@ public class UsefulPrograms extends JPanel {
         // Adds a title label for Sophos Scan.
         JLabel title = createLabel("Sophos Scan",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for Sophos Scan.
-        JLabel description = createLabel("Version: Auto-Updated",
+        JLabel description = createLabel(VERSION_AUTO_UPDATED,
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -520,14 +506,14 @@ public class UsefulPrograms extends JPanel {
         // Adds a title label for uBlock Origin.
         JLabel title = createLabel("uBlock Origin",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for uBlock Origin.
-        JLabel description = createLabel("Version: Auto-Updated",
+        JLabel description = createLabel(VERSION_AUTO_UPDATED,
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 
@@ -554,14 +540,14 @@ public class UsefulPrograms extends JPanel {
         // Adds a title label for TrafficLight.
         JLabel title = createLabel("TrafficLight",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font("Arial", Font.BOLD, 16)
+                new Font(ARIAL, Font.BOLD, 16)
         );
         add(title);
 
         // Adds a description label for TrafficLight.
-        JLabel description = createLabel("Version: Auto-Updated",
+        JLabel description = createLabel(VERSION_AUTO_UPDATED,
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font("Arial", Font.BOLD, 12)
+                new Font(ARIAL, Font.BOLD, 12)
         );
         add(description);
 

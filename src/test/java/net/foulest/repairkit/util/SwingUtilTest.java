@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
+import static net.foulest.repairkit.util.ConstantUtil.ARIAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -60,7 +61,7 @@ class SwingUtilTest {
     void performPanelButtonAction() {
         // Setup
         JPanel mainPanel = new JPanel(new CardLayout());
-        RepairKit.mainPanel = mainPanel; // Set the mainPanel field in RepairKit
+        RepairKit.setMainPanel(mainPanel);
 
         // Call the method
         SwingUtil.performPanelButtonAction("Test");
@@ -72,10 +73,10 @@ class SwingUtilTest {
 
     @Test
     void createLabel() {
-        JLabel label = SwingUtil.createLabel("Test", new Rectangle(0, 0, 100, 50), new Font("Arial", Font.BOLD, 14));
+        JLabel label = SwingUtil.createLabel("Test", new Rectangle(0, 0, 100, 50), new Font(ARIAL, Font.BOLD, 14));
 
         assertEquals("Test", label.getText());
         assertEquals(new Rectangle(0, 0, 100, 50), label.getBounds());
-        assertEquals(new Font("Arial", Font.BOLD, 14), label.getFont());
+        assertEquals(new Font(ARIAL, Font.BOLD, 14), label.getFont());
     }
 }

@@ -19,6 +19,7 @@ package net.foulest.repairkit;
 
 import com.sun.jna.platform.win32.WinReg;
 import lombok.Getter;
+import lombok.Setter;
 import net.foulest.repairkit.panels.AutomaticRepairs;
 import net.foulest.repairkit.panels.SystemShortcuts;
 import net.foulest.repairkit.panels.UsefulPrograms;
@@ -30,6 +31,7 @@ import java.awt.*;
 
 import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
 import static net.foulest.repairkit.util.CommandUtil.runCommand;
+import static net.foulest.repairkit.util.ConstantUtil.*;
 import static net.foulest.repairkit.util.FileUtil.*;
 import static net.foulest.repairkit.util.ProcessUtil.isProcessRunning;
 import static net.foulest.repairkit.util.RegistryUtil.setRegistryIntValue;
@@ -40,7 +42,9 @@ public class RepairKit extends JFrame {
 
     // TODO: Adjust RepairKit's code to scale with high DPI displays.
 
-    public static JPanel mainPanel;
+    @Getter
+    @Setter
+    private static JPanel mainPanel;
     @Getter
     private static boolean safeMode = false;
     @Getter
@@ -64,7 +68,7 @@ public class RepairKit extends JFrame {
         SystemShortcuts systemShortcuts = new SystemShortcuts();
 
         // Creates the main panel.
-        mainPanel = new JPanel(new CardLayout());
+        setMainPanel(new JPanel(new CardLayout()));
         mainPanel.add(automaticRepairs, "Automatic Repairs");
         mainPanel.add(usefulPrograms, "Useful Programs");
         mainPanel.add(systemShortcuts, "System Shortcuts");
@@ -109,7 +113,7 @@ public class RepairKit extends JFrame {
         // Creates the primary banner label.
         JLabel bannerLabelPrimary = createLabel("RepairKit",
                 new Rectangle(60, 6, 200, 30),
-                new Font("Arial", Font.BOLD, 22)
+                new Font(ARIAL, Font.BOLD, 22)
         );
         bannerLabelPrimary.setForeground(Color.WHITE);
         bannerPanel.add(bannerLabelPrimary);
@@ -117,7 +121,7 @@ public class RepairKit extends JFrame {
         // Creates the secondary banner label.
         JLabel bannerLabelSecondary = createLabel("by Foulest",
                 new Rectangle(60, 31, 100, 20),
-                new Font("Arial", Font.PLAIN, 14)
+                new Font(ARIAL, Font.PLAIN, 14)
         );
         bannerLabelSecondary.setForeground(Color.WHITE);
         bannerLabelSecondary.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -127,7 +131,7 @@ public class RepairKit extends JFrame {
         // Creates the version info label.
         JLabel versionInfo = createLabel("Version:",
                 new Rectangle(675, 5, 60, 30),
-                new Font("Arial", Font.BOLD, 14)
+                new Font(ARIAL, Font.BOLD, 14)
         );
         versionInfo.setForeground(Color.WHITE);
         bannerPanel.add(versionInfo);
@@ -135,11 +139,11 @@ public class RepairKit extends JFrame {
         // Creates the version number label.
         JLabel versionNumber = createLabel(getVersionFromProperties(),
                 new Rectangle(700, 25, 50, 30),
-                new Font("Arial", Font.PLAIN, 14)
+                new Font(ARIAL, Font.PLAIN, 14)
         );
         versionNumber.setForeground(Color.WHITE);
         versionNumber.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        versionNumber.addMouseListener(createHyperlinkLabel(versionNumber, "https://github.com/Foulest/RepairKit"));
+        versionNumber.addMouseListener(createHyperlinkLabel(versionNumber, "https://github.com/Foulest/RepairKit/releases"));
         bannerPanel.add(versionNumber);
 
         // Creates the Automatic Repairs button.
@@ -194,12 +198,12 @@ public class RepairKit extends JFrame {
 
         // Checks if the operating system is 32-bit.
         if (!System.getProperty("os.arch").contains("64")) {
-            playSound("win.sound.hand");
+            playSound(ERROR_SOUND);
             JOptionPane.showMessageDialog(null,
                     "Your operating system is 32-bit."
                             + "\nThis program is designed for 64-bit operating systems."
-                            + "\nPlease upgrade to a 64-bit operating system to use this program."
-                    , "Incompatible Operating System", JOptionPane.ERROR_MESSAGE);
+                            + "\nPlease upgrade to a 64-bit operating system to use this program.",
+                    INCOMPATIBLE_OS_TITLE, JOptionPane.ERROR_MESSAGE);
             System.exit(0);
             return;
         }
@@ -212,20 +216,21 @@ public class RepairKit extends JFrame {
                     || osName.equalsIgnoreCase("Windows 7")
                     || osName.equalsIgnoreCase("Windows Vista")
                     || osName.equalsIgnoreCase("Windows XP")) {
-                playSound("win.sound.hand");
+                playSound(ERROR_SOUND);
                 JOptionPane.showMessageDialog(null,
                         "Your operating system, " + osName + ", "
                                 + "is outdated and no longer supported."
-                                + "\nFeatures of this program may not work correctly or at all."
-                        , "Outdated Operating System", JOptionPane.ERROR_MESSAGE);
+                                + "\nFeatures of this program may not work correctly or at all.",
+                        OUTDATED_OS_TITLE, JOptionPane.ERROR_MESSAGE);
                 outdatedOperatingSystem = true;
             } else {
-                playSound("win.sound.hand");
+                playSound(ERROR_SOUND);
                 JOptionPane.showMessageDialog(null,
                         "Your operating system, " + osName + ", "
                                 + "is outdated, unknown, or not Windows based."
-                                + "\n"
-                        , "Incompatible Operating System", JOptionPane.ERROR_MESSAGE);
+                                + "\nThis program is designed for Windows 10 and 11."
+                                + "\nPlease upgrade to a supported operating system to use this program.",
+                        INCOMPATIBLE_OS_TITLE, JOptionPane.ERROR_MESSAGE);
                 System.exit(0);
                 return;
             }
@@ -234,11 +239,11 @@ public class RepairKit extends JFrame {
         // Checks if the system is booting in Safe Mode.
         if (getCommandOutput("wmic COMPUTERSYSTEM GET BootupState",
                 false, false).toString().contains("safe")) {
-            playSound("win.sound.hand");
+            playSound(ERROR_SOUND);
             JOptionPane.showMessageDialog(null,
                     "Your system is booting in Safe Mode."
-                            + "\nFeatures of this program may not work correctly or at all."
-                    , "Safe Mode Detected", JOptionPane.ERROR_MESSAGE);
+                            + "\nFeatures of this program may not work correctly or at all.",
+                    SAFE_MODE_TITLE, JOptionPane.ERROR_MESSAGE);
             safeMode = true;
         }
     }
@@ -253,7 +258,7 @@ public class RepairKit extends JFrame {
                 && isProcessRunning("TrustedInstaller.exe")
                 && isProcessRunning("wuauclt.exe")) {
             windowsUpdateInProgress = true;
-            playSound("win.sound.asterisk");
+            playSound(WARNING_SOUND);
             JOptionPane.showMessageDialog(null, "Windows Update is running on your system."
                             + "\nCertain tweaks will not be applied until the Windows Update is finished."
                     , "Software Warning", JOptionPane.WARNING_MESSAGE);
@@ -266,7 +271,7 @@ public class RepairKit extends JFrame {
      */
     private static void checkForMedal() {
         if (isProcessRunning("medal.exe")) {
-            playSound("win.sound.asterisk");
+            playSound(WARNING_SOUND);
             JOptionPane.showMessageDialog(null,
                     "Warning: Medal is installed and running on your system."
                             + "\nMedal causes issues with Desktop Windows Manager, which affects system performance."

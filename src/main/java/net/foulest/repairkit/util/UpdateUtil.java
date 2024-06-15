@@ -17,7 +17,9 @@
  */
 package net.foulest.repairkit.util;
 
+import lombok.AccessLevel;
 import lombok.Cleanup;
+import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -30,9 +32,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static net.foulest.repairkit.util.CommandUtil.runCommand;
+import static net.foulest.repairkit.util.ConstantUtil.ERROR_SOUND;
 import static net.foulest.repairkit.util.FileUtil.getVersionFromProperties;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdateUtil {
 
     private static final String REPO_API_URL = "https://api.github.com/repos/Foulest/RepairKit/releases/latest";
@@ -59,10 +63,25 @@ public class UpdateUtil {
                 }
             }
         } else {
-            playSound("win.sound.hand");
+            // Check if the system has internet access.
+            try {
+                URL url = new URL("https://www.google.com");
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.connect();
+                connection.disconnect();
+            } catch (IOException ex) {
+                // If the user doesn't have internet access, the software is most likely
+                // being run in a restricted environment. Therefore, we don't want to spam
+                // the user with error messages about not being able to check for updates.
+                return;
+            }
+
+            // If the user has internet access but the update check failed, we'll notify the user.
+            playSound(ERROR_SOUND);
             JOptionPane.showMessageDialog(null,
-                    "Failed to check for updates.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+                    "Failed to check for updates. Please try again later.",
+                    "Update Check Failed", JOptionPane.ERROR_MESSAGE);
         }
     }
 

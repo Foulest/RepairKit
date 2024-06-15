@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static net.foulest.repairkit.util.CommandUtil.*;
+import static net.foulest.repairkit.util.ConstantUtil.*;
 import static net.foulest.repairkit.util.RegistryUtil.*;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
 import static net.foulest.repairkit.util.SwingUtil.createLabel;
@@ -53,7 +54,7 @@ public class AutomaticRepairs extends JPanel {
         // Creates the title label.
         JLabel titleLabel = createLabel("Automatic Repairs",
                 new Rectangle(20, 15, 200, 30),
-                new Font("Arial", Font.BOLD, 18)
+                new Font(ARIAL, Font.BOLD, 18)
         );
         add(titleLabel);
 
@@ -62,7 +63,7 @@ public class AutomaticRepairs extends JPanel {
                         + " disable telemetry settings, optimize Windows services, remove bloatware, repair disk"
                         + " issues, and more.<br><br>Automatic repairs are recommended to be run once per month.</html>",
                 new Rectangle(20, 40, 500, 100),
-                new Font("Arial", Font.PLAIN, 14)
+                new Font(ARIAL, Font.PLAIN, 14)
         );
         descriptionLabel.setMaximumSize(new Dimension(500, Integer.MAX_VALUE));
         add(descriptionLabel);
@@ -70,7 +71,7 @@ public class AutomaticRepairs extends JPanel {
         // Creates the run button.
         runButton = new JButton("Run Automatic Repairs");
         runButton.setBounds(20, 145, 200, 40);
-        runButton.setFont(new Font("Arial", Font.BOLD, 14));
+        runButton.setFont(new Font(ARIAL, Font.BOLD, 14));
         runButton.setBackground(new Color(0, 120, 215));
         runButton.setForeground(Color.WHITE);
         runButton.addActionListener(e -> runAutomaticRepairs());
@@ -79,7 +80,7 @@ public class AutomaticRepairs extends JPanel {
         // Creates the progress label.
         JLabel progressLabel = createLabel("Progress:",
                 new Rectangle(20, 205, 200, 30),
-                new Font("Arial", Font.BOLD, 14)
+                new Font(ARIAL, Font.BOLD, 14)
         );
         add(progressLabel);
 
@@ -97,7 +98,7 @@ public class AutomaticRepairs extends JPanel {
         progressCheckboxes = new JCheckBox[progressItems.length];
         for (int i = 0; i < progressItems.length; i++) {
             progressCheckboxes[i] = new JCheckBox(progressItems[i]);
-            progressCheckboxes[i].setFont(new Font("Arial", Font.PLAIN, 14));
+            progressCheckboxes[i].setFont(new Font(ARIAL, Font.PLAIN, 14));
             progressCheckboxes[i].setBounds(16, 235 + (i * 28), 500, 30);
             progressCheckboxes[i].setEnabled(false);
         }
@@ -124,11 +125,8 @@ public class AutomaticRepairs extends JPanel {
             try {
                 // Checks if the operating system is outdated.
                 if (RepairKit.isOutdatedOperatingSystem()) {
-                    playSound("win.sound.hand");
-                    JOptionPane.showMessageDialog(null,
-                            "Automatic repairs cannot be run on outdated operating systems."
-                                    + "\nPlease upgrade to Windows 10 or 11 to use this feature."
-                            , "Outdated Operating System", JOptionPane.ERROR_MESSAGE);
+                    playSound(ERROR_SOUND);
+                    JOptionPane.showMessageDialog(null, OUTDATED_OS_MESSAGE, OUTDATED_OS_TITLE, JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 

@@ -17,6 +17,8 @@
  */
 package net.foulest.repairkit.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import net.foulest.repairkit.RepairKit;
 import org.jetbrains.annotations.Contract;
@@ -38,10 +40,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static net.foulest.repairkit.RepairKit.mainPanel;
 import static net.foulest.repairkit.util.CommandUtil.runCommand;
+import static net.foulest.repairkit.util.ConstantUtil.ARIAL;
 import static net.foulest.repairkit.util.FileUtil.*;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SwingUtil {
 
     /**
@@ -207,16 +210,16 @@ public class SwingUtil {
      * Creates a hyperlink label that opens a URL when clicked.
      *
      * @param label The label to make a hyperlink.
-     * @param URL  The URL to open when the label is clicked.
+     * @param url  The URL to open when the label is clicked.
      * @return The created mouse adapter.
      */
     @Contract(value = "_, _ -> new", pure = true)
-    public static @NotNull MouseAdapter createHyperlinkLabel(JLabel label, String URL) {
+    public static @NotNull MouseAdapter createHyperlinkLabel(JLabel label, String url) {
         return new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent event) {
                 try {
-                    Desktop.getDesktop().browse(new URI(URL));
+                    Desktop.getDesktop().browse(new URI(url));
                 } catch (IOException | URISyntaxException ex) {
                     ex.printStackTrace();
                 }
@@ -256,7 +259,7 @@ public class SwingUtil {
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setFont(new Font(ARIAL, Font.BOLD, 14));
 
         button.addActionListener(actionEvent -> performPanelButtonAction(name));
         return button;
@@ -268,8 +271,8 @@ public class SwingUtil {
      * @param name The name of the panel to switch to.
      */
     public static void performPanelButtonAction(String name) {
-        CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
-        cardLayout.show(mainPanel, name);
+        CardLayout cardLayout = (CardLayout) RepairKit.getMainPanel().getLayout();
+        cardLayout.show(RepairKit.getMainPanel(), name);
     }
 
     /**

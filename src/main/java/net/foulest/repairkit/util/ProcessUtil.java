@@ -17,9 +17,13 @@
  */
 package net.foulest.repairkit.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
 
 @SuppressWarnings("unused")
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ProcessUtil {
 
     /**
