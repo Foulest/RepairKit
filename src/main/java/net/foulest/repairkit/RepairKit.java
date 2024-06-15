@@ -164,6 +164,17 @@ public class RepairKit extends JFrame {
      * @param args The program's arguments.
      */
     public static void main(String[] args) {
+        // Checks if RepairKit is running in the temp directory.
+        if (System.getProperty("user.dir").equalsIgnoreCase(tempDirectory.getPath())) {
+            playSound(ERROR_SOUND);
+            JOptionPane.showMessageDialog(null,
+                    "RepairKit cannot be run from the Temp directory."
+                            + "\nPlease move the RepairKit folder to a different location and try again.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+            return;
+        }
+
         // Checks for incompatibility issues.
         checkOperatingSystemCompatibility();
 
