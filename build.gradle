@@ -1,10 +1,8 @@
 plugins {
     id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'edu.sc.seis.launch4j' version '3.0.5'
-    id "org.sonarqube" version '3.5.0.2730'
     id 'maven-publish'
     id 'application'
-    id 'jacoco'
     id 'java'
 }
 
@@ -37,8 +35,8 @@ dependencies {
 
     // Lombok - for reducing boilerplate code
     // https://projectlombok.org
-    compileOnly 'org.projectlombok:lombok:1.18.32'
-    annotationProcessor 'org.projectlombok:lombok:1.18.32'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.32'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.32'
 
     // JUnit 5 - for testing
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
@@ -51,20 +49,6 @@ dependencies {
     // https://mvnrepository.com/artifact/org.mockito/mockito-inline
     testImplementation group: 'org.mockito', name: 'mockito-core', version: '4.11.0'
     testImplementation group: 'org.mockito', name: 'mockito-inline', version: '4.11.0'
-}
-
-test {
-    useJUnitPlatform()
-
-    testLogging {
-        events "passed", "skipped", "failed"
-    }
-}
-
-jacocoTestReport {
-    reports {
-        xml.required = true
-    }
 }
 
 launch4j {
@@ -143,6 +127,14 @@ tasks {
         }
 
         finalizedBy(zipLaunch4jDir)
+    }
+
+    test {
+        useJUnitPlatform()
+
+        testLogging {
+            events "passed", "skipped", "failed"
+        }
     }
 
     compileJava {
