@@ -58,7 +58,7 @@ public class RepairKit extends JFrame {
     public RepairKit() {
         // Sets the window properties.
         setTitle("RepairKit");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(758, 550));
         setResizable(false);
 
