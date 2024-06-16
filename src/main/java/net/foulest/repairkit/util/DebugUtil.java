@@ -15,7 +15,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static net.foulest.repairkit.util.UpdateUtil.CONNECTED_TO_INTERNET;
@@ -56,6 +59,16 @@ public class DebugUtil {
     public static void printSystemInfo(String[] args) {
         debug("Starting RepairKit with arguments: \"" + String.join(" ", args) + "\"");
 
+        List<String> securitySoftware = CommandUtil.getPowerShellCommandOutput("Get-CimInstance -Namespace"
+                        + " root/SecurityCenter2 -ClassName AntivirusProduct | Select-Object -ExpandProperty displayName",
+                false, false);
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy");
+        String formattedDate = LocalDate.now().format(dateFormatter);
+
+        debug("");
+        debug("RepairKit Version: " + UpdateUtil.getLatestReleaseVersion());
+        debug("System Date: " + formattedDate);
         debug("");
         debug("OS Information");
         debug("- Operating System: " + System.getProperty("os.name") + " ("
@@ -65,6 +78,7 @@ public class DebugUtil {
         debug("- Java Home: " + System.getProperty("java.home"));
         debug("- User Directory: " + System.getProperty("user.dir"));
         debug("- Temp Directory: " + System.getenv("TEMP"));
+        debug("- Security Software: " + (securitySoftware.isEmpty() ? "No Antivirus Found" : String.join(", ", securitySoftware)));
 
         SystemInfo systemInfo = new SystemInfo();
         HardwareAbstractionLayer hal = systemInfo.getHardware();

@@ -20,20 +20,23 @@ package net.foulest.repairkit.util;
 import lombok.AccessLevel;
 import lombok.Cleanup;
 import lombok.NoArgsConstructor;
+import net.foulest.repairkit.RepairKit;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static net.foulest.repairkit.util.CommandUtil.runCommand;
 import static net.foulest.repairkit.util.ConstantUtil.ERROR_SOUND;
-import static net.foulest.repairkit.util.FileUtil.getVersionFromProperties;
+import static net.foulest.repairkit.util.DebugUtil.debug;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -138,5 +141,27 @@ public class UpdateUtil {
             return matcher.group(1);
         }
         return null;
+    }
+
+    /**
+     * Gets the version of the program.
+     *
+     * @return The version of the program.
+     */
+    public static String getVersionFromProperties() {
+        debug("Getting version from properties...");
+        Properties properties = new Properties();
+
+        try (InputStream inputStream = RepairKit.class.getResourceAsStream("/version.properties")) {
+            if (inputStream != null) {
+                debug("Loading properties...");
+                properties.load(inputStream);
+                return properties.getProperty("version");
+            }
+        } catch (IOException ex) {
+            debug("[WARN] Failed to get version from properties");
+            ex.printStackTrace();
+        }
+        return "Unknown";
     }
 }

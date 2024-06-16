@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'net.foulest'
-version = '1.0.8'
+version = '1.0.9'
 description = 'RepairKit'
 
 compileJava.options.encoding = 'UTF-8'
@@ -32,6 +32,11 @@ dependencies {
     // OSHI - for system information
     // https://central.sonatype.com/artifact/com.github.oshi/oshi-core
     implementation group: 'com.github.oshi', name: 'oshi-core', version: '6.6.1'
+
+    // SLF4J Simple - for logging
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
+    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.13'
+    testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.13'
 
     // JetBrains Annotations - for code inspection and documentation
     // https://mvnrepository.com/artifact/org.jetbrains/annotations

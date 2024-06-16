@@ -32,7 +32,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -136,27 +135,5 @@ public class FileUtil {
     public static @NotNull ImageIcon getImageIcon(String path) {
         debug("Getting image icon: " + path);
         return new ImageIcon(Objects.requireNonNull(RepairKit.class.getClassLoader().getResource(path)));
-    }
-
-    /**
-     * Gets the version of the program.
-     *
-     * @return The version of the program.
-     */
-    public static String getVersionFromProperties() {
-        debug("Getting version from properties...");
-        Properties properties = new Properties();
-
-        try (InputStream inputStream = RepairKit.class.getResourceAsStream("/version.properties")) {
-            if (inputStream != null) {
-                debug("Loading properties...");
-                properties.load(inputStream);
-                return properties.getProperty("version");
-            }
-        } catch (IOException ex) {
-            debug("[WARN] Failed to get version from properties");
-            ex.printStackTrace();
-        }
-        return "Unknown";
     }
 }

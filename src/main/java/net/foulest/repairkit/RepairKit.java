@@ -29,16 +29,19 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 
 import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
 import static net.foulest.repairkit.util.CommandUtil.runCommand;
 import static net.foulest.repairkit.util.ConstantUtil.*;
 import static net.foulest.repairkit.util.DebugUtil.debug;
-import static net.foulest.repairkit.util.FileUtil.*;
+import static net.foulest.repairkit.util.FileUtil.getImageIcon;
+import static net.foulest.repairkit.util.FileUtil.tempDirectory;
 import static net.foulest.repairkit.util.ProcessUtil.isProcessRunning;
 import static net.foulest.repairkit.util.RegistryUtil.setRegistryIntValue;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
 import static net.foulest.repairkit.util.SwingUtil.*;
+import static net.foulest.repairkit.util.UpdateUtil.getVersionFromProperties;
 
 public class RepairKit extends JFrame {
 
@@ -58,109 +61,127 @@ public class RepairKit extends JFrame {
      * @param args The program's arguments.
      */
     public static void main(String[] args) {
-        // Checks if RepairKit is running as administrator.
-        debug("Checking if RepairKit is running as administrator...");
-        if (getCommandOutput("net session", false, false).toString().contains("Access is denied.")) {
-            playSound(ERROR_SOUND);
-            JOptionPane.showMessageDialog(null,
-                    "Please run RepairKit as an administrator.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            System.exit(0);
-            return;
-        }
+        try {
+            // Checks if RepairKit is running as administrator.
+            debug("Checking if RepairKit is running as administrator...");
+            if (getCommandOutput("net session", false, false).toString().contains("Access is denied.")) {
+                playSound(ERROR_SOUND);
+                JOptionPane.showMessageDialog(null,
+                        "Please run RepairKit as an administrator.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                System.exit(0);
+                return;
+            }
 
-        // Deletes the log file.
-        runCommand("del /f /q \"" + System.getenv("TEMP") + "\\RepairKit.log\"", false);
+            // Deletes the log file.
+            runCommand("del /f /q \"" + System.getenv("TEMP") + "\\RepairKit.log\"", false);
 
-        // Creates the log file.
-        DebugUtil.createLogFile();
+            // Creates the log file.
+            DebugUtil.createLogFile();
 
-        // Prints system information.
-        DebugUtil.printSystemInfo(args);
+            // Prints system information.
+            DebugUtil.printSystemInfo(args);
 
-        // Checks if RepairKit is running in the temp directory.
-        debug("Checking if RepairKit is running in the temp directory...");
-        if (System.getProperty("user.dir").equalsIgnoreCase(tempDirectory.getPath())) {
-            playSound(ERROR_SOUND);
-            JOptionPane.showMessageDialog(null, BAD_FILE_LOCATION, "Error", JOptionPane.ERROR_MESSAGE);
-            System.exit(0);
-            return;
-        }
+            // Checks if RepairKit is running in the temp directory.
+            debug("Checking if RepairKit is running in the temp directory...");
+            if (System.getProperty("user.dir").equalsIgnoreCase(tempDirectory.getPath())) {
+                playSound(ERROR_SOUND);
+                JOptionPane.showMessageDialog(null, BAD_FILE_LOCATION, "Error", JOptionPane.ERROR_MESSAGE);
+                System.exit(0);
+                return;
+            }
 
-        // Checks for incompatibility issues.
-        debug("Checking for incompatibility issues...");
-        checkOperatingSystemCompatibility();
+            // Checks for incompatibility issues.
+            debug("Checking for incompatibility issues...");
+            checkOperatingSystemCompatibility();
 
-        // Checks for Windows Update and Medal.
-        if (!safeMode) {
-            debug("Checking for Windows Update and Medal...");
-            checkForWindowsUpdate();
-            checkForMedal();
-        }
+            // Checks for Windows Update and Medal.
+            if (!safeMode) {
+                debug("Checking for Windows Update and Medal...");
+                checkForWindowsUpdate();
+                checkForMedal();
+            }
 
-        // Deletes pre-existing RepairKit files.
-        debug("Deleting pre-existing RepairKit files...");
-        runCommand("rd /s /q \"" + tempDirectory.getPath() + "\"", false);
-
-        // Deletes RepairKit files on shutdown.
-        debug("Deleting RepairKit files on shutdown...");
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            debug("Shutting down RepairKit...");
+            // Deletes pre-existing RepairKit files.
+            debug("Deleting pre-existing RepairKit files...");
             runCommand("rd /s /q \"" + tempDirectory.getPath() + "\"", false);
-        }));
 
-        // Sets up necessary app registry keys.
-        debug("Setting up necessary app registry keys...");
-        setAppRegistryKeys();
+            // Deletes RepairKit files on shutdown.
+            debug("Deleting RepairKit files on shutdown...");
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                debug("Shutting down RepairKit...");
+                runCommand("rd /s /q \"" + tempDirectory.getPath() + "\"", false);
+            }));
 
-        // Launches the program.
-        debug("Launching the program...");
-        SwingUtilities.invokeLater(() -> new RepairKit().setVisible(true));
+            // Sets up necessary app registry keys.
+            debug("Setting up necessary app registry keys...");
+            setAppRegistryKeys();
+
+            // Launches the program.
+            debug("Launching the program...");
+
+            SwingUtilities.invokeLater(() -> {
+                try {
+                    new RepairKit().setVisible(true);
+                } catch (Exception ex) {
+                    debug("Exception in SwingUtilities.invokeLater: " + ex.getMessage());
+                    debug(Arrays.toString(ex.getStackTrace()));
+                }
+            });
+        } catch (Exception ex) {
+            debug("Exception in main: " + ex.getMessage());
+            debug(Arrays.toString(ex.getStackTrace()));
+        }
     }
 
     /**
      * Creates a new instance of the program.
      */
     public RepairKit() {
-        // Sets the window properties.
-        debug("Setting up the window properties...");
-        setTitle("RepairKit");
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(758, 550));
-        setResizable(false);
+        try {
+            // Sets the window properties.
+            debug("Setting up the window properties...");
+            setTitle("RepairKit");
+            setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            setPreferredSize(new Dimension(758, 550));
+            setResizable(false);
 
-        // Initialize the panels.
-        debug("Initializing the Automatic Repairs panel...");
-        AutomaticRepairs automaticRepairs = new AutomaticRepairs();
-        debug("Initializing the Useful Programs panel...");
-        UsefulPrograms usefulPrograms = new UsefulPrograms();
-        debug("Initializing the System Shortcuts panel...");
-        SystemShortcuts systemShortcuts = new SystemShortcuts();
+            // Initialize the panels.
+            debug("Initializing the Automatic Repairs panel...");
+            AutomaticRepairs automaticRepairs = new AutomaticRepairs();
+            debug("Initializing the Useful Programs panel...");
+            UsefulPrograms usefulPrograms = new UsefulPrograms();
+            debug("Initializing the System Shortcuts panel...");
+            SystemShortcuts systemShortcuts = new SystemShortcuts();
 
-        // Creates the main panel.
-        debug("Creating the main panel...");
-        setMainPanel(new JPanel(new CardLayout()));
-        mainPanel.add(automaticRepairs, "Automatic Repairs");
-        mainPanel.add(usefulPrograms, "Useful Programs");
-        mainPanel.add(systemShortcuts, "System Shortcuts");
+            // Creates the main panel.
+            debug("Creating the main panel...");
+            setMainPanel(new JPanel(new CardLayout()));
+            mainPanel.add(automaticRepairs, "Automatic Repairs");
+            mainPanel.add(usefulPrograms, "Useful Programs");
+            mainPanel.add(systemShortcuts, "System Shortcuts");
 
-        // Creates the banner panel.
-        debug("Creating the banner panel...");
-        JPanel bannerPanel = createBannerPanel();
+            // Creates the banner panel.
+            debug("Creating the banner panel...");
+            JPanel bannerPanel = createBannerPanel();
 
-        // Adds the panels to the main panel.
-        debug("Adding the panels to the main panel...");
-        add(bannerPanel, BorderLayout.NORTH);
-        add(mainPanel, BorderLayout.CENTER);
+            // Adds the panels to the main panel.
+            debug("Adding the panels to the main panel...");
+            add(bannerPanel, BorderLayout.NORTH);
+            add(mainPanel, BorderLayout.CENTER);
 
-        // Checks for updates.
-        debug("Checking for updates...");
-        UpdateUtil.checkForUpdates();
+            // Checks for updates.
+            debug("Checking for updates...");
+            UpdateUtil.checkForUpdates();
 
-        // Packs and centers the frame.
-        debug("Packing and centering the frame...");
-        pack();
-        setLocationRelativeTo(null);
+            // Packs and centers the frame.
+            debug("Packing and centering the frame...");
+            pack();
+            setLocationRelativeTo(null);
+        } catch (Exception ex) {
+            debug("Exception in RepairKit constructor: " + ex.getMessage());
+            debug(Arrays.toString(ex.getStackTrace()));
+        }
     }
 
     /**
