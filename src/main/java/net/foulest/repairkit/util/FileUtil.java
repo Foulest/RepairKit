@@ -36,6 +36,8 @@ import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static net.foulest.repairkit.util.DebugUtil.debug;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FileUtil {
 
@@ -51,6 +53,8 @@ public class FileUtil {
         fileZip = fileZip.replace("%temp%", System.getenv("TEMP"));
         fileDest = fileDest.replace("%temp%", System.getenv("TEMP"));
 
+        debug("Unzipping file: " + fileZip + " to " + fileDest);
+
         try {
             Path sourcePath = Paths.get(fileZip);
             Path targetPath = Paths.get(fileDest);
@@ -59,6 +63,7 @@ public class FileUtil {
                 ZipEntry zipEntry = zis.getNextEntry();
 
                 while (zipEntry != null) {
+                    debug("Opening zip entry: " + zipEntry.getName());
                     Path newPath = targetPath.resolve(zipEntry.getName()).normalize();
 
                     // Check for path traversal vulnerabilities
@@ -67,16 +72,22 @@ public class FileUtil {
                     }
 
                     if (zipEntry.isDirectory()) {
+                        debug("Creating directory: " + newPath);
                         Files.createDirectories(newPath);
                     } else {
+                        debug("Creating file: " + newPath);
                         Files.createDirectories(newPath.getParent());
+
+                        debug("Copying file: " + newPath);
                         Files.copy(zis, newPath, StandardCopyOption.REPLACE_EXISTING);
                     }
 
+                    debug("Closing zip entry: " + zipEntry.getName());
                     zipEntry = zis.getNextEntry();
                 }
             }
         } catch (IOException ex) {
+            debug("[WARN] Failed to unzip file: " + fileZip + " to " + fileDest);
             ex.printStackTrace();
         }
     }
@@ -89,11 +100,13 @@ public class FileUtil {
      * @param replaceOldFile Whether to replace the old file.
      */
     public static void saveFile(InputStream input, String path, boolean replaceOldFile) {
+        debug("Saving file: " + path);
         Path savedFilePath = Paths.get(path);
 
         try {
             if (Files.exists(savedFilePath)) {
                 if (replaceOldFile) {
+                    debug("Deleting old file: " + savedFilePath);
                     Files.delete(savedFilePath);
                 } else {
                     return;
@@ -101,11 +114,14 @@ public class FileUtil {
             }
 
             if (!Files.exists(savedFilePath.getParent())) {
+                debug("Creating directories: " + savedFilePath.getParent());
                 Files.createDirectories(savedFilePath.getParent());
             }
 
+            debug("Copying file: " + savedFilePath);
             Files.copy(input, savedFilePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
+            debug("[WARN] Failed to save file: " + path);
             ex.printStackTrace();
         }
     }
@@ -118,6 +134,7 @@ public class FileUtil {
      */
     @Contract("_ -> new")
     public static @NotNull ImageIcon getImageIcon(String path) {
+        debug("Getting image icon: " + path);
         return new ImageIcon(Objects.requireNonNull(RepairKit.class.getClassLoader().getResource(path)));
     }
 
@@ -127,14 +144,17 @@ public class FileUtil {
      * @return The version of the program.
      */
     public static String getVersionFromProperties() {
+        debug("Getting version from properties...");
         Properties properties = new Properties();
 
         try (InputStream inputStream = RepairKit.class.getResourceAsStream("/version.properties")) {
             if (inputStream != null) {
+                debug("Loading properties...");
                 properties.load(inputStream);
                 return properties.getProperty("version");
             }
         } catch (IOException ex) {
+            debug("[WARN] Failed to get version from properties");
             ex.printStackTrace();
         }
         return "Unknown";

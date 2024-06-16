@@ -17,7 +17,6 @@
  */
 package net.foulest.repairkit.util;
 
-import lombok.extern.java.Log;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -28,7 +27,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-@Log
+import static net.foulest.repairkit.util.DebugUtil.debug;
+
 public class CommandUtil {
 
     /**
@@ -52,8 +52,10 @@ public class CommandUtil {
         };
 
         if (async) {
+            debug("Running command async: " + command);
             CompletableFuture.runAsync(commandRunner);
         } else {
+            debug("Running command: " + command);
             commandRunner.run();
         }
     }
@@ -90,8 +92,10 @@ public class CommandUtil {
         };
 
         if (async) {
+            debug("Running command async: " + command);
             CompletableFuture.runAsync(commandRunner);
         } else {
+            debug("Running command: " + command);
             commandRunner.run();
         }
     }
@@ -103,6 +107,12 @@ public class CommandUtil {
      * @param async   Whether to run the command asynchronously.
      */
     public static void runPowerShellCommand(String command, boolean async) {
+        if (async) {
+            debug("Running PowerShell command async: " + command);
+        } else {
+            debug("Running PowerShell command: " + command);
+        }
+
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"" + command + "\"", async);
     }
 
@@ -114,6 +124,12 @@ public class CommandUtil {
      */
     public static void runPowerShellCommand(String command, boolean async,
                                             LineConsumer lineConsumer) {
+        if (async) {
+            debug("Running PowerShell command async: " + command);
+        } else {
+            debug("Running PowerShell command: " + command);
+        }
+
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"" + command + "\"", async, lineConsumer);
     }
 
@@ -132,7 +148,7 @@ public class CommandUtil {
             output.add(line);
 
             if (display && !line.trim().isEmpty()) {
-                log.info(line);
+                System.out.println(line);
             }
         });
         return output.isEmpty() ? Collections.singletonList("") : output;
@@ -153,7 +169,7 @@ public class CommandUtil {
             output.add(line);
 
             if (display && !line.trim().isEmpty()) {
-                log.info(line);
+                System.out.println(line);
             }
         });
         return output.isEmpty() ? Collections.singletonList("") : output;

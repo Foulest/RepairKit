@@ -41,6 +41,11 @@ public class UpdateUtil {
 
     private static final String REPO_API_URL = "https://api.github.com/repos/Foulest/RepairKit/releases/latest";
     private static final String DOWNLOAD_URL = "https://github.com/Foulest/RepairKit/releases/latest";
+    public static final boolean CONNECTED_TO_INTERNET;
+
+    static {
+        CONNECTED_TO_INTERNET = connectedToInternet();
+    }
 
     /**
      * Checks for updates and logs the result.
@@ -63,25 +68,31 @@ public class UpdateUtil {
                 }
             }
         } else {
-            // Check if the system has internet access.
-            try {
-                URL url = new URL("https://www.google.com");
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("GET");
-                connection.connect();
-                connection.disconnect();
-            } catch (IOException ex) {
-                // If the user doesn't have internet access, the software is most likely
-                // being run in a restricted environment. Therefore, we don't want to spam
-                // the user with error messages about not being able to check for updates.
-                return;
-            }
-
             // If the user has internet access but the update check failed, we'll notify the user.
-            playSound(ERROR_SOUND);
-            JOptionPane.showMessageDialog(null,
-                    "Failed to check for updates. Please try again later.",
-                    "Update Check Failed", JOptionPane.ERROR_MESSAGE);
+            if (CONNECTED_TO_INTERNET) {
+                playSound(ERROR_SOUND);
+                JOptionPane.showMessageDialog(null,
+                        "Failed to check for updates. Please try again later.",
+                        "Update Check Failed", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    /**
+     * Checks if the system has internet access.
+     *
+     * @return True if the system has internet access, otherwise false.
+     */
+    public static boolean connectedToInternet() {
+        try {
+            URL url = new URL("https://www.google.com");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            connection.disconnect();
+            return true;
+        } catch (IOException ex) {
+            return false;
         }
     }
 

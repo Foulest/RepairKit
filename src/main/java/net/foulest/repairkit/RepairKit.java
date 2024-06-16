@@ -23,6 +23,7 @@ import lombok.Setter;
 import net.foulest.repairkit.panels.AutomaticRepairs;
 import net.foulest.repairkit.panels.SystemShortcuts;
 import net.foulest.repairkit.panels.UsefulPrograms;
+import net.foulest.repairkit.util.DebugUtil;
 import net.foulest.repairkit.util.UpdateUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,6 +33,7 @@ import java.awt.*;
 import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
 import static net.foulest.repairkit.util.CommandUtil.runCommand;
 import static net.foulest.repairkit.util.ConstantUtil.*;
+import static net.foulest.repairkit.util.DebugUtil.debug;
 import static net.foulest.repairkit.util.FileUtil.*;
 import static net.foulest.repairkit.util.ProcessUtil.isProcessRunning;
 import static net.foulest.repairkit.util.RegistryUtil.setRegistryIntValue;
@@ -51,37 +53,112 @@ public class RepairKit extends JFrame {
     private static boolean windowsUpdateInProgress = false;
 
     /**
+     * The main method of the program.
+     *
+     * @param args The program's arguments.
+     */
+    public static void main(String[] args) {
+        // Checks if RepairKit is running as administrator.
+        debug("Checking if RepairKit is running as administrator...");
+        if (getCommandOutput("net session", false, false).toString().contains("Access is denied.")) {
+            playSound(ERROR_SOUND);
+            JOptionPane.showMessageDialog(null,
+                    "Please run RepairKit as an administrator.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+            return;
+        }
+
+        // Deletes the log file.
+        runCommand("del /f /q \"" + System.getenv("TEMP") + "\\RepairKit.log\"", false);
+
+        // Creates the log file.
+        DebugUtil.createLogFile();
+
+        // Prints system information.
+        DebugUtil.printSystemInfo(args);
+
+        // Checks if RepairKit is running in the temp directory.
+        debug("Checking if RepairKit is running in the temp directory...");
+        if (System.getProperty("user.dir").equalsIgnoreCase(tempDirectory.getPath())) {
+            playSound(ERROR_SOUND);
+            JOptionPane.showMessageDialog(null, BAD_FILE_LOCATION, "Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+            return;
+        }
+
+        // Checks for incompatibility issues.
+        debug("Checking for incompatibility issues...");
+        checkOperatingSystemCompatibility();
+
+        // Checks for Windows Update and Medal.
+        if (!safeMode) {
+            debug("Checking for Windows Update and Medal...");
+            checkForWindowsUpdate();
+            checkForMedal();
+        }
+
+        // Deletes pre-existing RepairKit files.
+        debug("Deleting pre-existing RepairKit files...");
+        runCommand("rd /s /q \"" + tempDirectory.getPath() + "\"", false);
+
+        // Deletes RepairKit files on shutdown.
+        debug("Deleting RepairKit files on shutdown...");
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            debug("Shutting down RepairKit...");
+            runCommand("rd /s /q \"" + tempDirectory.getPath() + "\"", false);
+        }));
+
+        // Sets up necessary app registry keys.
+        debug("Setting up necessary app registry keys...");
+        setAppRegistryKeys();
+
+        // Launches the program.
+        debug("Launching the program...");
+        SwingUtilities.invokeLater(() -> new RepairKit().setVisible(true));
+    }
+
+    /**
      * Creates a new instance of the program.
      */
     public RepairKit() {
         // Sets the window properties.
+        debug("Setting up the window properties...");
         setTitle("RepairKit");
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setPreferredSize(new Dimension(758, 550));
         setResizable(false);
 
         // Initialize the panels.
+        debug("Initializing the Automatic Repairs panel...");
         AutomaticRepairs automaticRepairs = new AutomaticRepairs();
+        debug("Initializing the Useful Programs panel...");
         UsefulPrograms usefulPrograms = new UsefulPrograms();
+        debug("Initializing the System Shortcuts panel...");
         SystemShortcuts systemShortcuts = new SystemShortcuts();
 
         // Creates the main panel.
+        debug("Creating the main panel...");
         setMainPanel(new JPanel(new CardLayout()));
         mainPanel.add(automaticRepairs, "Automatic Repairs");
         mainPanel.add(usefulPrograms, "Useful Programs");
         mainPanel.add(systemShortcuts, "System Shortcuts");
 
         // Creates the banner panel.
+        debug("Creating the banner panel...");
         JPanel bannerPanel = createBannerPanel();
 
         // Adds the panels to the main panel.
+        debug("Adding the panels to the main panel...");
         add(bannerPanel, BorderLayout.NORTH);
         add(mainPanel, BorderLayout.CENTER);
 
         // Checks for updates.
+        debug("Checking for updates...");
         UpdateUtil.checkForUpdates();
 
         // Packs and centers the frame.
+        debug("Packing and centering the frame...");
         pack();
         setLocationRelativeTo(null);
     }
@@ -100,6 +177,7 @@ public class RepairKit extends JFrame {
         bannerPanel.setPreferredSize(new Dimension(getWidth(), 60));
 
         // Creates the RepairKit icon image.
+        debug("Creating the RepairKit icon image...");
         ImageIcon imageIcon = getImageIcon("icons/RepairKit.png");
         Image scaledImage = imageIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
         imageIcon = new ImageIcon(scaledImage);
@@ -109,6 +187,7 @@ public class RepairKit extends JFrame {
         iconLabel.repaint();
 
         // Creates the primary banner label.
+        debug("Creating the primary banner label...");
         JLabel bannerLabelPrimary = createLabel("RepairKit",
                 new Rectangle(60, 6, 200, 30),
                 new Font(ARIAL, Font.BOLD, 22)
@@ -117,6 +196,7 @@ public class RepairKit extends JFrame {
         bannerPanel.add(bannerLabelPrimary);
 
         // Creates the secondary banner label.
+        debug("Creating the secondary banner label...");
         JLabel bannerLabelSecondary = createLabel("by Foulest",
                 new Rectangle(60, 31, 100, 20),
                 new Font(ARIAL, Font.PLAIN, 14)
@@ -127,6 +207,7 @@ public class RepairKit extends JFrame {
         bannerPanel.add(bannerLabelSecondary);
 
         // Creates the version info label.
+        debug("Creating the version info label...");
         JLabel versionInfo = createLabel("Version:",
                 new Rectangle(675, 5, 60, 30),
                 new Font(ARIAL, Font.BOLD, 14)
@@ -135,6 +216,7 @@ public class RepairKit extends JFrame {
         bannerPanel.add(versionInfo);
 
         // Creates the version number label.
+        debug("Creating the version number label...");
         JLabel versionNumber = createLabel(getVersionFromProperties(),
                 new Rectangle(700, 25, 50, 30),
                 new Font(ARIAL, Font.PLAIN, 14)
@@ -145,58 +227,20 @@ public class RepairKit extends JFrame {
         bannerPanel.add(versionNumber);
 
         // Creates the Automatic Repairs button.
+        debug("Creating the Automatic Repairs button...");
         JButton automaticRepairs = createPanelButton("Automatic Repairs", new Rectangle(175, 10, 150, 40));
         bannerPanel.add(automaticRepairs);
 
         // Creates the Useful Programs button.
+        debug("Creating the Useful Programs button...");
         JButton usefulPrograms = createPanelButton("Useful Programs", new Rectangle(325, 10, 150, 40));
         bannerPanel.add(usefulPrograms);
 
         // Creates the System Shortcuts button.
+        debug("Creating the System Shortcuts button...");
         JButton systemShortcuts = createPanelButton("System Shortcuts", new Rectangle(475, 10, 150, 40));
         bannerPanel.add(systemShortcuts);
         return bannerPanel;
-    }
-
-    /**
-     * The main method of the program.
-     *
-     * @param args The program's arguments.
-     */
-    public static void main(String[] args) {
-        // Checks if RepairKit is running in the temp directory.
-        if (System.getProperty("user.dir").equalsIgnoreCase(tempDirectory.getPath())) {
-            playSound(ERROR_SOUND);
-            JOptionPane.showMessageDialog(null,
-                    "RepairKit cannot be run from the Temp directory."
-                            + "\nPlease move the RepairKit folder to a different location and try again.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            System.exit(0);
-            return;
-        }
-
-        // Checks for incompatibility issues.
-        checkOperatingSystemCompatibility();
-
-        // Checks for Windows Update and Medal.
-        if (!safeMode) {
-            checkForWindowsUpdate();
-            checkForMedal();
-        }
-
-        // Deletes pre-existing RepairKit files.
-        runCommand("rd /s /q \"" + tempDirectory.getPath() + "\"", false);
-
-        // Deletes RepairKit files on shutdown.
-        Runtime.getRuntime().addShutdownHook(new Thread(() ->
-                runCommand("rd /s /q \"" + tempDirectory.getPath() + "\"", false))
-        );
-
-        // Sets up necessary app registry keys.
-        setAppRegistryKeys();
-
-        // Launches the program.
-        SwingUtilities.invokeLater(() -> new RepairKit().setVisible(true));
     }
 
     /**
@@ -206,6 +250,7 @@ public class RepairKit extends JFrame {
         String osName = System.getProperty("os.name");
 
         // Checks if the operating system is 32-bit.
+        debug("Checking if the operating system is 32-bit...");
         if (!System.getProperty("os.arch").contains("64")) {
             playSound(ERROR_SOUND);
             JOptionPane.showMessageDialog(null,
@@ -218,6 +263,7 @@ public class RepairKit extends JFrame {
         }
 
         // Checks if the operating system is outdated (older than Windows 10).
+        debug("Checking if the operating system is outdated...");
         if (!osName.equalsIgnoreCase("Windows 10")
                 && !osName.equalsIgnoreCase("Windows 11")) {
             if (osName.equalsIgnoreCase("Windows 8.1")
@@ -246,6 +292,7 @@ public class RepairKit extends JFrame {
         }
 
         // Checks if the system is booting in Safe Mode.
+        debug("Checking if the system is booting in Safe Mode...");
         if (getCommandOutput("wmic COMPUTERSYSTEM GET BootupState",
                 false, false).toString().contains("safe")) {
             playSound(ERROR_SOUND);

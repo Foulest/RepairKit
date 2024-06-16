@@ -24,6 +24,8 @@ import java.awt.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static net.foulest.repairkit.util.DebugUtil.debug;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SoundUtil {
 
@@ -35,6 +37,7 @@ public class SoundUtil {
      * @param soundName Name of the sound to play.
      */
     public static void playSound(String soundName) {
+        debug("Playing sound: " + soundName);
         Runnable runnable = (Runnable) Toolkit.getDefaultToolkit().getDesktopProperty(soundName);
 
         if (runnable != null) {

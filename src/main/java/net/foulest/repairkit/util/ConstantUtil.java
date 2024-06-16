@@ -22,4 +22,7 @@ public class ConstantUtil {
     public static final String OUTDATED_OS_TITLE = "Outdated Operating System";
     public static final String OUTDATED_OS_MESSAGE = "This feature is incompatible with outdated operating systems."
             + "\nPlease upgrade to Windows 10 or 11 to use this feature.";
+
+    public static final String BAD_FILE_LOCATION = "RepairKit cannot be run from this folder/directory."
+            + "\nPlease move the RepairKit folder to a different location and try again.";
 }

@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
+import static net.foulest.repairkit.util.DebugUtil.debug;
 
 @SuppressWarnings("unused")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -33,7 +34,8 @@ public class ProcessUtil {
      * @return Whether the service is running.
      */
     public static boolean isServiceRunning(String serviceName) {
-        return getCommandOutput("sc query " + serviceName,
+        debug("Checking if service is running: " + serviceName);
+        return getCommandOutput("sc query \"" + serviceName + "\"",
                 false, false).toString().contains("RUNNING");
     }
 
@@ -44,7 +46,8 @@ public class ProcessUtil {
      * @return Whether the process is running.
      */
     public static boolean isProcessRunning(String processName) {
-        return getCommandOutput("tasklist /FI \"IMAGENAME eq " + processName,
+        debug("Checking if process is running: " + processName);
+        return getCommandOutput("tasklist /FI \"IMAGENAME eq " + processName + "\"",
                 false, false).toString().contains(processName);
     }
 }
