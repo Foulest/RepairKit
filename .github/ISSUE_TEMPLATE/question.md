@@ -3,7 +3,7 @@ name: Ask a question
 about: Ask a question about the project.
 title: ''
 labels: 'question'
-assignees: ''
+assignees: 'Foulest'
 
 ---
 

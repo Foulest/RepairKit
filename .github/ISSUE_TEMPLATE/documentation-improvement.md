@@ -3,7 +3,7 @@ name: Documentation improvement
 about: Suggest an improvement for the project documentation.
 title: ''
 labels: 'documentation'
-assignees: ''
+assignees: 'Foulest'
 
 ---
 
