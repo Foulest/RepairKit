@@ -1,0 +1,33 @@
+name: 'Build with Gradle'
+
+on:
+  push:
+    branches: [ 'main' ]
+  pull_request:
+    branches: [ 'main' ]
+  schedule:
+    - cron: '0 8 * * 1'
+
+jobs:
+  build:
+    name: 'Build with Gradle'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v4
+
+      - name: 'Setup Java'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 8
+
+      - name: 'Setup Gradle'
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: 'Apply Permissions to Gradlew'
+        run: chmod +x gradlew
+
+      - name: 'Build with Gradle'
+        run: ./gradlew build
