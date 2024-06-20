@@ -115,7 +115,7 @@ public class UsefulPrograms extends JPanel {
                 "Displays system hardware information.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
-                "CPU-Z.zip",
+                "CPU-Z.7z",
                 "CPU-Z.exe",
                 true, tempDirectory.getPath()
         );
@@ -155,7 +155,7 @@ public class UsefulPrograms extends JPanel {
                 "Displays hardware voltages & temperatures.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
-                "HWMonitor.zip",
+                "HWMonitor.7z",
                 "HWMonitor.exe",
                 true, tempDirectory.getPath()
         );
@@ -195,7 +195,7 @@ public class UsefulPrograms extends JPanel {
                 "Displays startup items.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
-                "Autoruns.zip",
+                "Autoruns.7z",
                 "Autoruns.exe",
                 true, tempDirectory.getPath()
         );
@@ -235,7 +235,7 @@ public class UsefulPrograms extends JPanel {
                 "Displays system processes.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
-                "ProcessExplorer.zip",
+                "ProcessExplorer.7z",
                 "ProcessExplorer.exe",
                 true, tempDirectory.getPath()
         );
@@ -286,7 +286,7 @@ public class UsefulPrograms extends JPanel {
                     "Displays system files organized by size.",
                     new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                     new Color(200, 200, 200),
-                    "TreeSize.zip",
+                    "TreeSize.7z",
                     "TreeSize.exe",
                     true, tempDirectory.getPath()
             );
@@ -327,7 +327,7 @@ public class UsefulPrograms extends JPanel {
                 "Displays all files on your system.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
-                "Everything.zip",
+                "Everything.7z",
                 "Everything.exe",
                 true, tempDirectory.getPath()
         );
@@ -388,7 +388,7 @@ public class UsefulPrograms extends JPanel {
                         // If FanControl is not running, extract and launch it.
                         // Otherwise, launch the existing instance.
                         if (!isProcessRunning("FanControl.exe")) {
-                            launchApplication("FanControl.zip", "\\FanControl.exe",
+                            launchApplication("FanControl.7z", "\\FanControl.exe",
                                     true, System.getenv("APPDATA") + "\\FanControl");
                         } else {
                             runCommand("start \"\" \"" + fanControlPath + "\"", false);
@@ -440,9 +440,9 @@ public class UsefulPrograms extends JPanel {
                         return;
                     }
 
-                    try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/NVCleanstall.zip")) {
-                        saveFile(Objects.requireNonNull(input), tempDirectory + "\\NVCleanstall.zip", true);
-                        unzipFile(tempDirectory + "\\NVCleanstall.zip", tempDirectory.getPath());
+                    try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/NVCleanstall.7z")) {
+                        saveFile(Objects.requireNonNull(input), tempDirectory + "\\NVCleanstall.7z", true);
+                        unzipFile(tempDirectory + "\\NVCleanstall.7z", tempDirectory.getPath());
                         runCommand(tempDirectory + "\\NVCleanstall.exe", true);
                     } catch (IOException ex) {
                         ex.printStackTrace();
@@ -496,7 +496,7 @@ public class UsefulPrograms extends JPanel {
                     "Scans for malware with Emsisoft.",
                     new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                     new Color(200, 200, 200),
-                    "Emsisoft.zip",
+                    "Emsisoft.7z",
                     "Emsisoft.exe",
                     true, tempDirectory.getPath()
             );
@@ -537,9 +537,9 @@ public class UsefulPrograms extends JPanel {
                 "Scans for malware with Sophos.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
-                    try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/Sophos.zip")) {
-                        saveFile(Objects.requireNonNull(input), tempDirectory + "\\Sophos.zip", true);
-                        unzipFile(tempDirectory + "\\Sophos.zip", tempDirectory.getPath());
+                    try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/Sophos.7z")) {
+                        saveFile(Objects.requireNonNull(input), tempDirectory + "\\Sophos.7z", true);
+                        unzipFile(tempDirectory + "\\Sophos.7z", tempDirectory.getPath());
                         runCommand("start \"\" \"" + tempDirectory + "\\Sophos.exe\"", true);
                     } catch (IOException ex) {
                         ex.printStackTrace();

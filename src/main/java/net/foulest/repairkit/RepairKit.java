@@ -200,8 +200,6 @@ public class RepairKit extends JFrame {
         // Creates the RepairKit icon image.
         debug("Creating the RepairKit icon image...");
         ImageIcon imageIcon = getImageIcon("icons/RepairKit.png");
-        Image scaledImage = imageIcon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
-        imageIcon = new ImageIcon(scaledImage);
         JLabel iconLabel = new JLabel(imageIcon);
         iconLabel.setBounds(10, 10, 40, 40);
         bannerPanel.add(iconLabel);

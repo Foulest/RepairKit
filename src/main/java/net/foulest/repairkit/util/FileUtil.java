@@ -35,6 +35,7 @@ import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import static net.foulest.repairkit.util.CommandUtil.runCommand;
 import static net.foulest.repairkit.util.DebugUtil.debug;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -54,40 +55,49 @@ public class FileUtil {
 
         debug("Unzipping file: " + fileZip + " to " + fileDest);
 
-        try {
-            Path sourcePath = Paths.get(fileZip);
-            Path targetPath = Paths.get(fileDest);
+        if (fileZip.endsWith(".zip")) {
+            try {
+                Path sourcePath = Paths.get(fileZip);
+                Path targetPath = Paths.get(fileDest);
 
-            try (ZipInputStream zis = new ZipInputStream(Files.newInputStream(sourcePath))) {
-                ZipEntry zipEntry = zis.getNextEntry();
+                try (ZipInputStream zis = new ZipInputStream(Files.newInputStream(sourcePath))) {
+                    ZipEntry zipEntry = zis.getNextEntry();
 
-                while (zipEntry != null) {
-                    debug("Opening zip entry: " + zipEntry.getName());
-                    Path newPath = targetPath.resolve(zipEntry.getName()).normalize();
+                    while (zipEntry != null) {
+                        debug("Opening zip entry: " + zipEntry.getName());
+                        Path newPath = targetPath.resolve(zipEntry.getName()).normalize();
 
-                    // Check for path traversal vulnerabilities
-                    if (!newPath.startsWith(targetPath)) {
-                        throw new IOException("Bad zip entry (potential path traversal): " + zipEntry.getName());
+                        // Check for path traversal vulnerabilities
+                        if (!newPath.startsWith(targetPath)) {
+                            throw new IOException("Bad zip entry (potential path traversal): " + zipEntry.getName());
+                        }
+
+                        if (zipEntry.isDirectory()) {
+                            debug("Creating directory: " + newPath);
+                            Files.createDirectories(newPath);
+                        } else {
+                            debug("Creating file: " + newPath);
+                            Files.createDirectories(newPath.getParent());
+
+                            debug("Copying file: " + newPath);
+                            Files.copy(zis, newPath, StandardCopyOption.REPLACE_EXISTING);
+                        }
+
+                        debug("Closing zip entry: " + zipEntry.getName());
+                        zipEntry = zis.getNextEntry();
                     }
-
-                    if (zipEntry.isDirectory()) {
-                        debug("Creating directory: " + newPath);
-                        Files.createDirectories(newPath);
-                    } else {
-                        debug("Creating file: " + newPath);
-                        Files.createDirectories(newPath.getParent());
-
-                        debug("Copying file: " + newPath);
-                        Files.copy(zis, newPath, StandardCopyOption.REPLACE_EXISTING);
-                    }
-
-                    debug("Closing zip entry: " + zipEntry.getName());
-                    zipEntry = zis.getNextEntry();
                 }
+            } catch (IOException ex) {
+                debug("[WARN] Failed to unzip file: " + fileZip + " to " + fileDest);
+                ex.printStackTrace();
             }
-        } catch (IOException ex) {
-            debug("[WARN] Failed to unzip file: " + fileZip + " to " + fileDest);
-            ex.printStackTrace();
+        } else {
+            try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/7zr.exe")) {
+                saveFile(Objects.requireNonNull(input), tempDirectory + "\\7zr.exe", true);
+                runCommand("\"" + tempDirectory + "\\7zr.exe\" x \"" + fileZip + "\"" + " -y -o\"" + tempDirectory, false);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 

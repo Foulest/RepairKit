@@ -3,12 +3,6 @@ package net.foulest.repairkit.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import oshi.SystemInfo;
-import oshi.hardware.CentralProcessor;
-import oshi.hardware.GlobalMemory;
-import oshi.hardware.GraphicsCard;
-import oshi.hardware.HardwareAbstractionLayer;
-import oshi.util.FormatUtil;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
 import static net.foulest.repairkit.util.UpdateUtil.CONNECTED_TO_INTERNET;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -66,6 +61,10 @@ public class DebugUtil {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy");
         String formattedDate = LocalDate.now().format(dateFormatter);
 
+        List<String> cpuInfo = getCommandOutput("wmic cpu get name,NumberOfCores,NumberOfLogicalProcessors", false, false);
+        List<String> memoryInfo = getCommandOutput("wmic memorychip get capacity", false, false);
+        List<String> gpuInfo = getCommandOutput("wmic path win32_VideoController get name", false, false);
+
         debug("");
         debug("RepairKit Version: " + UpdateUtil.getLatestReleaseVersion());
         debug("System Date: " + formattedDate);
@@ -80,24 +79,12 @@ public class DebugUtil {
         debug("- Temp Directory: " + System.getenv("TEMP"));
         debug("- Security Software: " + (securitySoftware.isEmpty() ? "No Antivirus Found" : String.join(", ", securitySoftware)));
 
-        SystemInfo systemInfo = new SystemInfo();
-        HardwareAbstractionLayer hal = systemInfo.getHardware();
-        CentralProcessor processor = hal.getProcessor();
-        GlobalMemory memory = hal.getMemory();
-
         debug("");
         debug("Hardware Information");
 
-        debug("- CPU: " + processor.getProcessorIdentifier().getName().trim() + " ("
-                + processor.getPhysicalProcessorCount() + "c, "
-                + processor.getLogicalProcessorCount() + "t)");
-
-        for (GraphicsCard card : hal.getGraphicsCards()) {
-            debug("- GPU: " + card.getName().trim() + " (" + FormatUtil.formatBytes(card.getVRam()) + ")");
-        }
-
-        debug("- Memory: " + FormatUtil.formatBytes(memory.getAvailable())
-                + " / " + FormatUtil.formatBytes(memory.getTotal()));
+        debug(formatCpuInfo(cpuInfo));
+        debug(formatMemoryInfo(memoryInfo));
+        debug(formatGpuInfo(gpuInfo));
 
         debug("- Network Connection: " + CONNECTED_TO_INTERNET);
         debug("");
@@ -111,5 +98,49 @@ public class DebugUtil {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+
+    private static @NotNull String formatCpuInfo(@NotNull List<String> cpuInfo) {
+        for (String line : cpuInfo) {
+            if (line.trim().isEmpty() || line.contains("Name")) {
+                continue;
+            }
+
+            String[] parts = line.trim().split("\\s{2,}");
+
+            if (parts.length == 3) {
+                return "- CPU: " + parts[0] + " (" + parts[1] + "c, " + parts[2] + "t)";
+            }
+        }
+        return "- CPU: Information not available";
+    }
+
+    private static @NotNull String formatMemoryInfo(@NotNull List<String> memoryInfo) {
+        long totalMemory = 0;
+
+        for (String line : memoryInfo) {
+            if (line.trim().isEmpty() || line.contains("Capacity")) {
+                continue;
+            }
+
+            try {
+                totalMemory += Long.parseLong(line.trim());
+            } catch (NumberFormatException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        long totalMemoryGB = totalMemory / (1024 * 1024 * 1024);
+        return "- Memory: " + totalMemoryGB / 2 + " GB available (" + totalMemoryGB + " GB total)";
+    }
+
+    private static @NotNull String formatGpuInfo(@NotNull List<String> gpuInfo) {
+        for (String line : gpuInfo) {
+            if (line.trim().isEmpty() || line.contains("Name")) {
+                continue;
+            }
+            return "- GPU: " + line.trim();
+        }
+        return "- GPU: Information not available";
     }
 }

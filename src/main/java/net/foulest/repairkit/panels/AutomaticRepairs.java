@@ -334,7 +334,6 @@ public class AutomaticRepairs extends JPanel {
                 "Microsoft.WindowsFeedbackHub", // Feedback Hub
                 "Microsoft.WindowsMaps", // Maps
                 "Microsoft.WindowsPhone", // Windows Phone
-                "Microsoft.YourPhone", // Your Phone
                 "PandoraMediaInc.29680B314EFC2", // Pandora
                 "ShazamEntertainmentLtd.Shazam", // Shazam
                 "king.com.CandyCrushSaga", // Candy Crush Saga
@@ -921,13 +920,12 @@ public class AutomaticRepairs extends JPanel {
                 new String[]{"RetailDemo", "Retail Demo"},
                 new String[]{"VSStandardCollectorService150", "Visual Studio Standard Collector Service"},
                 new String[]{"WMPNetworkSvc", "Windows Media Player Network Sharing Service"},
-                new String[]{"WpcMonSvc", "Parental Controls"},
                 new String[]{"diagnosticshub.standardcollector.service", "Diagnostics Hub Standard Collector Service"},
                 new String[]{"diagsvc", "Diagnostic Execution Service"},
                 new String[]{"dmwappushservice", "WAP Push Message Routing Service"},
                 new String[]{"fhsvc", "File History Service"},
                 new String[]{"lmhosts", "TCP/IP NetBIOS Helper"},
-                new String[]{"wercplsupport", "wercplsupport"},
+                new String[]{"wercplsupport", "Problem Reports Control Panel Support"},
                 new String[]{"wersvc", "wersvc"}
         );
 
@@ -1118,7 +1116,7 @@ public class AutomaticRepairs extends JPanel {
                 () -> runPowerShellCommand("Add-MpPreference"
                         + " -AttackSurfaceReductionRules_Ids "
                         + "56a863a9-875e-4185-98a7-b882c64b5ce5," // ASR: Warn against abuse of exploited vulnerable signed drivers
-                        + "a8f5898e-1dc8-49a9-9878-85004b8a61e6" // ASR: Warn against Webshell creation for Servers
+                        + "a8f5898e-1dc8-49a9-9878-85004b8a61e6" // ASR: Warn against Webshell creation for servers
                         + " -AttackSurfaceReductionRules_Actions Warn", false)
         );
 

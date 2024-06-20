@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'net.foulest'
-version = '1.0.9'
+version = '1.1.0'
 description = 'RepairKit'
 
 compileJava.options.encoding = 'UTF-8'
@@ -29,15 +29,6 @@ dependencies {
     // https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform
     implementation group: 'net.java.dev.jna', name: 'jna-platform', version: '5.14.0'
 
-    // OSHI - for system information
-    // https://central.sonatype.com/artifact/com.github.oshi/oshi-core
-    implementation group: 'com.github.oshi', name: 'oshi-core', version: '6.6.1'
-
-    // SLF4J Simple - for logging
-    // https://mvnrepository.com/artifact/org.slf4j/slf4j-simple
-    implementation group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.13'
-    testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '2.0.13'
-
     // JetBrains Annotations - for code inspection and documentation
     // https://mvnrepository.com/artifact/org.jetbrains/annotations
     compileOnly group: 'org.jetbrains', name: 'annotations', version: '24.1.0'
@@ -46,18 +37,6 @@ dependencies {
     // https://projectlombok.org
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.32'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.32'
-
-    // JUnit 5 - for testing
-    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
-    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.11.0-M2'
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.11.0-M2'
-
-    // Mockito - for mocking objects
-    // https://mvnrepository.com/artifact/org.mockito/mockito-core
-    // https://mvnrepository.com/artifact/org.mockito/mockito-inline
-    testImplementation group: 'org.mockito', name: 'mockito-core', version: '4.11.0'
-    testImplementation group: 'org.mockito', name: 'mockito-inline', version: '4.11.0'
 }
 
 launch4j {
@@ -136,14 +115,6 @@ tasks {
         }
 
         finalizedBy(zipLaunch4jDir)
-    }
-
-    test {
-        useJUnitPlatform()
-
-        testLogging {
-            events "passed", "skipped", "failed"
-        }
     }
 
     compileJava {
