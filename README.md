@@ -25,7 +25,7 @@ Automatically perform a comprehensive system cleanup and repair, including:
 - Running registry, service, and settings tweaks
 - Scanning for malware with Windows Defender
 
-![Automatic Repairs](https://i.imgur.com/0Sl5DD0.png)
+![Automatic Repairs](https://i.imgur.com/mSicilx.png)
 
 ### **Useful Programs**
 
@@ -49,7 +49,7 @@ Access essential software tools for system maintenance, including:
 - **[TrafficLight](https://bitdefender.com/solutions/trafficlight.html)**: Link to Bitdefender's TrafficLight browser
   extension.
 
-![Useful Programs](https://i.imgur.com/s1aS0BI.png)
+![Useful Programs](https://i.imgur.com/w0OrAjT.png)
 
 ### **System Shortcuts**
 
@@ -61,7 +61,7 @@ Quickly access important Windows utilities like:
 - Windows Security
 - Task Manager
 
-![System Shortcuts](https://i.imgur.com/rPYvwan.png)
+![System Shortcuts](https://i.imgur.com/lYjZvms.png)
 
 ## Download and Run
 
