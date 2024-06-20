@@ -31,6 +31,9 @@ Steps to reproduce the behavior:
 3. Scroll down to '....'
 4. See error
 
+**Log File**
+If applicable, add the log file located at `%temp%\RepairKit.log`.
+
 **Screenshots**
 If applicable, add screenshots or animated GIFs to help explain your problem.
 
