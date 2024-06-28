@@ -35,8 +35,8 @@ dependencies {
 
     // Lombok - for reducing boilerplate code
     // https://projectlombok.org
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.32'
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.32'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.34'
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.34'
 }
 
 launch4j {
