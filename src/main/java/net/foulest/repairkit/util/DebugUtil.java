@@ -1,3 +1,20 @@
+/*
+ * RepairKit - an all-in-one Java-based Windows repair and maintenance toolkit.
+ * Copyright (C) 2024 Foulest (https://github.com/Foulest)
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
 package net.foulest.repairkit.util;
 
 import lombok.AccessLevel;
@@ -16,6 +33,7 @@ import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
+import static net.foulest.repairkit.util.CommandUtil.runCommand;
 import static net.foulest.repairkit.util.UpdateUtil.CONNECTED_TO_INTERNET;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -23,11 +41,6 @@ public class DebugUtil {
 
     private static final Path logFile = Paths.get(System.getenv("TEMP") + "\\RepairKit.log");
     private static final ReentrantLock lock = new ReentrantLock();
-
-    static {
-        // Ensure the log file exists when the class is loaded.
-        createLogFile();
-    }
 
     /**
      * Prints a debug message to a log file.
@@ -51,6 +64,33 @@ public class DebugUtil {
         }
     }
 
+    /**
+     * Creates a log file in the user's temp directory.
+     *
+     * @param args The command line arguments.
+     */
+    public static void createLogFile(String[] args) {
+        try {
+            // Deletes the old log file.
+            runCommand("del /f /q \"" + System.getenv("TEMP") + "\\RepairKit.log\"", false);
+
+            // Creates a new log file.
+            if (!Files.exists(logFile)) {
+                Files.createFile(logFile);
+            }
+
+            // Writes the initial message to the log file.
+            printSystemInfo(args);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    /**
+     * Prints system information to the log file.
+     *
+     * @param args The command line arguments.
+     */
     public static void printSystemInfo(String[] args) {
         debug("Starting RepairKit with arguments: \"" + String.join(" ", args) + "\"");
 
@@ -90,16 +130,12 @@ public class DebugUtil {
         debug("");
     }
 
-    public static void createLogFile() {
-        try {
-            if (!Files.exists(logFile)) {
-                Files.createFile(logFile);
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-    }
-
+    /**
+     * Formats the CPU information.
+     *
+     * @param cpuInfo The CPU information.
+     * @return The formatted CPU information.
+     */
     private static @NotNull String formatCpuInfo(@NotNull List<String> cpuInfo) {
         for (String line : cpuInfo) {
             if (line.trim().isEmpty() || line.contains("Name")) {
@@ -115,6 +151,12 @@ public class DebugUtil {
         return "- CPU: Information not available";
     }
 
+    /**
+     * Formats the memory information.
+     *
+     * @param memoryInfo The memory information.
+     * @return The formatted memory information.
+     */
     private static @NotNull String formatMemoryInfo(@NotNull List<String> memoryInfo) {
         long totalMemory = 0;
 
@@ -134,6 +176,12 @@ public class DebugUtil {
         return "- Memory: " + totalMemoryGB / 2 + " GB available (" + totalMemoryGB + " GB total)";
     }
 
+    /**
+     * Formats the GPU information.
+     *
+     * @param gpuInfo The GPU information.
+     * @return The formatted GPU information.
+     */
     private static @NotNull String formatGpuInfo(@NotNull List<String> gpuInfo) {
         for (String line : gpuInfo) {
             if (line.trim().isEmpty() || line.contains("Name")) {

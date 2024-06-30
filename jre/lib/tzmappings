@@ -87,7 +87,6 @@ Central European Standard Time:MK:Europe/Skopje:
 Central European Standard Time:PL:Europe/Warsaw:
 Central European Standard Time:001:Europe/Warsaw:
 Central Pacific Standard Time:AQ:Antarctica/Casey:
-Central Pacific Standard Time:AU:Antarctica/Macquarie:
 Central Pacific Standard Time:FM:Pacific/Ponape:
 Central Pacific Standard Time:NC:Pacific/Noumea:
 Central Pacific Standard Time:SB:Pacific/Guadalcanal:
@@ -119,7 +118,6 @@ E. Africa Standard Time:KE:Africa/Nairobi:
 E. Africa Standard Time:KM:Indian/Comoro:
 E. Africa Standard Time:MG:Indian/Antananarivo:
 E. Africa Standard Time:SO:Africa/Mogadishu:
-E. Africa Standard Time:SS:Africa/Juba:
 E. Africa Standard Time:TZ:Africa/Dar_es_Salaam:
 E. Africa Standard Time:UG:Africa/Kampala:
 E. Africa Standard Time:YT:Indian/Mayotte:
@@ -174,6 +172,7 @@ Greenland Standard Time:001:America/Godthab:
 Greenwich Standard Time:BF:Africa/Ouagadougou:
 Greenwich Standard Time:CI:Africa/Abidjan:
 Greenwich Standard Time:GH:Africa/Accra:
+Greenwich Standard Time:GL:America/Danmarkshavn:
 Greenwich Standard Time:GM:Africa/Banjul:
 Greenwich Standard Time:GN:Africa/Conakry:
 Greenwich Standard Time:GW:Africa/Bissau:
@@ -215,7 +214,6 @@ Lord Howe Standard Time:AU:Australia/Lord_Howe:
 Lord Howe Standard Time:001:Australia/Lord_Howe:
 Magadan Standard Time:RU:Asia/Magadan:
 Magadan Standard Time:001:Asia/Magadan:
-Magallanes Standard Time:AQ:Antarctica/Palmer:
 Magallanes Standard Time:CL:America/Punta_Arenas:
 Magallanes Standard Time:001:America/Punta_Arenas:
 Marquesas Standard Time:PF:Pacific/Marquesas:
@@ -274,6 +272,8 @@ Pakistan Standard Time:PK:Asia/Karachi:
 Pakistan Standard Time:001:Asia/Karachi:
 Paraguay Standard Time:PY:America/Asuncion:
 Paraguay Standard Time:001:America/Asuncion:
+Qyzylorda Standard Time:KZ:Asia/Qyzylorda:
+Qyzylorda Standard Time:001:Asia/Qyzylorda:
 Romance Standard Time:BE:Europe/Brussels:
 Romance Standard Time:DK:Europe/Copenhagen:
 Romance Standard Time:ES:Europe/Madrid:
@@ -348,6 +348,8 @@ Sakhalin Standard Time:RU:Asia/Sakhalin:
 Sakhalin Standard Time:001:Asia/Sakhalin:
 Samoa Standard Time:WS:Pacific/Apia:
 Samoa Standard Time:001:Pacific/Apia:
+Sao Tome Standard Time:ST:Africa/Sao_Tome:
+Sao Tome Standard Time:001:Africa/Sao_Tome:
 Saratov Standard Time:RU:Europe/Saratov:
 Saratov Standard Time:001:Europe/Saratov:
 Singapore Standard Time:BN:Asia/Brunei:
@@ -364,6 +366,7 @@ South Africa Standard Time:LS:Africa/Maseru:
 South Africa Standard Time:MW:Africa/Blantyre:
 South Africa Standard Time:MZ:Africa/Maputo:
 South Africa Standard Time:RW:Africa/Kigali:
+South Africa Standard Time:SS:Africa/Juba:
 South Africa Standard Time:SZ:Africa/Mbabane:
 South Africa Standard Time:ZA:Africa/Johannesburg:
 South Africa Standard Time:ZM:Africa/Lusaka:
@@ -394,21 +397,19 @@ Tonga Standard Time:TO:Pacific/Tongatapu:
 Tonga Standard Time:001:Pacific/Tongatapu:
 Transbaikal Standard Time:RU:Asia/Chita:
 Transbaikal Standard Time:001:Asia/Chita:
-Turkey Standard Time:CY:Asia/Famagusta:
 Turkey Standard Time:TR:Europe/Istanbul:
 Turkey Standard Time:001:Europe/Istanbul:
 Turks And Caicos Standard Time:TC:America/Grand_Turk:
 Turks And Caicos Standard Time:001:America/Grand_Turk:
 US Eastern Standard Time:US:America/Indianapolis:
 US Eastern Standard Time:001:America/Indianapolis:
-US Mountain Standard Time:CA:America/Dawson_Creek:
+US Mountain Standard Time:CA:America/Creston:
 US Mountain Standard Time:MX:America/Hermosillo:
 US Mountain Standard Time:US:America/Phoenix:
 US Mountain Standard Time:ZZ:Etc/GMT+7:
 US Mountain Standard Time:001:America/Phoenix:
-UTC:GL:America/Danmarkshavn:
-UTC:ZZ:Etc/GMT:
-UTC:001:Etc/GMT:
+UTC:ZZ:Etc/UTC:
+UTC:001:Etc/UTC:
 UTC+12:KI:Pacific/Tarawa:
 UTC+12:MH:Pacific/Majuro:
 UTC+12:NR:Pacific/Nauru:
@@ -442,6 +443,8 @@ Venezuela Standard Time:VE:America/Caracas:
 Venezuela Standard Time:001:America/Caracas:
 Vladivostok Standard Time:RU:Asia/Vladivostok:
 Vladivostok Standard Time:001:Asia/Vladivostok:
+Volgograd Standard Time:RU:Europe/Volgograd:
+Volgograd Standard Time:001:Europe/Volgograd:
 W. Australia Standard Time:AU:Australia/Perth:
 W. Australia Standard Time:001:Australia/Perth:
 W. Central Africa Standard Time:AO:Africa/Luanda:
@@ -455,7 +458,6 @@ W. Central Africa Standard Time:GA:Africa/Libreville:
 W. Central Africa Standard Time:GQ:Africa/Malabo:
 W. Central Africa Standard Time:NE:Africa/Niamey:
 W. Central Africa Standard Time:NG:Africa/Lagos:
-W. Central Africa Standard Time:ST:Africa/Sao_Tome:
 W. Central Africa Standard Time:TD:Africa/Ndjamena:
 W. Central Africa Standard Time:TN:Africa/Tunis:
 W. Central Africa Standard Time:ZZ:Etc/GMT-1:
@@ -499,3 +501,5 @@ West Pacific Standard Time:ZZ:Etc/GMT-10:
 West Pacific Standard Time:001:Pacific/Port_Moresby:
 Yakutsk Standard Time:RU:Asia/Yakutsk:
 Yakutsk Standard Time:001:Asia/Yakutsk:
+Yukon Standard Time:CA:America/Whitehorse:
+Yukon Standard Time:001:America/Whitehorse:

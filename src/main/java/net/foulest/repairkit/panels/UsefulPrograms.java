@@ -17,6 +17,7 @@
  */
 package net.foulest.repairkit.panels;
 
+import com.sun.jna.platform.win32.WinReg;
 import net.foulest.repairkit.RepairKit;
 import net.foulest.repairkit.util.TaskUtil;
 
@@ -34,6 +35,7 @@ import static net.foulest.repairkit.util.ConstantUtil.*;
 import static net.foulest.repairkit.util.DebugUtil.debug;
 import static net.foulest.repairkit.util.FileUtil.*;
 import static net.foulest.repairkit.util.ProcessUtil.isProcessRunning;
+import static net.foulest.repairkit.util.RegistryUtil.setRegistryIntValue;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
 import static net.foulest.repairkit.util.SwingUtil.*;
 
@@ -111,13 +113,14 @@ public class UsefulPrograms extends JPanel {
 
         // Adds a button to launch CPU-Z.
         debug("Creating the CPU-Z launch button...");
-        JButton appButton = createAppButton("Launch CPU-Z",
+        JButton appButton = createActionButton("Launch CPU-Z",
                 "Displays system hardware information.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
-                new Color(200, 200, 200),
-                "CPU-Z.7z",
-                "CPU-Z.exe",
-                true, tempDirectory.getPath()
+                new Color(200, 200, 200), () -> {
+                    // Unzips and launches CPU-Z.
+                    launchApplication("CPU-Z.7z", "\\CPU-Z.exe",
+                            true, tempDirectory.getPath());
+                }
         );
         add(appButton);
     }
@@ -151,13 +154,14 @@ public class UsefulPrograms extends JPanel {
 
         // Adds a button to launch HWMonitor.
         debug("Creating the HWMonitor launch button...");
-        JButton appButton = createAppButton("Launch HWMonitor",
+        JButton appButton = createActionButton("Launch HWMonitor",
                 "Displays hardware voltages & temperatures.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
-                new Color(200, 200, 200),
-                "HWMonitor.7z",
-                "HWMonitor.exe",
-                true, tempDirectory.getPath()
+                new Color(200, 200, 200), () -> {
+                    // Unzips and launches HWMonitor.
+                    launchApplication("HWMonitor.7z", "\\HWMonitor.exe",
+                            true, tempDirectory.getPath());
+                }
         );
         add(appButton);
     }
@@ -191,13 +195,26 @@ public class UsefulPrograms extends JPanel {
 
         // Adds a button to launch HWMonitor.
         debug("Creating the Autoruns launch button...");
-        JButton appButton = createAppButton("Launch Autoruns",
+        JButton appButton = createActionButton("Launch Autoruns",
                 "Displays startup items.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
-                new Color(200, 200, 200),
-                "Autoruns.7z",
-                "Autoruns.exe",
-                true, tempDirectory.getPath()
+                new Color(200, 200, 200), () -> {
+                    // Sets registry keys for Autoruns.
+                    setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "CheckVirusTotal", 1);
+                    setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "EulaAccepted", 1);
+                    setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideEmptyEntries", 1);
+                    setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideMicrosoftEntries", 1);
+                    setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideVirusTotalCleanEntries", 0);
+                    setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideWindowsEntries", 1);
+                    setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "ScanOnlyPerUserLocations", 0);
+                    setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "SubmitUnknownImages", 1);
+                    setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "VerifyCodeSignatures", 1);
+                    setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns\\VirusTotal", "VirusTotalTermsAccepted", 1);
+
+                    // Unzips and launches Autoruns.
+                    launchApplication("Autoruns.7z", "\\Autoruns.exe",
+                            true, tempDirectory.getPath());
+                }
         );
         add(appButton);
     }
@@ -231,13 +248,22 @@ public class UsefulPrograms extends JPanel {
 
         // Adds a button to launch Process Explorer.
         debug("Creating the Process Explorer launch button...");
-        JButton appButton = createAppButton("Launch Process Explorer",
+        JButton appButton = createActionButton("Launch Process Explorer",
                 "Displays system processes.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
-                new Color(200, 200, 200),
-                "ProcessExplorer.7z",
-                "ProcessExplorer.exe",
-                true, tempDirectory.getPath()
+                new Color(200, 200, 200), () -> {
+                    // Sets registry keys for Process Explorer.
+                    setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "ConfirmKill", 1);
+                    setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "EulaAccepted", 1);
+                    setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VerifySignatures", 1);
+                    setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VirusTotalCheck", 1);
+                    setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VirusTotalSubmitUnknown", 1);
+                    setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer\\VirusTotal", "VirusTotalTermsAccepted", 1);
+
+                    // Unzips and launches Process Explorer.
+                    launchApplication("ProcessExplorer.7z", "\\ProcessExplorer.exe",
+                            true, tempDirectory.getPath());
+                }
         );
         add(appButton);
     }
@@ -282,13 +308,14 @@ public class UsefulPrograms extends JPanel {
                     }
             );
         } else {
-            appButton = createAppButton("Launch TreeSize",
+            appButton = createActionButton("Launch TreeSize",
                     "Displays system files organized by size.",
                     new Rectangle(baseWidth, baseHeight + 50, 200, 30),
-                    new Color(200, 200, 200),
-                    "TreeSize.7z",
-                    "TreeSize.exe",
-                    true, tempDirectory.getPath()
+                    new Color(200, 200, 200), () -> {
+                        // Unzips and launches TreeSize.
+                        launchApplication("TreeSize.7z", "\\TreeSize.exe",
+                                true, tempDirectory.getPath());
+                    }
             );
         }
         add(appButton);
@@ -323,13 +350,14 @@ public class UsefulPrograms extends JPanel {
 
         // Adds a button to launch Everything.
         debug("Creating the Everything launch button...");
-        JButton appButton = createAppButton("Launch Everything",
+        JButton appButton = createActionButton("Launch Everything",
                 "Displays all files on your system.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
-                new Color(200, 200, 200),
-                "Everything.7z",
-                "Everything.exe",
-                true, tempDirectory.getPath()
+                new Color(200, 200, 200), () -> {
+                    // Unzips and launches Everything.
+                    launchApplication("Everything.7z", "\\Everything.exe",
+                            true, tempDirectory.getPath());
+                }
         );
         add(appButton);
     }
@@ -492,13 +520,14 @@ public class UsefulPrograms extends JPanel {
                     }
             );
         } else {
-            appButton = createAppButton("Launch Emsisoft Scan",
+            appButton = createActionButton("Launch Emsisoft Scan",
                     "Scans for malware with Emsisoft.",
                     new Rectangle(baseWidth, baseHeight + 50, 200, 30),
-                    new Color(200, 200, 200),
-                    "Emsisoft.7z",
-                    "Emsisoft.exe",
-                    true, tempDirectory.getPath()
+                    new Color(200, 200, 200), () -> {
+                        // Unzips and launches Emsisoft Scan.
+                        launchApplication("Emsisoft.7z", "\\Emsisoft.exe",
+                                true, tempDirectory.getPath());
+                    }
             );
         }
         add(appButton);
@@ -537,6 +566,12 @@ public class UsefulPrograms extends JPanel {
                 "Scans for malware with Sophos.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
+                    // Sets registry keys for Sophos Scan.
+                    setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "Registered", 1);
+                    setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "NoCookieScan", 1);
+                    setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "EULA37", 1);
+
+                    // Unzips and launches Sophos Scan.
                     try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/Sophos.7z")) {
                         saveFile(Objects.requireNonNull(input), tempDirectory + "\\Sophos.7z", true);
                         unzipFile(tempDirectory + "\\Sophos.7z", tempDirectory.getPath());

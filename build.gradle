@@ -7,11 +7,15 @@ plugins {
 }
 
 group = 'net.foulest'
-version = '1.1.0'
+version = '1.1.1'
 description = 'RepairKit'
 
-compileJava.options.encoding = 'UTF-8'
-java.sourceCompatibility = JavaVersion.VERSION_1_8
+// Set the language level to Java 17
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
 
 repositories {
     // Maven central repository
@@ -46,6 +50,7 @@ launch4j {
     icon = "${projectDir}/src/main/resources/icons/RepairKit.ico"
 
     // Java runtime information
+    // Uses Java 8 as the minimum version; bundled JRE (17) is in the 'jre' directory
     jreMinVersion = '1.8.0'
     bundledJrePath = 'jre'
     initialHeapSize = 128
@@ -119,6 +124,7 @@ tasks {
 
     compileJava {
         dependsOn(clean)
+        options.encoding = 'UTF-8'
     }
 
     classes {

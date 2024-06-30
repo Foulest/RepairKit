@@ -19,7 +19,6 @@ package net.foulest.repairkit.util;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 import net.foulest.repairkit.RepairKit;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -53,20 +52,9 @@ public class SwingUtil {
      * @param buttonText Text to display on the button.
      * @param action    Action to run when the button is clicked.
      */
-    public static @NonNull JButton createActionButton(String buttonText, Rectangle bounds,
+    public static @NotNull JButton createActionButton(String buttonText, Rectangle bounds,
                                                       Color backgroundColor, Runnable action) {
-        JButton button = new JButton(buttonText);
-        button.setBounds(bounds);
-        button.setBackground(backgroundColor);
-
-        button.addActionListener(actionEvent -> {
-            try {
-                action.run();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        });
-        return button;
+        return createActionButton(buttonText, "", bounds, backgroundColor, action);
     }
 
     /**
@@ -76,54 +64,8 @@ public class SwingUtil {
      * @param toolTipText Text to display when hovering over the button.
      * @param action      Action to run when the button is clicked.
      */
-    public static @NotNull JButton createActionButton(String buttonText, String toolTipText, Rectangle bounds,
+    public static @NotNull JButton createActionButton(String buttonText, @NotNull String toolTipText, Rectangle bounds,
                                                       Color backgroundColor, Runnable action) {
-        JButton button = new JButton(buttonText);
-        button.setToolTipText(toolTipText);
-        button.setBounds(bounds);
-        button.setBackground(backgroundColor);
-
-        button.addActionListener(actionEvent -> {
-            try {
-                action.run();
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        });
-        return button;
-    }
-
-    /**
-     * Creates an application button without launch arguments.
-     *
-     * @param buttonText    Text to display on the button.
-     * @param toolTipText   Text to display when hovering over the button.
-     * @param appResource   Resource to extract.
-     * @param appExecutable Executable to run.
-     * @param isZipped      Whether the resource is zipped.
-     */
-    public static @NotNull JButton createAppButton(String buttonText, String toolTipText,
-                                                   Rectangle bounds, Color color,
-                                                   String appResource, String appExecutable,
-                                                   boolean isZipped, String extractionPath) {
-        return createAppButton(buttonText, toolTipText, bounds, color, appResource, appExecutable, "", isZipped, extractionPath);
-    }
-
-    /**
-     * Creates an application button.
-     *
-     * @param buttonText     Text to display on the button.
-     * @param toolTipText    Text to display when hovering over the button.
-     * @param appResource    Resource to extract.
-     * @param appExecutable  Executable to run.
-     * @param isZipped       Whether the resource is zipped.
-     * @param extractionPath Path to extract the resource to.
-     * @param launchArgs     Arguments to launch the application with.
-     */
-    public static @NotNull JButton createAppButton(String buttonText, @NotNull String toolTipText,
-                                                   Rectangle bounds, Color color,
-                                                   String appResource, String appExecutable,
-                                                   String launchArgs, boolean isZipped, String extractionPath) {
         JButton button = new JButton(buttonText);
 
         if (!toolTipText.isEmpty()) {
@@ -131,11 +73,11 @@ public class SwingUtil {
         }
 
         button.setBounds(bounds);
-        button.setBackground(color);
+        button.setBackground(backgroundColor);
 
         button.addActionListener(actionEvent -> {
             try {
-                launchApplication(appResource, appExecutable, launchArgs, isZipped, extractionPath);
+                action.run();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

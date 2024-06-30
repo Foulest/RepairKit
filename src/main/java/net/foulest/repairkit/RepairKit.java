@@ -17,7 +17,6 @@
  */
 package net.foulest.repairkit;
 
-import com.sun.jna.platform.win32.WinReg;
 import lombok.Getter;
 import lombok.Setter;
 import net.foulest.repairkit.panels.AutomaticRepairs;
@@ -38,7 +37,6 @@ import static net.foulest.repairkit.util.DebugUtil.debug;
 import static net.foulest.repairkit.util.FileUtil.getImageIcon;
 import static net.foulest.repairkit.util.FileUtil.tempDirectory;
 import static net.foulest.repairkit.util.ProcessUtil.isProcessRunning;
-import static net.foulest.repairkit.util.RegistryUtil.setRegistryIntValue;
 import static net.foulest.repairkit.util.SoundUtil.playSound;
 import static net.foulest.repairkit.util.SwingUtil.*;
 import static net.foulest.repairkit.util.UpdateUtil.getVersionFromProperties;
@@ -73,14 +71,8 @@ public class RepairKit extends JFrame {
                 return;
             }
 
-            // Deletes the log file.
-            runCommand("del /f /q \"" + System.getenv("TEMP") + "\\RepairKit.log\"", false);
-
-            // Creates the log file.
-            DebugUtil.createLogFile();
-
-            // Prints system information.
-            DebugUtil.printSystemInfo(args);
+            // Creates the new log file.
+            DebugUtil.createLogFile(args);
 
             // Checks if RepairKit is running in the temp directory.
             debug("Checking if RepairKit is running in the temp directory...");
@@ -112,10 +104,6 @@ public class RepairKit extends JFrame {
                 debug("Shutting down RepairKit...");
                 runCommand("rd /s /q \"" + tempDirectory.getPath() + "\"", false);
             }));
-
-            // Sets up necessary app registry keys.
-            debug("Setting up necessary app registry keys...");
-            setAppRegistryKeys();
 
             // Launches the program.
             debug("Launching the program...");
@@ -273,9 +261,10 @@ public class RepairKit extends JFrame {
         if (!System.getProperty("os.arch").contains("64")) {
             playSound(ERROR_SOUND);
             JOptionPane.showMessageDialog(null,
-                    "Your operating system is 32-bit."
-                            + "\nThis program is designed for 64-bit operating systems."
-                            + "\nPlease upgrade to a 64-bit operating system to use this program.",
+                    """
+                            Your operating system is 32-bit.\
+                            This program is designed for 64-bit operating systems.\
+                            Please upgrade to a 64-bit operating system to use this program.""",
                     INCOMPATIBLE_OS_TITLE, JOptionPane.ERROR_MESSAGE);
             System.exit(0);
             return;
@@ -348,40 +337,11 @@ public class RepairKit extends JFrame {
         if (isProcessRunning("medal.exe")) {
             playSound(WARNING_SOUND);
             JOptionPane.showMessageDialog(null,
-                    "Warning: Medal is installed and running on your system."
-                            + "\nMedal causes issues with Desktop Windows Manager, which affects system performance."
-                            + "\nFinding an alternative to Medal, such as ShadowPlay or AMD ReLive, is recommended.",
+                    """
+                            Warning: Medal is installed and running on your system.\
+                            Medal causes issues with Desktop Windows Manager, which affects system performance.\
+                            Finding an alternative to Medal, such as ShadowPlay or AMD ReLive, is recommended.""",
                     "Software Warning", JOptionPane.WARNING_MESSAGE);
         }
-    }
-
-    /**
-     * Sets necessary app registry keys.
-     */
-    private static void setAppRegistryKeys() {
-        // Autoruns
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "CheckVirusTotal", 1);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "EulaAccepted", 1);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideEmptyEntries", 1);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideMicrosoftEntries", 1);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideVirusTotalCleanEntries", 0);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideWindowsEntries", 1);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "ScanOnlyPerUserLocations", 0);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "SubmitUnknownImages", 1);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "VerifyCodeSignatures", 1);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns\\VirusTotal", "VirusTotalTermsAccepted", 1);
-
-        // Process Explorer
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "ConfirmKill", 1);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "EulaAccepted", 1);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VerifySignatures", 1);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VirusTotalCheck", 1);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VirusTotalSubmitUnknown", 1);
-        setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer\\VirusTotal", "VirusTotalTermsAccepted", 1);
-
-        // Sophos Scan & Clean
-        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "Registered", 1);
-        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "NoCookieScan", 1);
-        setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "EULA37", 1);
     }
 }
