@@ -101,7 +101,7 @@ public class UsefulPrograms extends JPanel {
 
         // Adds a description label for CPU-Z.
         debug("Creating the CPU-Z description label...");
-        JLabel description = createLabel("Version: 2.09.0",
+        JLabel description = createLabel("Version: 2.10.0",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ARIAL, Font.BOLD, 12)
         );
@@ -142,7 +142,7 @@ public class UsefulPrograms extends JPanel {
 
         // Adds a description label for HWMonitor.
         debug("Creating the HWMonitor description label...");
-        JLabel description = createLabel("Version: 1.53.0",
+        JLabel description = createLabel("Version: 1.54.0",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ARIAL, Font.BOLD, 12)
         );
