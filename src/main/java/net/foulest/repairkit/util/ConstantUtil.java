@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ConstantUtil {
+public final class ConstantUtil {
 
     public static final String ARIAL = "Arial";
 

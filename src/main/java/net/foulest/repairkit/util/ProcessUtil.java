@@ -20,12 +20,9 @@ package net.foulest.repairkit.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
-import static net.foulest.repairkit.util.DebugUtil.debug;
-
 @SuppressWarnings("unused")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ProcessUtil {
+public final class ProcessUtil {
 
     /**
      * Checks if a service is running.
@@ -34,8 +31,8 @@ public class ProcessUtil {
      * @return Whether the service is running.
      */
     public static boolean isServiceRunning(String serviceName) {
-        debug("Checking if service is running: " + serviceName);
-        return getCommandOutput("sc query \"" + serviceName + "\"",
+        DebugUtil.debug("Checking if service is running: " + serviceName);
+        return CommandUtil.getCommandOutput("sc query \"" + serviceName + "\"",
                 false, false).toString().contains("RUNNING");
     }
 
@@ -45,9 +42,9 @@ public class ProcessUtil {
      * @param processName Name of the process to check.
      * @return Whether the process is running.
      */
-    public static boolean isProcessRunning(String processName) {
-        debug("Checking if process is running: " + processName);
-        return getCommandOutput("tasklist /FI \"IMAGENAME eq " + processName + "\"",
+    public static boolean isProcessRunning(CharSequence processName) {
+        DebugUtil.debug("Checking if process is running: " + processName);
+        return CommandUtil.getCommandOutput("tasklist /FI \"IMAGENAME eq " + processName + "\"",
                 false, false).toString().contains(processName);
     }
 }

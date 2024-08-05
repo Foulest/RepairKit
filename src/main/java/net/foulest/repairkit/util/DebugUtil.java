@@ -30,17 +30,15 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static net.foulest.repairkit.util.CommandUtil.getCommandOutput;
-import static net.foulest.repairkit.util.CommandUtil.runCommand;
-import static net.foulest.repairkit.util.UpdateUtil.CONNECTED_TO_INTERNET;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DebugUtil {
+public final class DebugUtil {
 
     private static final Path logFile = Paths.get(System.getenv("TEMP") + "\\RepairKit.log");
-    private static final ReentrantLock lock = new ReentrantLock();
+    private static final Lock lock = new ReentrantLock();
 
     /**
      * Prints a debug message to a log file.
@@ -56,7 +54,7 @@ public class DebugUtil {
         // Writes the message to the log file.
         lock.lock();
         try {
-            Files.write(logFile, timeStampedMessage.getBytes(), StandardOpenOption.APPEND);
+            Files.writeString(logFile, timeStampedMessage, StandardOpenOption.APPEND);
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
@@ -72,7 +70,7 @@ public class DebugUtil {
     public static void createLogFile(String[] args) {
         try {
             // Deletes the old log file.
-            runCommand("del /f /q \"" + System.getenv("TEMP") + "\\RepairKit.log\"", false);
+            CommandUtil.runCommand("del /f /q \"" + System.getenv("TEMP") + "\\RepairKit.log\"", false);
 
             // Creates a new log file.
             if (!Files.exists(logFile)) {
@@ -91,19 +89,19 @@ public class DebugUtil {
      *
      * @param args The command line arguments.
      */
-    public static void printSystemInfo(String[] args) {
+    private static void printSystemInfo(String[] args) {
         debug("Starting RepairKit with arguments: \"" + String.join(" ", args) + "\"");
 
         List<String> securitySoftware = CommandUtil.getPowerShellCommandOutput("Get-CimInstance -Namespace"
                         + " root/SecurityCenter2 -ClassName AntivirusProduct | Select-Object -ExpandProperty displayName",
                 false, false);
 
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ROOT);
         String formattedDate = LocalDate.now().format(dateFormatter);
 
-        List<String> cpuInfo = getCommandOutput("wmic cpu get name,NumberOfCores,NumberOfLogicalProcessors", false, false);
-        List<String> memoryInfo = getCommandOutput("wmic memorychip get capacity", false, false);
-        List<String> gpuInfo = getCommandOutput("wmic path win32_VideoController get name", false, false);
+        List<String> cpuInfo = CommandUtil.getCommandOutput("wmic cpu get name,NumberOfCores,NumberOfLogicalProcessors", false, false);
+        List<String> memoryInfo = CommandUtil.getCommandOutput("wmic memorychip get capacity", false, false);
+        List<String> gpuInfo = CommandUtil.getCommandOutput("wmic path win32_VideoController get name", false, false);
 
         debug("");
         debug("RepairKit Version: " + UpdateUtil.getLatestReleaseVersion());
@@ -126,7 +124,7 @@ public class DebugUtil {
         debug(formatMemoryInfo(memoryInfo));
         debug(formatGpuInfo(gpuInfo));
 
-        debug("- Network Connection: " + CONNECTED_TO_INTERNET);
+        debug("- Network Connection: " + UpdateUtil.CONNECTED_TO_INTERNET);
         debug("");
     }
 
@@ -136,7 +134,7 @@ public class DebugUtil {
      * @param cpuInfo The CPU information.
      * @return The formatted CPU information.
      */
-    private static @NotNull String formatCpuInfo(@NotNull List<String> cpuInfo) {
+    private static @NotNull String formatCpuInfo(@NotNull Iterable<String> cpuInfo) {
         for (String line : cpuInfo) {
             if (line.trim().isEmpty() || line.contains("Name")) {
                 continue;
@@ -157,7 +155,7 @@ public class DebugUtil {
      * @param memoryInfo The memory information.
      * @return The formatted memory information.
      */
-    private static @NotNull String formatMemoryInfo(@NotNull List<String> memoryInfo) {
+    private static @NotNull String formatMemoryInfo(@NotNull Iterable<String> memoryInfo) {
         long totalMemory = 0;
 
         for (String line : memoryInfo) {
@@ -182,7 +180,7 @@ public class DebugUtil {
      * @param gpuInfo The GPU information.
      * @return The formatted GPU information.
      */
-    private static @NotNull String formatGpuInfo(@NotNull List<String> gpuInfo) {
+    private static @NotNull String formatGpuInfo(@NotNull Iterable<String> gpuInfo) {
         for (String line : gpuInfo) {
             if (line.trim().isEmpty() || line.contains("Name")) {
                 continue;

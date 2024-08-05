@@ -22,9 +22,12 @@ Automatically perform a comprehensive system cleanup and repair, including:
 - Removing pre-installed bloatware
 - Repairing various disk issues
 - Running registry, service, and settings tweaks
-- Scanning for malware with Windows Defender
+- Scanning for malware with security software
 
-![Automatic Repairs](https://i.imgur.com/mSicilx.png)
+> **Note:** The malware scan automatically runs a quick scan with Windows Defender. In the event that Windows Defender
+> is disabled or unavailable, a quick scan is performed with Sophos Scan & Clean instead.
+
+![Automatic Repairs](https://i.imgur.com/OzTvpIL.png)
 
 ### **Useful Programs**
 
@@ -48,7 +51,7 @@ Access essential software tools for system maintenance, including:
 - **[TrafficLight](https://bitdefender.com/solutions/trafficlight.html)**: Link to Bitdefender's TrafficLight browser
   extension.
 
-![Useful Programs](https://i.imgur.com/w0OrAjT.png)
+![Useful Programs](https://i.imgur.com/w9KJ4J0.png)
 
 ### **System Shortcuts**
 
@@ -60,7 +63,7 @@ Quickly access important Windows utilities like:
 - Windows Security
 - Task Manager
 
-![System Shortcuts](https://i.imgur.com/lYjZvms.png)
+![System Shortcuts](https://i.imgur.com/BURrqr1.png)
 
 ## Download and Run
 

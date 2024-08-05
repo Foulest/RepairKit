@@ -27,10 +27,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static net.foulest.repairkit.util.DebugUtil.debug;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class RegistryUtil {
+public final class RegistryUtil {
 
     /**
      * Creates a registry key if it doesn't exist.
@@ -40,7 +38,7 @@ public class RegistryUtil {
      */
     private static void createRegistryKeyIfNeeded(WinReg.HKEY hkey, String keyPath) {
         if (!Advapi32Util.registryKeyExists(hkey, keyPath)) {
-            debug("Creating registry key: " + keyPath);
+            DebugUtil.debug("Creating registry key: " + keyPath);
             Advapi32Util.registryCreateKey(hkey, keyPath);
         }
     }
@@ -54,7 +52,7 @@ public class RegistryUtil {
      * @param value   Value to set.
      */
     public static void setRegistryIntValue(WinReg.HKEY hkey, String keyPath, String keyName, int value) {
-        debug("Setting registry int value: " + keyName + " to " + value);
+        DebugUtil.debug("Setting registry int value: " + keyName + " to " + value);
         createRegistryKeyIfNeeded(hkey, keyPath);
         Advapi32Util.registrySetIntValue(hkey, keyPath, keyName, value);
     }
@@ -68,7 +66,7 @@ public class RegistryUtil {
      * @param value   Value to set.
      */
     public static void setRegistryStringValue(WinReg.HKEY hkey, String keyPath, String keyName, String value) {
-        debug("Setting registry string value: " + keyName + " to " + value);
+        DebugUtil.debug("Setting registry string value: " + keyName + " to " + value);
         createRegistryKeyIfNeeded(hkey, keyPath);
         Advapi32Util.registrySetStringValue(hkey, keyPath, keyName, value);
     }
@@ -81,7 +79,7 @@ public class RegistryUtil {
      * @param value   Value to delete.
      */
     public static void deleteRegistryValue(WinReg.HKEY hkey, String keyPath, String value) {
-        debug("Deleting registry value: " + value);
+        DebugUtil.debug("Deleting registry value: " + value);
 
         if (Advapi32Util.registryValueExists(hkey, keyPath, value)) {
             Advapi32Util.registryDeleteValue(hkey, keyPath, value);
@@ -95,7 +93,7 @@ public class RegistryUtil {
      * @param keyPath Path to the registry key.
      */
     public static void deleteRegistryKey(WinReg.HKEY hkey, String keyPath) {
-        debug("Deleting registry key: " + keyPath);
+        DebugUtil.debug("Deleting registry key: " + keyPath);
 
         if (Advapi32Util.registryKeyExists(hkey, keyPath)) {
             Advapi32Util.registryDeleteKey(hkey, keyPath);
@@ -110,7 +108,7 @@ public class RegistryUtil {
      * @return List of sub keys.
      */
     public static @NotNull List<String> listSubKeys(WinReg.HKEY root, String keyPath) {
-        debug("Listing sub keys: " + keyPath);
+        DebugUtil.debug("Listing sub keys: " + keyPath);
         List<String> subKeysList = new ArrayList<>();
         WinReg.HKEYByReference hkeyRef = Advapi32Util.registryGetKey(root, keyPath, WinNT.KEY_READ);
 
@@ -134,7 +132,7 @@ public class RegistryUtil {
                 }
             }
         } finally {
-            debug("Closing registry key: " + keyPath);
+            DebugUtil.debug("Closing registry key: " + keyPath);
             Advapi32.INSTANCE.RegCloseKey(hkeyRef.getValue());
         }
         return subKeysList;

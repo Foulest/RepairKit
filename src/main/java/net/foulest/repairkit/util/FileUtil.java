@@ -35,11 +35,8 @@ import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import static net.foulest.repairkit.util.CommandUtil.runCommand;
-import static net.foulest.repairkit.util.DebugUtil.debug;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class FileUtil {
+public final class FileUtil {
 
     public static final File tempDirectory = new File(System.getenv("TEMP") + "\\RepairKit");
 
@@ -53,7 +50,7 @@ public class FileUtil {
         fileZip = fileZip.replace("%temp%", System.getenv("TEMP"));
         fileDest = fileDest.replace("%temp%", System.getenv("TEMP"));
 
-        debug("Unzipping file: " + fileZip + " to " + fileDest);
+        DebugUtil.debug("Unzipping file: " + fileZip + " to " + fileDest);
 
         if (fileZip.endsWith(".zip")) {
             try {
@@ -64,7 +61,7 @@ public class FileUtil {
                     ZipEntry zipEntry = zis.getNextEntry();
 
                     while (zipEntry != null) {
-                        debug("Opening zip entry: " + zipEntry.getName());
+                        DebugUtil.debug("Opening zip entry: " + zipEntry.getName());
                         Path newPath = targetPath.resolve(zipEntry.getName()).normalize();
 
                         // Check for path traversal vulnerabilities
@@ -73,28 +70,28 @@ public class FileUtil {
                         }
 
                         if (zipEntry.isDirectory()) {
-                            debug("Creating directory: " + newPath);
+                            DebugUtil.debug("Creating directory: " + newPath);
                             Files.createDirectories(newPath);
                         } else {
-                            debug("Creating file: " + newPath);
+                            DebugUtil.debug("Creating file: " + newPath);
                             Files.createDirectories(newPath.getParent());
 
-                            debug("Copying file: " + newPath);
+                            DebugUtil.debug("Copying file: " + newPath);
                             Files.copy(zis, newPath, StandardCopyOption.REPLACE_EXISTING);
                         }
 
-                        debug("Closing zip entry: " + zipEntry.getName());
+                        DebugUtil.debug("Closing zip entry: " + zipEntry.getName());
                         zipEntry = zis.getNextEntry();
                     }
                 }
             } catch (IOException ex) {
-                debug("[WARN] Failed to unzip file: " + fileZip + " to " + fileDest);
+                DebugUtil.debug("[WARN] Failed to unzip file: " + fileZip + " to " + fileDest);
                 ex.printStackTrace();
             }
         } else {
             try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/7zr.exe")) {
                 saveFile(Objects.requireNonNull(input), tempDirectory + "\\7zr.exe", true);
-                runCommand("\"" + tempDirectory + "\\7zr.exe\" x \"" + fileZip + "\"" + " -y -o\"" + tempDirectory, false);
+                CommandUtil.getCommandOutput("\"" + tempDirectory + "\\7zr.exe\" x \"" + fileZip + "\"" + " -y -o\"" + fileDest, true, false);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -109,13 +106,13 @@ public class FileUtil {
      * @param replaceOldFile Whether to replace the old file.
      */
     public static void saveFile(InputStream input, String path, boolean replaceOldFile) {
-        debug("Saving file: " + path);
+        DebugUtil.debug("Saving file: " + path);
         Path savedFilePath = Paths.get(path);
 
         try {
             if (Files.exists(savedFilePath)) {
                 if (replaceOldFile) {
-                    debug("Deleting old file: " + savedFilePath);
+                    DebugUtil.debug("Deleting old file: " + savedFilePath);
                     Files.delete(savedFilePath);
                 } else {
                     return;
@@ -123,14 +120,14 @@ public class FileUtil {
             }
 
             if (!Files.exists(savedFilePath.getParent())) {
-                debug("Creating directories: " + savedFilePath.getParent());
+                DebugUtil.debug("Creating directories: " + savedFilePath.getParent());
                 Files.createDirectories(savedFilePath.getParent());
             }
 
-            debug("Copying file: " + savedFilePath);
+            DebugUtil.debug("Copying file: " + savedFilePath);
             Files.copy(input, savedFilePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
-            debug("[WARN] Failed to save file: " + path);
+            DebugUtil.debug("[WARN] Failed to save file: " + path);
             ex.printStackTrace();
         }
     }
@@ -143,7 +140,7 @@ public class FileUtil {
      */
     @Contract("_ -> new")
     public static @NotNull ImageIcon getImageIcon(String path) {
-        debug("Getting image icon: " + path);
+        DebugUtil.debug("Getting image icon: " + path);
         return new ImageIcon(Objects.requireNonNull(RepairKit.class.getClassLoader().getResource(path)));
     }
 }

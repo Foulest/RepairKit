@@ -21,20 +21,20 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class TaskUtil {
+public final class TaskUtil {
 
     /**
      * Executes a list of tasks concurrently using an ExecutorService and CountDownLatch.
      *
      * @param tasks the list of tasks to execute
      */
-    public static void executeTasks(@NotNull List<Runnable> tasks) {
+    public static void executeTasks(@NotNull Collection<Runnable> tasks) {
         ExecutorService executor = Executors.newWorkStealingPool();
         CountDownLatch latch = new CountDownLatch(tasks.size());
 
@@ -42,7 +42,7 @@ public class TaskUtil {
             executor.submit(() -> {
                 try {
                     task.run();
-                } catch (Exception ex) {
+                } catch (RuntimeException ex) {
                     ex.printStackTrace();
                 } finally {
                     latch.countDown();

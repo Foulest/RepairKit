@@ -39,12 +39,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static net.foulest.repairkit.util.CommandUtil.runCommand;
-import static net.foulest.repairkit.util.ConstantUtil.ARIAL;
-import static net.foulest.repairkit.util.FileUtil.*;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class SwingUtil {
+public final class SwingUtil {
 
     /**
      * Creates an action button without a tooltip.
@@ -78,7 +74,7 @@ public class SwingUtil {
         button.addActionListener(actionEvent -> {
             try {
                 action.run();
-            } catch (Exception ex) {
+            } catch (RuntimeException ex) {
                 ex.printStackTrace();
             }
         });
@@ -107,25 +103,26 @@ public class SwingUtil {
      * @param extractionPath The path to extract the application to.
      * @param launchArgs     The arguments to launch the application with.
      */
-    public static void launchApplication(String appResource, String appExecutable,
-                                         String launchArgs, boolean isZipped, String extractionPath) {
+    @SuppressWarnings("SameParameterValue")
+    private static void launchApplication(String appResource, String appExecutable,
+                                          CharSequence launchArgs, boolean isZipped, String extractionPath) {
         Path path = Paths.get(extractionPath, appExecutable);
 
         synchronized (RepairKit.class) {
             if (!Files.exists(path)) {
                 try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/" + appResource)) {
-                    saveFile(Objects.requireNonNull(input), tempDirectory + "\\" + appResource, false);
+                    FileUtil.saveFile(Objects.requireNonNull(input), FileUtil.tempDirectory + "\\" + appResource, false);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
 
                 if (isZipped) {
-                    unzipFile(tempDirectory + "\\" + appResource, extractionPath);
+                    FileUtil.unzipFile(FileUtil.tempDirectory + "\\" + appResource, extractionPath);
                 }
             }
         }
 
-        runCommand(path + (launchArgs.isEmpty() ? "" : " " + launchArgs), true);
+        CommandUtil.runCommand(path + (launchArgs.isEmpty() ? "" : " " + launchArgs), true);
     }
 
     /**
@@ -201,7 +198,7 @@ public class SwingUtil {
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-        button.setFont(new Font(ARIAL, Font.BOLD, 14));
+        button.setFont(new Font(ConstantUtil.ARIAL, Font.BOLD, 14));
 
         button.addActionListener(actionEvent -> performPanelButtonAction(name));
         return button;
@@ -212,7 +209,7 @@ public class SwingUtil {
      *
      * @param name The name of the panel to switch to.
      */
-    public static void performPanelButtonAction(String name) {
+    private static void performPanelButtonAction(String name) {
         CardLayout cardLayout = (CardLayout) RepairKit.getMainPanel().getLayout();
         cardLayout.show(RepairKit.getMainPanel(), name);
     }

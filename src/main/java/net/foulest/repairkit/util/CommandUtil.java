@@ -17,19 +17,21 @@
  */
 package net.foulest.repairkit.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static net.foulest.repairkit.util.DebugUtil.debug;
-
-public class CommandUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CommandUtil {
 
     /**
      * Runs a command.
@@ -52,10 +54,10 @@ public class CommandUtil {
         };
 
         if (async) {
-            debug("Running command async: " + command);
+            DebugUtil.debug("Running command async: " + command);
             CompletableFuture.runAsync(commandRunner);
         } else {
-            debug("Running command: " + command);
+            DebugUtil.debug("Running command: " + command);
             commandRunner.run();
         }
     }
@@ -76,7 +78,7 @@ public class CommandUtil {
 
                 Process process = processBuilder.start();
 
-                try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+                try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
                     String line;
 
                     while ((line = bufferedReader.readLine()) != null) {
@@ -92,10 +94,10 @@ public class CommandUtil {
         };
 
         if (async) {
-            debug("Running command async: " + command);
+            DebugUtil.debug("Running command async: " + command);
             CompletableFuture.runAsync(commandRunner);
         } else {
-            debug("Running command: " + command);
+            DebugUtil.debug("Running command: " + command);
             commandRunner.run();
         }
     }
@@ -107,12 +109,6 @@ public class CommandUtil {
      * @param async   Whether to run the command asynchronously.
      */
     public static void runPowerShellCommand(String command, boolean async) {
-        if (async) {
-            debug("Running PowerShell command async: " + command);
-        } else {
-            debug("Running PowerShell command: " + command);
-        }
-
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"" + command + "\"", async);
     }
 
@@ -122,14 +118,8 @@ public class CommandUtil {
      * @param command Command to run.
      * @param async   Whether to run the command asynchronously.
      */
-    public static void runPowerShellCommand(String command, boolean async,
-                                            LineConsumer lineConsumer) {
-        if (async) {
-            debug("Running PowerShell command async: " + command);
-        } else {
-            debug("Running PowerShell command: " + command);
-        }
-
+    private static void runPowerShellCommand(String command, boolean async,
+                                             LineConsumer lineConsumer) {
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"" + command + "\"", async, lineConsumer);
     }
 
@@ -148,7 +138,7 @@ public class CommandUtil {
             output.add(line);
 
             if (display && !line.trim().isEmpty()) {
-                System.out.println(line);
+                DebugUtil.debug("Command output: " + line);
             }
         });
         return output.isEmpty() ? Collections.singletonList("") : output;
@@ -169,7 +159,7 @@ public class CommandUtil {
             output.add(line);
 
             if (display && !line.trim().isEmpty()) {
-                System.out.println(line);
+                DebugUtil.debug("Command output: " + line);
             }
         });
         return output.isEmpty() ? Collections.singletonList("") : output;
