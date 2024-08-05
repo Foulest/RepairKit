@@ -18,7 +18,6 @@
 package net.foulest.repairkit.panels;
 
 import com.sun.jna.platform.win32.WinReg;
-import lombok.ToString;
 import net.foulest.repairkit.RepairKit;
 import net.foulest.repairkit.util.*;
 
@@ -30,7 +29,6 @@ import java.util.List;
 import java.util.*;
 import java.util.regex.Pattern;
 
-@ToString
 public class AutomaticRepairs extends JPanel {
 
     private final JCheckBox[] progressCheckboxes;
