@@ -212,7 +212,6 @@ public final class SwingUtil {
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         button.setFont(new Font(ConstantUtil.ARIAL, Font.BOLD, 14));
-
         button.addActionListener(actionEvent -> performPanelButtonAction(name));
         return button;
     }
@@ -224,7 +223,7 @@ public final class SwingUtil {
      */
     private static void performPanelButtonAction(String name) {
         CardLayout cardLayout = (CardLayout) RepairKit.getMainPanel().getLayout();
-        cardLayout.show(RepairKit.getMainPanel(), name);
+        SwingUtilities.invokeLater(() -> cardLayout.show(RepairKit.getMainPanel(), name));
     }
 
     /**

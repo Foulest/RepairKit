@@ -32,6 +32,7 @@ import java.util.concurrent.Executors;
  * @author Foulest
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("unused")
 public final class TaskUtil {
 
     /**
