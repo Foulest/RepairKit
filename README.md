@@ -23,6 +23,7 @@ Automatically perform a comprehensive system cleanup and repair, including:
 - Removing pre-installed bloatware
 - Repairing various disk issues
 - Running registry, service, and settings tweaks
+- Updating programs with [Winget-AutoUpdate](https://github.com/Romanitho/Winget-AutoUpdate)
 - Scanning for malware with security software
 
 > **Note:** The malware scan automatically runs a quick scan with Windows Defender. In the event that Windows Defender

@@ -25,6 +25,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -81,12 +83,12 @@ public class AutomaticRepairs extends JPanel {
 
         String[] progressItems = {
                 "Delete System Policies",
-                "Remove Bloatware",
-                "Repair Disk Issues",
                 "Run Registry Tweaks",
                 "Run Service Tweaks",
                 "Run Settings Tweaks",
-                "Scan with Security Software"
+                "Remove Bloatware",
+                "Repair Disk Issues",
+                "Scan for Malware"
         };
 
         // Creates the progress checkboxes.
@@ -142,42 +144,46 @@ public class AutomaticRepairs extends JPanel {
                 deleteSystemPolicies();
                 SwingUtilities.invokeLater(() -> progressCheckboxes[0].setSelected(true));
 
+                // Installs Winget-AutoUpdate.
+                DebugUtil.debug("Installing Winget-AutoUpdate...");
+                installWingetAutoUpdate();
+
                 // Creates tasks for the executor.
                 List<Runnable> tasks = List.of(
                         () -> {
-                            // Removes bloatware if the system is not in safe mode.
-                            if (!RepairKit.isSafeMode()) {
-                                removeBloatware();
-                            }
-                            SwingUtilities.invokeLater(() -> progressCheckboxes[1].setSelected(true));
-                        },
-
-                        () -> {
                             // Runs registry tweaks.
                             runRegistryTweaks();
-                            SwingUtilities.invokeLater(() -> progressCheckboxes[3].setSelected(true));
+                            SwingUtilities.invokeLater(() -> progressCheckboxes[1].setSelected(true));
                         },
 
                         () -> {
                             // Runs service tweaks.
                             runServiceTweaks();
-                            SwingUtilities.invokeLater(() -> progressCheckboxes[4].setSelected(true));
+                            SwingUtilities.invokeLater(() -> progressCheckboxes[2].setSelected(true));
                         },
 
                         () -> {
                             // Runs settings tweaks.
                             runSettingsTweaks();
-                            SwingUtilities.invokeLater(() -> progressCheckboxes[5].setSelected(true));
+                            SwingUtilities.invokeLater(() -> progressCheckboxes[3].setSelected(true));
 
                             // Repairs disk issues.
                             // This has to be done after the DISM tweaks in the settings tweaks.
                             repairDiskIssues();
-                            SwingUtilities.invokeLater(() -> progressCheckboxes[2].setSelected(true));
+                            SwingUtilities.invokeLater(() -> progressCheckboxes[5].setSelected(true));
                         },
 
                         () -> {
-                            // Performs a quick scan with supported security software.
-                            scanWithSecuritySoftware();
+                            // Removes bloatware if the system is not in safe mode.
+                            if (!RepairKit.isSafeMode()) {
+                                removeBloatware();
+                            }
+                            SwingUtilities.invokeLater(() -> progressCheckboxes[4].setSelected(true));
+                        },
+
+                        () -> {
+                            // Scans the system for malware.
+                            scanForMalware();
                             SwingUtilities.invokeLater(() -> progressCheckboxes[6].setSelected(true));
                         }
                 );
@@ -706,7 +712,6 @@ public class AutomaticRepairs extends JPanel {
                 () -> {
                     RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\SpecialAccounts\\UserList", "Administrator", 0);
                     RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\SpecialAccounts\\UserList", "Guest", 0);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows Script Host\\Settings", "Enabled", 0);
                     RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\WindowsUpdate\\UX\\Settings", "AllowMUUpdateService", 1);
                     RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer", "NoDriveTypeAutoRun", 255);
                     RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\FVE", "UseAdvancedStartup", 1);
@@ -1040,7 +1045,7 @@ public class AutomaticRepairs extends JPanel {
     /**
      * Scans for malware with supported security software.
      */
-    private static void scanWithSecuritySoftware() {
+    private static void scanForMalware() {
         // Scans with Windows Defender if the process is running.
         if (ProcessUtil.isProcessRunning("MsMpEng.exe")) {
             DebugUtil.debug("Running Windows Defender tweaks...");
@@ -1155,6 +1160,44 @@ public class AutomaticRepairs extends JPanel {
             }
 
             DebugUtil.debug("Completed Sophos Scan.");
+        }
+    }
+
+    /**
+     * Installs Winget-AutoUpdate and checks for updates.
+     */
+    private static void installWingetAutoUpdate() {
+        // Checks if Winget-AutoUpdate is already installed.
+        if (Files.exists(Paths.get("C:\\Windows\\System32\\Tasks\\WAU\\Winget-AutoUpdate"))) {
+            DebugUtil.debug("Winget-AutoUpdate is already installed.");
+            return;
+        }
+
+        // Asks the user to install Winget-AutoUpdate.
+        DebugUtil.debug("Prompting user to install Winget-AutoUpdate...");
+        int response = JOptionPane.showConfirmDialog(null,
+                "Would you like to install Winget-AutoUpdate to keep your system up-to-date?",
+                "Install Winget-AutoUpdate", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+        // Installs Winget-AutoUpdate if the user chooses to.
+        if (response == JOptionPane.YES_OPTION) {
+            DebugUtil.debug("Enabling Windows Script Host for installation...");
+            RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows Script Host\\Settings", "Enabled", 1);
+
+            try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/WAU.7z")) {
+                // Saves and unzips the Winget-AutoUpdate files.
+                DebugUtil.debug("Extracting Winget-AutoUpdate files...");
+                FileUtil.saveFile(Objects.requireNonNull(input), FileUtil.tempDirectory + "\\WAU.7z", true);
+                FileUtil.unzipFile(FileUtil.tempDirectory + "\\WAU.7z", FileUtil.tempDirectory.getPath());
+
+                // Silently installs Winget-AutoUpdate and checks for updates.
+                DebugUtil.debug("Silently installing Winget-AutoUpdate...");
+                CommandUtil.runCommand("PowerShell -ExecutionPolicy Bypass \""
+                        + FileUtil.tempDirectory + "\\Winget-AutoUpdate-Install.ps1\" -Silent -UpdatesAtLogon"
+                        + " -NotificationLevel SuccessOnly -NoClean -StartMenuShortcut", true);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 }

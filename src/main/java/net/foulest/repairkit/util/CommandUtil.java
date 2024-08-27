@@ -81,7 +81,13 @@ public final class CommandUtil {
                 try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
                     String line;
 
-                    while ((line = bufferedReader.readLine()) != null) {
+                    while (true) {
+                        line = bufferedReader.readLine();
+
+                        if (line == null) {
+                            break;
+                        }
+
                         lineConsumer.consume(line);
                     }
                 }

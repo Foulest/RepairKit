@@ -112,7 +112,13 @@ public final class UpdateUtil {
             String inputLine;
             StringBuilder content = new StringBuilder();
 
-            while ((inputLine = in.readLine()) != null) {
+            while (true) {
+                inputLine = in.readLine();
+
+                if (inputLine == null) {
+                    break;
+                }
+
                 content.append(inputLine);
             }
 

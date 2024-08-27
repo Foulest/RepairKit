@@ -29,7 +29,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 
-public class RepairKit extends JFrame {
+public final class RepairKit extends JFrame {
 
     @Getter
     @Setter
@@ -113,7 +113,7 @@ public class RepairKit extends JFrame {
     /**
      * Creates a new instance of the program.
      */
-    public RepairKit() {
+    private RepairKit() {
         try {
             // Sets the window properties.
             DebugUtil.debug("Setting up the window properties...");
