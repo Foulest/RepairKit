@@ -36,6 +36,7 @@ import java.util.concurrent.CompletableFuture;
  * @author Foulest
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@SuppressWarnings("unused")
 public final class CommandUtil {
 
     /**
