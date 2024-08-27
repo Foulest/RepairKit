@@ -29,6 +29,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Useful Programs panel.
+ *
+ * @author Foulest
+ */
 public class UsefulPrograms extends JPanel {
 
     /**

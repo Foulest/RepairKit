@@ -35,9 +35,17 @@ import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+/**
+ * Utility class for file operations.
+ *
+ * @author Foulest
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FileUtil {
 
+    /**
+     * The temporary directory for the program.
+     */
     public static final File tempDirectory = new File(System.getenv("TEMP") + "\\RepairKit");
 
     /**

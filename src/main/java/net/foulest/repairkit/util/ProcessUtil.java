@@ -20,6 +20,11 @@ package net.foulest.repairkit.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+/**
+ * Utility class for process operations.
+ *
+ * @author Foulest
+ */
 @SuppressWarnings("unused")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ProcessUtil {

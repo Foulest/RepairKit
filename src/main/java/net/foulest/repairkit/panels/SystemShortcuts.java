@@ -25,6 +25,11 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Panel for System Shortcuts.
+ *
+ * @author Foulest
+ */
 public class SystemShortcuts extends JPanel {
 
     /**

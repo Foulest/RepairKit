@@ -29,6 +29,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 
+/**
+ * Main class for the program.
+ *
+ * @author Foulest
+ */
 public final class RepairKit extends JFrame {
 
     @Getter

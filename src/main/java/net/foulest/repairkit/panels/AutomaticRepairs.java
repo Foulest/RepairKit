@@ -31,9 +31,21 @@ import java.util.List;
 import java.util.*;
 import java.util.regex.Pattern;
 
+/**
+ * The Automatic Repairs panel.
+ *
+ * @author Foulest
+ */
 public class AutomaticRepairs extends JPanel {
 
+    /**
+     * The progress checkboxes that display the status of the automatic repairs.
+     */
     private final JCheckBox[] progressCheckboxes;
+
+    /**
+     * The run button for the automatic repairs.
+     */
     private final JButton runButton;
 
     /**

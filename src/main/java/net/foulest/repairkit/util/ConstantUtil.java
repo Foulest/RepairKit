@@ -20,26 +20,64 @@ package net.foulest.repairkit.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
+/**
+ * Utility class for constants.
+ *
+ * @author Foulest
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ConstantUtil {
 
+    /**
+     * Constant for the Arial font.
+     */
     public static final String ARIAL = "Arial";
 
+    /**
+     * Constant for the error sound played when an error occurs.
+     */
     public static final String ERROR_SOUND = "win.sound.hand";
+
+    /**
+     * Constant for the warning sound played when a warning occurs.
+     */
     public static final String WARNING_SOUND = "win.sound.asterisk";
 
+    /**
+     * Constant for the version number when the program is auto-updated.
+     */
     public static final String VERSION_AUTO_UPDATED = "Version: Auto-Updated";
 
+    /**
+     * Constant for the title of the Safe Mode dialog.
+     */
     public static final String SAFE_MODE_TITLE = "Safe Mode Detected";
+
+    /**
+     * Constant for the message of the Safe Mode dialog.
+     */
     public static final String SAFE_MODE_MESSAGE = "This feature is incompatible with Safe Mode."
             + "\nPlease restart your system in normal mode to use this feature.";
 
+    /**
+     * Constant for the title of the incompatible OS dialog.
+     */
     public static final String INCOMPATIBLE_OS_TITLE = "Incompatible Operating System";
 
+    /**
+     * Constant for the title of the outdated OS dialog.
+     */
     public static final String OUTDATED_OS_TITLE = "Outdated Operating System";
+
+    /**
+     * Constant for the message of the outdated OS dialog.
+     */
     public static final String OUTDATED_OS_MESSAGE = "This feature is incompatible with outdated operating systems."
             + "\nPlease upgrade to Windows 10 or 11 to use this feature.";
 
+    /**
+     * Constant for the message of the bad file location dialog.
+     */
     public static final String BAD_FILE_LOCATION = "RepairKit cannot be run from this folder/directory."
             + "\nPlease move the RepairKit folder to a different location and try again.";
 }

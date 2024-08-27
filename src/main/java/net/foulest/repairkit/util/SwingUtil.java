@@ -39,6 +39,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Utility class for Swing operations.
+ *
+ * @author Foulest
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SwingUtil {
 
@@ -46,7 +51,11 @@ public final class SwingUtil {
      * Creates an action button without a tooltip.
      *
      * @param buttonText Text to display on the button.
+     * @param bounds     Bounds of the button.
+     * @param backgroundColor Background color of the button.
      * @param action    Action to run when the button is clicked.
+     * @return The created button.
+     * @see #createActionButton(String, String, Rectangle, Color, Runnable)
      */
     public static @NotNull JButton createActionButton(String buttonText, Rectangle bounds,
                                                       Color backgroundColor, Runnable action) {
@@ -58,7 +67,10 @@ public final class SwingUtil {
      *
      * @param buttonText  Text to display on the button.
      * @param toolTipText Text to display when hovering over the button.
+     * @param bounds      Bounds of the button.
+     * @param backgroundColor Background color of the button.
      * @param action      Action to run when the button is clicked.
+     * @return The created button.
      */
     public static @NotNull JButton createActionButton(String buttonText, @NotNull String toolTipText, Rectangle bounds,
                                                       Color backgroundColor, Runnable action) {
@@ -88,6 +100,7 @@ public final class SwingUtil {
      * @param appExecutable  The name of the application's executable.
      * @param isZipped       Whether the application is zipped or not.
      * @param extractionPath The path to extract the application to.
+     * @see #launchApplication(String, String, CharSequence, boolean, String)
      */
     public static void launchApplication(String appResource, String appExecutable,
                                          boolean isZipped, String extractionPath) {
