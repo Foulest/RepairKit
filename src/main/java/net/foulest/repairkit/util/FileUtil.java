@@ -54,6 +54,7 @@ public final class FileUtil {
      * @param fileZip  The file to unzip.
      * @param fileDest The destination to unzip the file to.
      */
+    @SuppressWarnings("ThrowCaughtLocally")
     public static void unzipFile(String fileZip, String fileDest) {
         fileZip = fileZip.replace("%temp%", System.getenv("TEMP"));
         fileDest = fileDest.replace("%temp%", System.getenv("TEMP"));
