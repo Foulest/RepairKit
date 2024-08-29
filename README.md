@@ -22,7 +22,6 @@ Automatically perform a comprehensive system cleanup and repair, including:
 - Removing pre-installed bloatware
 - Repairing various disk issues
 - Running registry, service, and settings tweaks
-- Updating programs with [Winget-AutoUpdate](https://github.com/Romanitho/Winget-AutoUpdate)
 - Scanning for malware with security software
 
 > **Note:** The malware scan automatically runs a quick scan with Windows Defender. In the event that Windows Defender
@@ -42,15 +41,32 @@ Access essential software tools for system maintenance, including:
   Windows Task Manager.
 - **[TreeSize](https://jam-software.com/treesize_free)**: Analyze and manage disk contents.
 - **[Everything](https://voidtools.com)**: An ultra-fast file search engine.
-- **[FanControl](https://getfancontrol.com)**: Configure your system fans and their speeds.
-- **[NVCleanstall](https://techpowerup.com/download/techpowerup-nvcleanstall)**: A lightweight NVIDIA graphics card
-  driver updater.
+- **[CrystalDiskInfo](https://sourceforge.net/projects/crystaldiskinfo)**: Monitor your disk drive's health and status.
+- **[CrystalDiskMark](https://crystalmark.info/en/software/crystaldiskmark)**: Benchmark your disk drive's read/write
+  speeds.
 - **[Emsisoft Scan](https://emsisoft.com/en/home/emergency-kit)**: Scan for malware using Emsisoft Emergency Kit.
 - **[Sophos Scan](https://www.sophos.com/en-us/free-tools/virus-removal-tool)**: Scan for malware using Sophos Scan &
   Clean.
+- **[BlueScreenView](https://nirsoft.net/utils/blue_screen_view.html)**: View and analyze Windows BSOD crash dumps.
+- **[Winget-AutoUpdate](https://github.com/Romanitho/Winget-AutoUpdate)**: Automatically update Windows Package Manager
+  packages.
+- **[NVCleanstall](https://techpowerup.com/download/techpowerup-nvcleanstall)**: A lightweight NVIDIA graphics card
+  driver updater.
+- **[DDU](https://guru3d.com/files-details/display-driver-uninstaller-download.html)**: Remove display drivers and
+  packages.
+
+Additionally, RepairKit provides links to useful software tools, including:
+
 - **[uBlock Origin](https://ublockorigin.com)**: Link to the powerful ad-blocker browser extension.
 - **[TrafficLight](https://bitdefender.com/solutions/trafficlight.html)**: Link to Bitdefender's TrafficLight browser
   extension.
+- **[Bitwarden](https://bitwarden.com/download/#downloads-web-browser)**: Link to the open-source password manager.
+- **[Sophos Home](https://home.sophos.com)**: Link to the Sophos Home antivirus software.
+- **[0patch](https://0patch.com)**: Link to the 0patch Windows micro-patching software.
+- **[7-Zip](https://7-zip.org)**: Link to the open-source file archiver.
+- **[Notepad++](https://notepad-plus-plus.org)**: Link to the open-source text editor.
+- **[Twinkle Tray](https://twinkletray.com)**: Link to the monitor brightness control software.
+- **[FanControl](https://getfancontrol.com)**: Link to the fan speed control software.
 
 ![Useful Programs](https://i.imgur.com/uSrM2qa.png)
 

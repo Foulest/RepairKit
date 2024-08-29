@@ -50,11 +50,17 @@ public final class CommandUtil {
             try {
                 ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
                 processBuilder.redirectErrorStream(true);
-
                 Process process = processBuilder.start();
-                process.waitFor();
-            } catch (IOException | InterruptedException ex) {
-                Thread.currentThread().interrupt();
+
+                process.onExit().thenRun(() -> {
+                    try {
+                        process.waitFor();
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                        ex.printStackTrace();
+                    }
+                }).join();
+            } catch (IOException ex) {
                 ex.printStackTrace();
             }
         };
@@ -64,7 +70,7 @@ public final class CommandUtil {
             CompletableFuture.runAsync(commandRunner);
         } else {
             DebugUtil.debug("Running command: " + command);
-            commandRunner.run();
+            CompletableFuture.runAsync(commandRunner).join();
         }
     }
 
@@ -81,7 +87,6 @@ public final class CommandUtil {
             try {
                 ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
                 processBuilder.redirectErrorStream(true);
-
                 Process process = processBuilder.start();
 
                 try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
@@ -98,8 +103,15 @@ public final class CommandUtil {
                     }
                 }
 
-                process.waitFor();
-            } catch (IOException | InterruptedException ex) {
+                process.onExit().thenRun(() -> {
+                    try {
+                        process.waitFor();
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                        ex.printStackTrace();
+                    }
+                }).join();
+            } catch (IOException ex) {
                 Thread.currentThread().interrupt();
                 ex.printStackTrace();
             }
@@ -110,7 +122,7 @@ public final class CommandUtil {
             CompletableFuture.runAsync(commandRunner);
         } else {
             DebugUtil.debug("Running command: " + command);
-            commandRunner.run();
+            CompletableFuture.runAsync(commandRunner).join();
         }
     }
 

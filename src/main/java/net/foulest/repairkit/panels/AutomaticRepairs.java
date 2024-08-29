@@ -25,8 +25,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -156,10 +154,6 @@ public class AutomaticRepairs extends JPanel {
                 deleteSystemPolicies();
                 SwingUtilities.invokeLater(() -> progressCheckboxes[0].setSelected(true));
 
-                // Installs Winget-AutoUpdate.
-                DebugUtil.debug("Installing Winget-AutoUpdate...");
-                installWingetAutoUpdate();
-
                 // Creates tasks for the executor.
                 List<Runnable> tasks = List.of(
                         () -> {
@@ -251,6 +245,7 @@ public class AutomaticRepairs extends JPanel {
                     // Deletes specific system policies.
                     RegistryUtil.deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\MMC");
                     RegistryUtil.deleteRegistryKey(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Policies\\Microsoft\\Windows\\System");
+                    RegistryUtil.deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate");
                     RegistryUtil.deleteRegistryKey(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Policies\\Google\\Chrome");
                 },
 
@@ -1172,44 +1167,6 @@ public class AutomaticRepairs extends JPanel {
             }
 
             DebugUtil.debug("Completed Sophos Scan.");
-        }
-    }
-
-    /**
-     * Installs Winget-AutoUpdate and checks for updates.
-     */
-    private static void installWingetAutoUpdate() {
-        // Checks if Winget-AutoUpdate is already installed.
-        if (Files.exists(Paths.get("C:\\Windows\\System32\\Tasks\\WAU\\Winget-AutoUpdate"))) {
-            DebugUtil.debug("Winget-AutoUpdate is already installed.");
-            return;
-        }
-
-        // Asks the user to install Winget-AutoUpdate.
-        DebugUtil.debug("Prompting user to install Winget-AutoUpdate...");
-        int response = JOptionPane.showConfirmDialog(null,
-                "Would you like to install Winget-AutoUpdate to keep your system up-to-date?",
-                "Install Winget-AutoUpdate", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-        // Installs Winget-AutoUpdate if the user chooses to.
-        if (response == JOptionPane.YES_OPTION) {
-            DebugUtil.debug("Enabling Windows Script Host for installation...");
-            RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows Script Host\\Settings", "Enabled", 1);
-
-            try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/WAU.7z")) {
-                // Saves and unzips the Winget-AutoUpdate files.
-                DebugUtil.debug("Extracting Winget-AutoUpdate files...");
-                FileUtil.saveFile(Objects.requireNonNull(input), FileUtil.tempDirectory + "\\WAU.7z", true);
-                FileUtil.unzipFile(FileUtil.tempDirectory + "\\WAU.7z", FileUtil.tempDirectory.getPath());
-
-                // Silently installs Winget-AutoUpdate and checks for updates.
-                DebugUtil.debug("Silently installing Winget-AutoUpdate...");
-                CommandUtil.runCommand("PowerShell -ExecutionPolicy Bypass \""
-                        + FileUtil.tempDirectory + "\\Winget-AutoUpdate-Install.ps1\" -Silent -UpdatesAtLogon"
-                        + " -NotificationLevel SuccessOnly -NoClean -StartMenuShortcut", true);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
         }
     }
 }

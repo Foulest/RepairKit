@@ -21,7 +21,8 @@ import lombok.Getter;
 import lombok.Setter;
 import net.foulest.repairkit.panels.AutomaticRepairs;
 import net.foulest.repairkit.panels.SystemShortcuts;
-import net.foulest.repairkit.panels.UsefulPrograms;
+import net.foulest.repairkit.panels.UsefulPrograms1;
+import net.foulest.repairkit.panels.UsefulPrograms2;
 import net.foulest.repairkit.util.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -130,8 +131,10 @@ public final class RepairKit extends JFrame {
             // Initialize the panels.
             DebugUtil.debug("Initializing the Automatic Repairs panel...");
             AutomaticRepairs automaticRepairs = new AutomaticRepairs();
-            DebugUtil.debug("Initializing the Useful Programs panel...");
-            UsefulPrograms usefulPrograms = new UsefulPrograms();
+            DebugUtil.debug("Initializing the Useful Programs (Page 1) panel...");
+            UsefulPrograms1 usefulPrograms1 = new UsefulPrograms1();
+            DebugUtil.debug("Initializing the Useful Programs (Page 2) panel...");
+            UsefulPrograms2 usefulPrograms2 = new UsefulPrograms2();
             DebugUtil.debug("Initializing the System Shortcuts panel...");
             SystemShortcuts systemShortcuts = new SystemShortcuts();
 
@@ -139,7 +142,8 @@ public final class RepairKit extends JFrame {
             DebugUtil.debug("Creating the main panel...");
             setMainPanel(new JPanel(new CardLayout()));
             mainPanel.add(automaticRepairs, "Automatic Repairs");
-            mainPanel.add(usefulPrograms, "Useful Programs");
+            mainPanel.add(usefulPrograms1, "Useful Programs (Page 1)");
+            mainPanel.add(usefulPrograms2, "Useful Programs (Page 2)");
             mainPanel.add(systemShortcuts, "System Shortcuts");
 
             // Creates the banner panel.
@@ -228,17 +232,17 @@ public final class RepairKit extends JFrame {
 
         // Creates the Automatic Repairs button.
         DebugUtil.debug("Creating the Automatic Repairs button...");
-        JButton automaticRepairs = SwingUtil.createPanelButton("Automatic Repairs", new Rectangle(175, 10, 150, 40));
+        JButton automaticRepairs = SwingUtil.createPanelButton("Automatic Repairs", "Automatic Repairs", new Rectangle(175, 10, 150, 40));
         bannerPanel.add(automaticRepairs);
 
         // Creates the Useful Programs button.
         DebugUtil.debug("Creating the Useful Programs button...");
-        JButton usefulPrograms = SwingUtil.createPanelButton("Useful Programs", new Rectangle(325, 10, 150, 40));
+        JButton usefulPrograms = SwingUtil.createPanelButton("Useful Programs", "Useful Programs (Page 1)", new Rectangle(325, 10, 150, 40));
         bannerPanel.add(usefulPrograms);
 
         // Creates the System Shortcuts button.
         DebugUtil.debug("Creating the System Shortcuts button...");
-        JButton systemShortcuts = SwingUtil.createPanelButton("System Shortcuts", new Rectangle(475, 10, 150, 40));
+        JButton systemShortcuts = SwingUtil.createPanelButton("System Shortcuts", "System Shortcuts", new Rectangle(475, 10, 150, 40));
         bannerPanel.add(systemShortcuts);
         return bannerPanel;
     }

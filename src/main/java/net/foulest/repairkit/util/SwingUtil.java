@@ -83,13 +83,13 @@ public final class SwingUtil {
         button.setBounds(bounds);
         button.setBackground(backgroundColor);
 
-        button.addActionListener(actionEvent -> {
+        button.addActionListener(actionEvent -> new Thread(() -> {
             try {
                 action.run();
             } catch (RuntimeException ex) {
                 ex.printStackTrace();
             }
-        });
+        }).start());
         return button;
     }
 
@@ -198,21 +198,44 @@ public final class SwingUtil {
     }
 
     /**
+     * Creates a page button label.
+     *
+     * @param name The name of the button.
+     * @return The created mouse adapter.
+     */
+    public static @NotNull MouseAdapter createPageButtonLabel(String name) {
+        return new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent event) {
+                performPanelButtonAction(name);
+            }
+        };
+    }
+
+    /**
      * Creates a panel button (located at the top of the panel).
      *
-     * @param name   The name of the button.
+     * @param buttonName   The name of the button.
+     * @param panelName    The name of the panel to switch to.
      * @param bounds The bounds of the button.
      * @return The created button.
      */
-    public static @NotNull JButton createPanelButton(String name, Rectangle bounds) {
-        JButton button = new JButton(name);
+    public static @NotNull JButton createPanelButton(String buttonName, String panelName, Rectangle bounds) {
+        JButton button = new JButton(buttonName);
         button.setBounds(bounds);
         button.setBackground(new Color(0, 120, 215));
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         button.setFont(new Font(ConstantUtil.ARIAL, Font.BOLD, 14));
-        button.addActionListener(actionEvent -> performPanelButtonAction(name));
+
+        button.addActionListener(actionEvent -> new Thread(() -> {
+            try {
+                performPanelButtonAction(panelName);
+            } catch (RuntimeException ex) {
+                ex.printStackTrace();
+            }
+        }).start());
         return button;
     }
 
