@@ -399,7 +399,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for CrystalDiskInfo.
         DebugUtil.debug("Creating the CrystalDiskInfo description label...");
-        JLabel description = SwingUtil.createLabel("Version: 9.4.2",
+        JLabel description = SwingUtil.createLabel("Version: 9.4.3",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -665,7 +665,7 @@ public class UsefulPrograms1 extends JPanel {
                                 + (option == JOptionPane.YES_OPTION
                                 ? " -UpdatesAtLogon -UpdatesInterval Daily"
                                 : " -UpdatesInterval Never")
-                                + " -NotificationLevel SuccessOnly -NoClean"
+                                + " -NotificationLevel Full"
                                 + " -StartMenuShortcut -DoNotUpdate", false);
                     } catch (IOException ex) {
                         ex.printStackTrace();
