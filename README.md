@@ -49,8 +49,7 @@ Access essential software tools for system maintenance, including:
 - **[Sophos Scan](https://www.sophos.com/en-us/free-tools/virus-removal-tool)**: Scan for malware using Sophos Scan &
   Clean.
 - **[BlueScreenView](https://nirsoft.net/utils/blue_screen_view.html)**: View and analyze Windows BSOD crash dumps.
-- **[Winget-AutoUpdate](https://github.com/Romanitho/Winget-AutoUpdate)**: Automatically update Windows Package Manager
-  packages.
+- **[Winget-AutoUpdate](https://github.com/Romanitho/Winget-AutoUpdate)**: Automatically update installed programs using Winget.
 - **[NVCleanstall](https://techpowerup.com/download/techpowerup-nvcleanstall)**: A lightweight NVIDIA graphics card
   driver updater.
 - **[DisplayDriverUninstaller](https://guru3d.com/files-details/display-driver-uninstaller-download.html)**: Remove
