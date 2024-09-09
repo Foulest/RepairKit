@@ -21,7 +21,7 @@ Automatically perform a comprehensive system cleanup and repair, including:
 - Deleting restrictive system policies
 - Running registry and system tweaks
 - Removing pre-installed bloatware
-- Cleaning up unnecessary junk files
+- Cleaning unnecessary junk files
 - Repairing various disk issues
 - Scanning for malware with security software
 
