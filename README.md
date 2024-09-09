@@ -19,15 +19,16 @@
 Automatically perform a comprehensive system cleanup and repair, including:
 
 - Deleting restrictive system policies
+- Running registry and system tweaks
 - Removing pre-installed bloatware
+- Cleaning up unnecessary junk files
 - Repairing various disk issues
-- Running registry, service, and settings tweaks
 - Scanning for malware with security software
 
 > **Note:** The malware scan automatically runs a quick scan with Windows Defender. In the event that Windows Defender
 > is disabled or unavailable, a quick scan is performed with Sophos Scan & Clean instead.
 
-![Automatic Repairs](https://i.imgur.com/4RvrAAf.png)
+![Automatic Repairs](https://i.imgur.com/V9JWXhI.png)
 
 ### **Useful Programs**
 
@@ -55,7 +56,7 @@ Access essential software tools for system maintenance, including:
 - **[DisplayDriverUninstaller](https://guru3d.com/files-details/display-driver-uninstaller-download.html)**: Remove
   display drivers and packages.
 
-![Useful Programs](https://i.imgur.com/IOjms8C.png)
+![Useful Programs](https://i.imgur.com/Vl8t2Xa.png)
 
 Additionally, RepairKit provides links to useful software tools, including:
 
@@ -70,7 +71,7 @@ Additionally, RepairKit provides links to useful software tools, including:
 - **[Twinkle Tray](https://twinkletray.com)**: Link to the monitor brightness control software.
 - **[FanControl](https://getfancontrol.com)**: Link to the fan speed control software.
 
-![Useful Programs](https://i.imgur.com/lHeWx8X.png)
+![Useful Programs](https://i.imgur.com/qFwkyIg.png)
 
 ### **System Shortcuts**
 
@@ -82,7 +83,7 @@ Quickly access important Windows utilities like:
 - Windows Security
 - Task Manager
 
-![System Shortcuts](https://i.imgur.com/5PhslmA.png)
+![System Shortcuts](https://i.imgur.com/10De1zo.png)
 
 ## Download and Run
 
