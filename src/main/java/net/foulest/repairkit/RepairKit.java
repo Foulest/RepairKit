@@ -99,6 +99,10 @@ public final class RepairKit extends JFrame {
                 CommandUtil.runCommand("rd /s /q \"" + FileUtil.tempDirectory.getPath() + "\"", false);
             }));
 
+            // Checks for updates.
+            DebugUtil.debug("Checking for updates...");
+            UpdateUtil.checkForUpdates();
+
             // Launches the program.
             DebugUtil.debug("Launching the program...");
 
@@ -155,10 +159,6 @@ public final class RepairKit extends JFrame {
             add(bannerPanel, BorderLayout.PAGE_START);
             add(mainPanel, BorderLayout.CENTER);
 
-            // Checks for updates.
-            DebugUtil.debug("Checking for updates...");
-            UpdateUtil.checkForUpdates();
-
             // Packs and centers the frame.
             DebugUtil.debug("Packing and centering the frame...");
             pack();
@@ -202,7 +202,7 @@ public final class RepairKit extends JFrame {
         // Creates the secondary banner label.
         DebugUtil.debug("Creating the secondary banner label...");
         JLabel bannerLabelSecondary = SwingUtil.createLabel("by Foulest",
-                new Rectangle(60, 31, 100, 20),
+                new Rectangle(60, 31, 70, 20),
                 new Font(ConstantUtil.ARIAL, Font.PLAIN, 14)
         );
         bannerLabelSecondary.setForeground(Color.WHITE);
@@ -222,7 +222,7 @@ public final class RepairKit extends JFrame {
         // Creates the version number label.
         DebugUtil.debug("Creating the version number label...");
         JLabel versionNumber = SwingUtil.createLabel(UpdateUtil.getVersionFromProperties(),
-                new Rectangle(700, 25, 50, 30),
+                new Rectangle(700, 25, 35, 30),
                 new Font(ConstantUtil.ARIAL, Font.PLAIN, 14)
         );
         versionNumber.setForeground(Color.WHITE);

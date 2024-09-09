@@ -94,8 +94,8 @@ public class AutomaticRepairs extends JPanel {
         String[] progressItems = {
                 "Delete System Policies",
                 "Run Registry Tweaks",
-                "Run Service Tweaks",
-                "Run Settings Tweaks",
+                "Run System Tweaks",
+                "Remove Junk Files",
                 "Remove Bloatware",
                 "Repair Disk Issues",
                 "Scan for Malware"
@@ -163,20 +163,20 @@ public class AutomaticRepairs extends JPanel {
                         },
 
                         () -> {
-                            // Runs service tweaks.
-                            runServiceTweaks();
+                            // Runs settings tweaks.
+                            runSystemTweaks();
                             SwingUtilities.invokeLater(() -> progressCheckboxes[2].setSelected(true));
+
+                            // Repairs disk issues.
+                            // This has to be done after the DISM commands in the system tweaks.
+                            repairDiskIssues();
+                            SwingUtilities.invokeLater(() -> progressCheckboxes[5].setSelected(true));
                         },
 
                         () -> {
-                            // Runs settings tweaks.
-                            runSettingsTweaks();
+                            // Removes junk files.
+                            JunkFileUtil.removeJunkFiles();
                             SwingUtilities.invokeLater(() -> progressCheckboxes[3].setSelected(true));
-
-                            // Repairs disk issues.
-                            // This has to be done after the DISM tweaks in the settings tweaks.
-                            repairDiskIssues();
-                            SwingUtilities.invokeLater(() -> progressCheckboxes[5].setSelected(true));
                         },
 
                         () -> {
@@ -907,11 +907,9 @@ public class AutomaticRepairs extends JPanel {
     }
 
     /**
-     * Runs various tweaks to the Windows services.
+     * Runs tweaks to the system including services, settings, and tasks.
      */
-    private static void runServiceTweaks() {
-        DebugUtil.debug("Running service tweaks...");
-
+    private static void runSystemTweaks() {
         List<String[]> serviceList = Arrays.asList(
                 new String[]{"DiagTrack", "Connected User Experiences and Telemetry"},
                 new String[]{"MapsBroker", "Downloaded Maps Manager"},
@@ -930,26 +928,7 @@ public class AutomaticRepairs extends JPanel {
                 new String[]{"wersvc", "wersvc"}
         );
 
-        // Create tasks for the executor.
-        List<Runnable> tasks = serviceList.stream().map(service -> (Runnable) () -> {
-            String serviceName = service[0];
-            DebugUtil.debug("Disabling service: " + serviceName);
-            CommandUtil.runCommand("sc stop \"" + serviceName + "\"", true);
-            CommandUtil.runCommand("sc config \"" + serviceName + "\" start=disabled", true);
-        }).toList();
-
-        // Executes tasks using TaskUtil.
-        TaskUtil.executeTasks(tasks);
-        DebugUtil.debug("Completed service tweaks.");
-    }
-
-    /**
-     * Runs tweaks to Windows settings.
-     */
-    private static void runSettingsTweaks() {
-        DebugUtil.debug("Running settings tweaks...");
-
-        List<Runnable> tasks = Arrays.asList(
+        List<Runnable> systemTasks = Arrays.asList(
                 () -> {
                     // Fixes micro-stuttering in games.
                     CommandUtil.runCommand("bcdedit /set useplatformtick yes", true);
@@ -1044,9 +1023,22 @@ public class AutomaticRepairs extends JPanel {
                     }
                 });
 
-        // Execute tasks using TaskUtil.
-        TaskUtil.executeTasks(tasks);
-        DebugUtil.debug("Completed settings tweaks.");
+        List<Runnable> serviceTasks = serviceList.stream().map(service -> (Runnable) () -> {
+            String serviceName = service[0];
+            DebugUtil.debug("Disabling service: " + serviceName);
+            CommandUtil.runCommand("sc stop \"" + serviceName + "\"", true);
+            CommandUtil.runCommand("sc config \"" + serviceName + "\" start=disabled", true);
+        }).toList();
+
+        // Execute service tasks using TaskUtil.
+        DebugUtil.debug("Running service tweaks...");
+        TaskUtil.executeTasks(serviceTasks);
+        DebugUtil.debug("Completed service tweaks.");
+
+        // Execute system tasks using TaskUtil.
+        DebugUtil.debug("Running system tweaks...");
+        TaskUtil.executeTasks(systemTasks);
+        DebugUtil.debug("Completed system tweaks.");
     }
 
     /**

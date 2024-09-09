@@ -109,7 +109,7 @@ public final class DebugUtil {
         List<String> gpuInfo = CommandUtil.getCommandOutput("wmic path win32_VideoController get name", false, false);
 
         debug("");
-        debug("RepairKit Version: " + UpdateUtil.getLatestReleaseVersion());
+        debug("RepairKit Version: " + UpdateUtil.getVersionFromProperties());
         debug("System Date: " + formattedDate);
         debug("");
         debug("OS Information");

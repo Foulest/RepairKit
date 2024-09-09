@@ -100,8 +100,16 @@ public class UsefulPrograms1 extends JPanel {
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 25)
         );
         nextPage.setForeground(Color.DARK_GRAY);
-        nextPage.addMouseListener(SwingUtil.createPageButtonLabel("Useful Programs (Page 2)"));
         add(nextPage);
+
+        // Adds a button under the next page label.
+        JButton nextPageButton = SwingUtil.createPanelButton("",
+                "Useful Programs (Page 2)",
+                new Rectangle(267, 20, 22, 23)
+        );
+        nextPageButton.setOpaque(false);
+        nextPageButton.setContentAreaFilled(false);
+        add(nextPageButton);
     }
 
     /**
@@ -399,7 +407,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for CrystalDiskInfo.
         DebugUtil.debug("Creating the CrystalDiskInfo description label...");
-        JLabel description = SwingUtil.createLabel("Version: 9.4.3",
+        JLabel description = SwingUtil.createLabel("Version: 9.4.4",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -626,7 +634,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for Winget-AutoUpdate.
         DebugUtil.debug("Creating the Winget-AutoUpdate description label...");
-        JLabel description = SwingUtil.createLabel("Version: 1.20.2",
+        JLabel description = SwingUtil.createLabel(ConstantUtil.VERSION_AUTO_UPDATED,
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -639,9 +647,25 @@ public class UsefulPrograms1 extends JPanel {
         // Adds a button to launch Winget-AutoUpdate.
         DebugUtil.debug("Creating the Winget-AutoUpdate launch button...");
         JButton appButton = SwingUtil.createActionButton("Launch Winget-AutoUpdate",
-                "Automatically updates Windows Package Manager.",
+                "Automatically updates programs using Winget.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
+                    // Stops if Winget-AutoUpdate is currently running.
+                    if (ProcessUtil.isProcessRunning("wscript.exe")
+                            || ProcessUtil.isProcessRunning("winget.exe")
+                            || ProcessUtil.isProcessRunning("powershell.exe")) {
+                        SoundUtil.playSound(ConstantUtil.ERROR_SOUND);
+                        JOptionPane.showMessageDialog(null, """
+                                        Winget-AutoUpdate cannot be launched. It might be already running.
+
+                                        Please wait for the following processes to finish:
+                                        - wscript.exe
+                                        - winget.exe
+                                        - powershell.exe""",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
                     // Enables Windows Script Host for Winget-AutoUpdate.
                     DebugUtil.debug("Enabling Windows Script Host for Winget-AutoUpdate...");
                     RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows Script Host\\Settings", "Enabled", 1);

@@ -87,8 +87,16 @@ public class UsefulPrograms2 extends JPanel {
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 25)
         );
         previousPage.setForeground(Color.DARK_GRAY);
-        previousPage.addMouseListener(SwingUtil.createPageButtonLabel("Useful Programs (Page 1)"));
         add(previousPage);
+
+        // Adds a button under the previous page label.
+        JButton previousPageButton = SwingUtil.createPanelButton("",
+                "Useful Programs (Page 1)",
+                new Rectangle(246, 20, 22, 23)
+        );
+        previousPageButton.setOpaque(false);
+        previousPageButton.setContentAreaFilled(false);
+        add(previousPageButton);
 
         // Adds a label for the next page button.
         JLabel nextPage = SwingUtil.createLabel(">",
