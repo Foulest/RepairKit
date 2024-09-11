@@ -7,8 +7,9 @@ assignees: 'Foulest'
 
 ---
 
-**Before you submit this issue, please make sure you have done the following:**
+**Before you submit this, please make sure you have done the following:**
 
+- [ ] I am using the latest version of this project
 - [ ] I have checked the existing documentation for this project
 - [ ] I have searched the issue tracker for a similar issue
 
@@ -19,4 +20,4 @@ A clear and concise description of what the issue is.
 Steps or details on how to improve the documentation.
 
 **Additional context**
-Add any other context or screenshots about the documentation improvement here.
+Add any other context about the issue here.
