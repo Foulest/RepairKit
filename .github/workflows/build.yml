@@ -1,16 +1,14 @@
-name: 'Build with Gradle'
+name: 'Build Project'
 
 on:
   push:
     branches: [ 'main' ]
   pull_request:
     branches: [ 'main' ]
-  schedule:
-    - cron: '0 8 * * 1'
 
 jobs:
   build:
-    name: 'Build with Gradle'
+    name: 'Build Project'
     runs-on: ubuntu-latest
 
     steps:

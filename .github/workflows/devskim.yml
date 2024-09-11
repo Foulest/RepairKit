@@ -5,11 +5,9 @@ name: 'DevSkim'
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ 'main' ]
   pull_request:
-    branches: [ "main" ]
-  schedule:
-    - cron: '0 8 * * 1'
+    branches: [ 'main' ]
 
 jobs:
   devskim:
