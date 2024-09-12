@@ -80,3 +80,11 @@ release.properties
 
 # Misc
 machinet.conf
+
+# Node.js
+/node_modules/
+/package-lock.json
+
+# Yarn
+/yarn.lock
+/.run/
