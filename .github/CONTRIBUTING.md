@@ -35,11 +35,4 @@ including completely new features and minor improvements to existing functionali
 - Make sure your code follows the project's coding standards.
 - Make sure all tests pass.
 
-## Issue and Pull Request Labels
-
-This section lists the labels we use to help us track and manage issues and pull requests.
-
-- `bug` - Issues that are bugs.
-- `request` - Issues that are feature requests.
-
 Thank you for reading, and we look forward to your contributions!

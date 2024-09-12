@@ -58,9 +58,8 @@ representative at an online or offline event.
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement in the
-[Issues section](https://github.com/Foulest/RepairKit/issues).
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported
+to the community leaders responsible for enforcement in the project's **Issues** section.
 All complaints will be reviewed and investigated promptly and fairly.
 All community leaders are obligated to respect the privacy and security of the reporter of any incident.
 

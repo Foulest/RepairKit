@@ -6,8 +6,7 @@
 
 ## Reporting a Vulnerability
 
-If you discover a vulnerability, please report it using the
-[Security section](https://github.com/Foulest/RepairKit/security) in the GitHub repository.
+If you discover a vulnerability, please report it using the project's **Security** section.
 
 When reporting a vulnerability, please provide as much information as possible to help us understand the nature and
 scope of the potential issue. This should include:
