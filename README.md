@@ -1,7 +1,7 @@
 # RepairKit
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![CodeQL Badge](https://github.com/Foulest/RepairKit/actions/workflows/codeql.yml/badge.svg)](https://github.com/Foulest/RepairKit/actions/workflows/codeql.yml)
+[![CodeQL](https://github.com/Foulest/RepairKit/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/Foulest/RepairKit/actions/workflows/github-code-scanning/codeql)
 [![Downloads](https://img.shields.io/github/downloads/Foulest/RepairKit/total.svg)](https://github.com/Foulest/RepairKit/releases)
 
 **RepairKit** is an all-in-one Java-based Windows repair and maintenance toolkit.
