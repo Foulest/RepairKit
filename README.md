@@ -28,7 +28,7 @@ Automatically perform a comprehensive system cleanup and repair, including:
 > **Note:** The malware scan automatically runs a quick scan with Windows Defender. In the event that Windows Defender
 > is disabled or unavailable, a quick scan is performed with Sophos Scan & Clean instead.
 
-![Automatic Repairs](https://i.imgur.com/V9JWXhI.png)
+![Automatic Repairs](https://i.imgur.com/rXYVs88.png)
 
 ### **Useful Programs**
 
@@ -60,7 +60,7 @@ Access essential software tools for system maintenance, including:
 - **[DisplayDriverUninstaller](https://guru3d.com/files-details/display-driver-uninstaller-download.html)**: Remove
   display drivers and packages.
 
-![Useful Programs](https://i.imgur.com/Vl8t2Xa.png)
+![Useful Programs (Page 1/2)](https://i.imgur.com/EhlwbUX.png)
 
 Additionally, RepairKit provides links to useful software tools, including:
 
@@ -76,7 +76,7 @@ Additionally, RepairKit provides links to useful software tools, including:
 - **[Twinkle Tray](https://twinkletray.com)**: Link to the monitor brightness control software.
 - **[FanControl](https://getfancontrol.com)**: Link to the fan speed control software.
 
-![Useful Programs](https://i.imgur.com/qFwkyIg.png)
+![Useful Programs (Page 2/2)](https://i.imgur.com/UH5Rm1d.png)
 
 ### **System Shortcuts**
 
