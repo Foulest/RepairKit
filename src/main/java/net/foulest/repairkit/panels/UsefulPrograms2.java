@@ -17,13 +17,17 @@
  */
 package net.foulest.repairkit.panels;
 
+import com.sun.jna.platform.win32.WinReg;
 import net.foulest.repairkit.RepairKit;
 import net.foulest.repairkit.util.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Useful Programs panel (Page 2).
@@ -61,17 +65,19 @@ public class UsefulPrograms2 extends JPanel {
 
         // Creates tasks for the executor.
         List<Runnable> tasks = Arrays.asList(
-                this::setupUBlockOrigin,
-                this::setupTrafficLight,
+                this::setupWingetAutoUpdate,
+                this::setupNVCleanstall,
+                this::setupDDU,
+                this::setup7Zip,
+
                 this::setupBitwarden,
                 this::setupSophosHome,
-                this::setup0patch,
-                this::setup7Zip,
+                this::setupUBlockOrigin,
+                this::setupTrafficLight,
+
                 this::setupNotepadPlusPlus,
                 this::setupTwinkleTray,
-                this::setupFanControl,
-                this::setupNVCleanstall,
-                this::setupDDU
+                this::setupFanControl
         );
 
         // Executes tasks using TaskUtil.
@@ -108,10 +114,99 @@ public class UsefulPrograms2 extends JPanel {
     }
 
     /**
+     * Sets up the Winget-AutoUpdate section.
+     */
+    private void setupWingetAutoUpdate() {
+        int baseHeight = 55;
+        int baseWidth = 20;
+
+        // Adds a title label for Winget-AutoUpdate.
+        DebugUtil.debug("Creating the Winget-AutoUpdate title label...");
+        JLabel title = SwingUtil.createLabel("Winget-AutoUpdate",
+                new Rectangle(baseWidth + 43, baseHeight, 200, 30),
+                new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
+        );
+        add(title);
+
+        // Adds a description label for Winget-AutoUpdate.
+        DebugUtil.debug("Creating the Winget-AutoUpdate description label...");
+        JLabel description = SwingUtil.createLabel(ConstantUtil.VERSION_AUTO_UPDATED,
+                new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
+                new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
+        );
+        add(description);
+
+        // Adds an icon for TrafficLight.
+        DebugUtil.debug("Setting up the Winget-AutoUpdate icon...");
+        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/Winget-AutoUpdate.png"), this);
+
+        // Adds a button to launch Winget-AutoUpdate.
+        DebugUtil.debug("Creating the Winget-AutoUpdate launch button...");
+        JButton appButton = SwingUtil.createActionButton("Launch Winget-AutoUpdate",
+                "Automatically updates programs using Winget.",
+                new Rectangle(baseWidth, baseHeight + 50, 200, 30),
+                new Color(200, 200, 200), () -> {
+                    // Stops if Winget-AutoUpdate is currently running.
+                    if (ProcessUtil.isProcessRunning("wscript.exe")
+                            || ProcessUtil.isProcessRunning("winget.exe")
+                            || ProcessUtil.isProcessRunning("powershell.exe")) {
+                        SoundUtil.playSound(ConstantUtil.ERROR_SOUND);
+                        JOptionPane.showMessageDialog(null, """
+                                        Winget-AutoUpdate cannot be launched. It might be already running.
+                                        
+                                        Please wait for the following processes to finish:
+                                        - wscript.exe
+                                        - winget.exe
+                                        - powershell.exe""",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    // Enables Windows Script Host for Winget-AutoUpdate.
+                    DebugUtil.debug("Enabling Windows Script Host for Winget-AutoUpdate...");
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows Script Host\\Settings", "Enabled", 1);
+
+                    try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/WAU.7z")) {
+                        // Saves and unzips the Winget-AutoUpdate files.
+                        DebugUtil.debug("Extracting Winget-AutoUpdate files...");
+                        FileUtil.saveFile(Objects.requireNonNull(input), FileUtil.tempDirectory + "\\WAU.7z", true);
+                        FileUtil.unzipFile(FileUtil.tempDirectory + "\\WAU.7z", FileUtil.tempDirectory.getPath());
+
+                        // Prompt the user if they want to check for updates on logon, or just once.
+                        int option = JOptionPane.showOptionDialog(null,
+                                "Would you like Winget-AutoUpdate to automatically update your programs?",
+                                "Winget-AutoUpdate", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                                new String[]{"Yes", "No"}, "Yes");
+
+                        // Silently installs Winget-AutoUpdate.
+                        DebugUtil.debug("Silently installing Winget-AutoUpdate...");
+                        CommandUtil.runCommand("PowerShell -ExecutionPolicy Bypass \""
+                                + FileUtil.tempDirectory + "\\Winget-AutoUpdate-Install.ps1\" -Silent"
+                                + (option == JOptionPane.YES_OPTION
+                                ? " -UpdatesAtLogon -UpdatesInterval Daily"
+                                : " -UpdatesInterval Never")
+                                + " -NotificationLevel Full"
+                                + " -StartMenuShortcut -DoNotUpdate", false);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+
+                    // Launches Winget-AutoUpdate.
+                    DebugUtil.debug("Running update check with Winget-AutoUpdate...");
+                    CommandUtil.runCommand("C:\\Windows\\system32\\wscript.exe"
+                            + " \"C:\\ProgramData\\Winget-AutoUpdate\\Invisible.vbs\" \"powershell.exe"
+                            + " -NoProfile -ExecutionPolicy Bypass -File"
+                            + " \"\"\"C:\\ProgramData\\Winget-AutoUpdate\\user-run.ps1\"\"", false);
+                }
+        );
+        add(appButton);
+    }
+
+    /**
      * Sets up the NVCleanstall section.
      */
     private void setupNVCleanstall() {
-        int baseHeight = 55;
+        int baseHeight = 150;
         int baseWidth = 20;
 
         // Adds a title label for NVCleanstall.
@@ -158,7 +253,7 @@ public class UsefulPrograms2 extends JPanel {
      * Sets up the DDU section.
      */
     private void setupDDU() {
-        int baseHeight = 150;
+        int baseHeight = 245;
         int baseWidth = 20;
 
         // Adds a title label for DDU.
@@ -196,77 +291,39 @@ public class UsefulPrograms2 extends JPanel {
     }
 
     /**
-     * Sets up the uBlock Origin section.
+     * Sets up the 7-Zip section.
      */
-    private void setupUBlockOrigin() {
-        int baseHeight = 245;
-        int baseWidth = 20;
-
-        // Adds a title label for uBlock Origin.
-        DebugUtil.debug("Creating the uBlock Origin title label...");
-        JLabel title = SwingUtil.createLabel("uBlock Origin",
-                new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
-        );
-        add(title);
-
-        // Adds a description label for uBlock Origin.
-        DebugUtil.debug("Creating the uBlock Origin description label...");
-        JLabel description = SwingUtil.createLabel("Price: Free",
-                new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
-        );
-        add(description);
-
-        // Adds an icon for uBlock Origin.
-        DebugUtil.debug("Setting up the uBlock Origin icon...");
-        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/uBlockOrigin.png"), this);
-
-        // Adds a button to launch uBlock Origin.
-        DebugUtil.debug("Creating the uBlock Origin launch button...");
-        JButton appButton = SwingUtil.createActionButton("Visit uBlock Origin",
-                "Browser extension for content-filtering.",
-                new Rectangle(baseWidth, baseHeight + 50, 200, 30),
-                new Color(200, 200, 200),
-                () -> CommandUtil.runCommand("start https://ublockorigin.com", true)
-        );
-        add(appButton);
-    }
-
-    /**
-     * Sets up the TrafficLight section.
-     */
-    private void setupTrafficLight() {
+    private void setup7Zip() {
         int baseHeight = 340;
         int baseWidth = 20;
 
-        // Adds a title label for TrafficLight.
-        DebugUtil.debug("Creating the TrafficLight title label...");
-        JLabel title = SwingUtil.createLabel("TrafficLight",
+        // Adds a title label for 7-Zip.
+        DebugUtil.debug("Creating the 7-Zip title label...");
+        JLabel title = SwingUtil.createLabel("7-Zip",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
         add(title);
 
-        // Adds a description label for TrafficLight.
-        DebugUtil.debug("Creating the TrafficLight description label...");
+        // Adds a description label for 7-Zip.
+        DebugUtil.debug("Creating the 7-Zip description label...");
         JLabel description = SwingUtil.createLabel("Price: Free",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
         add(description);
 
-        // Adds an icon for TrafficLight.
-        DebugUtil.debug("Setting up the TrafficLight icon...");
-        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/TrafficLight.png"), this);
+        // Adds an icon for 7-Zip.
+        DebugUtil.debug("Setting up the 7-Zip icon...");
+        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/7-Zip.png"), this);
 
-        // Adds a button to launch TrafficLight.
-        DebugUtil.debug("Creating the TrafficLight launch button...");
-        JButton appButton = SwingUtil.createActionButton("Visit TrafficLight",
-                "Browser extension for safe browsing.",
+        // Adds a button to launch 7-Zip.
+        DebugUtil.debug("Creating the 7-Zip launch button...");
+        JButton appButton = SwingUtil.createActionButton("Visit 7-Zip",
+                "Free and open-source file archiver.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
-                () -> CommandUtil.runCommand("start https://bitdefender.com/solutions/trafficlight.html", true)
+                () -> CommandUtil.runCommand("start https://7-zip.org/download.html", true)
         );
         add(appButton);
     }
@@ -348,77 +405,77 @@ public class UsefulPrograms2 extends JPanel {
     }
 
     /**
-     * Sets up the 0patch section.
+     * Sets up the uBlock Origin section.
      */
-    private void setup0patch() {
+    private void setupUBlockOrigin() {
         int baseHeight = 245;
         int baseWidth = 250;
 
-        // Adds a title label for 0patch.
-        DebugUtil.debug("Creating the 0patch title label...");
-        JLabel title = SwingUtil.createLabel("0patch",
+        // Adds a title label for uBlock Origin.
+        DebugUtil.debug("Creating the uBlock Origin title label...");
+        JLabel title = SwingUtil.createLabel("uBlock Origin",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
         add(title);
 
-        // Adds a description label for 0patch.
-        DebugUtil.debug("Creating the 0patch description label...");
+        // Adds a description label for uBlock Origin.
+        DebugUtil.debug("Creating the uBlock Origin description label...");
         JLabel description = SwingUtil.createLabel("Price: Free",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
         add(description);
 
-        // Adds an icon for 0patch.
-        DebugUtil.debug("Setting up the 0patch icon...");
-        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/0patch.png"), this);
+        // Adds an icon for uBlock Origin.
+        DebugUtil.debug("Setting up the uBlock Origin icon...");
+        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/uBlockOrigin.png"), this);
 
-        // Adds a button to launch 0patch.
-        DebugUtil.debug("Creating the 0patch launch button...");
-        JButton appButton = SwingUtil.createActionButton("Visit 0patch",
-                "Free micro-patching service for Windows.",
+        // Adds a button to launch uBlock Origin.
+        DebugUtil.debug("Creating the uBlock Origin launch button...");
+        JButton appButton = SwingUtil.createActionButton("Visit uBlock Origin",
+                "Browser extension for content-filtering.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
-                () -> CommandUtil.runCommand("start https://0patch.com", true)
+                () -> CommandUtil.runCommand("start https://ublockorigin.com", true)
         );
         add(appButton);
     }
 
     /**
-     * Sets up the 7-Zip section.
+     * Sets up the TrafficLight section.
      */
-    private void setup7Zip() {
+    private void setupTrafficLight() {
         int baseHeight = 340;
         int baseWidth = 250;
 
-        // Adds a title label for 7-Zip.
-        DebugUtil.debug("Creating the 7-Zip title label...");
-        JLabel title = SwingUtil.createLabel("7-Zip",
+        // Adds a title label for TrafficLight.
+        DebugUtil.debug("Creating the TrafficLight title label...");
+        JLabel title = SwingUtil.createLabel("TrafficLight",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
         add(title);
 
-        // Adds a description label for 7-Zip.
-        DebugUtil.debug("Creating the 7-Zip description label...");
+        // Adds a description label for TrafficLight.
+        DebugUtil.debug("Creating the TrafficLight description label...");
         JLabel description = SwingUtil.createLabel("Price: Free",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
         add(description);
 
-        // Adds an icon for 7-Zip.
-        DebugUtil.debug("Setting up the 7-Zip icon...");
-        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/7-Zip.png"), this);
+        // Adds an icon for TrafficLight.
+        DebugUtil.debug("Setting up the TrafficLight icon...");
+        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/TrafficLight.png"), this);
 
-        // Adds a button to launch 7-Zip.
-        DebugUtil.debug("Creating the 7-Zip launch button...");
-        JButton appButton = SwingUtil.createActionButton("Visit 7-Zip",
-                "Free and open-source file archiver.",
+        // Adds a button to launch TrafficLight.
+        DebugUtil.debug("Creating the TrafficLight launch button...");
+        JButton appButton = SwingUtil.createActionButton("Visit TrafficLight",
+                "Browser extension for safe browsing.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
-                () -> CommandUtil.runCommand("start https://7-zip.org/download.html", true)
+                () -> CommandUtil.runCommand("start https://bitdefender.com/solutions/trafficlight.html", true)
         );
         add(appButton);
     }

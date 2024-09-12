@@ -1,10 +1,12 @@
 package net.foulest.repairkit.util;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
@@ -12,20 +14,24 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveTask;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class JunkFileUtil {
 
     // File extensions to scan for
-    private static final List<String> JUNK_FILE_EXTENSIONS = List.of(
-            ".tmp", ".temp", ".old", ".dmp", ".DS_Store", ".hprof"
+    private static final Set<String> JUNK_FILE_EXTENSIONS = Set.of(
+            ".tmp", ".temp", ".old", ".old.log", ".old.txt", ".old.ver", ".dmp", ".ds_store", ".hprof"
     );
 
     // Paths to exclude from scanning
-    private static final List<Path> EXCLUDED_PATHS = List.of(
+    private static final Set<Path> EXCLUDED_PATHS = Set.of(
             Paths.get("C:\\$Recycle.Bin"),
             Paths.get("C:\\Users\\Default"),
-            Paths.get("C:\\Users\\Public")
+            Paths.get("C:\\Users\\Public"),
+            Paths.get(System.getenv("TEMP"))
     );
 
     // Time constants
@@ -34,6 +40,10 @@ public final class JunkFileUtil {
     // Analytics
     private static long totalCount;
     private static long totalSize;
+
+    // File System Pool
+    // Uses between 2 and 25% of the available threads
+    private static final ForkJoinPool pool = new ForkJoinPool(Math.max(2, Runtime.getRuntime().availableProcessors() / 4));
 
     /**
      * Checks for junk files on the system.
@@ -45,11 +55,20 @@ public final class JunkFileUtil {
         totalSize = 0;
 
         List<Runnable> tasks = new ArrayList<>(List.of());
-        Iterable<Path> rootDirectories = FileSystems.getDefault().getRootDirectories();
 
-        // Adds each drive to the task list.
+        // Empties the Recycle Bin.
+        tasks.add(() -> CommandUtil.runPowerShellCommand("Clear-RecycleBin -Force", false));
+
+        // Deletes files in the Temp directory older than one day.
+        tasks.add(() -> CommandUtil.runPowerShellCommand("Get-ChildItem -Path $env:TEMP -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-1) } | Remove-Item -Recurse -Force", false));
+
+        // Deletes files in the Windows temp directory.
+        tasks.add(() -> CommandUtil.runPowerShellCommand("Get-ChildItem -Path $env:windir\\Temp -Recurse | Remove-Item -Recurse -Force", false));
+
+        // Scans each drive for junk files.
+        Iterable<Path> rootDirectories = FileSystems.getDefault().getRootDirectories();
         for (Path root : rootDirectories) {
-            tasks.add(() -> scanDrive(root));
+            tasks.add(() -> pool.invoke(new DirectoryScanTask(root)));
         }
 
         // Executes tasks using TaskUtil.
@@ -59,84 +78,63 @@ public final class JunkFileUtil {
         DebugUtil.debug("Time taken: " + (System.currentTimeMillis() - now) + "ms");
     }
 
-    /**
-     * Scans the drive for junk files.
-     *
-     * @param root The root directory to scan.
-     */
-    private static void scanDrive(Path root) {
-        try {
-            Files.walkFileTree(root, new SimpleFileVisitor<>() {
-                /**
-                 * Pre-visits directories to skip excluded paths.
-                 *
-                 * @param dir The directory to visit.
-                 * @param attrs The directory's attributes.
-                 * @return {@code FileVisitResult.SKIP_SUBTREE} if the directory is excluded,
-                 *         otherwise {@code FileVisitResult.CONTINUE}.
-                 */
-                @Override
-                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
-                    if (EXCLUDED_PATHS.contains(dir)) {
-                        return FileVisitResult.SKIP_SUBTREE;
-                    }
-                    return FileVisitResult.CONTINUE;
-                }
+    @AllArgsConstructor
+    private static class DirectoryScanTask extends RecursiveTask<Void> {
 
-                /**
-                 * Visits files to check if they are junk files.
-                 *
-                 * @param file The file to visit.
-                 * @param attrs The file's attributes.
-                 * @return {@code FileVisitResult.CONTINUE} to continue visiting files.
-                 */
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-                    if (isJunkFile(file, attrs)) {
-                        // Gets the file's size.
-                        long size = 0;
+        @Serial
+        private static final long serialVersionUID = 7784391839228931588L;
+        private final Path directory;
 
-                        try {
-                            size = Files.size(file);
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
+        @Override
+        protected @Nullable Void compute() {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
+                // Create a list of tasks to execute concurrently
+                List<DirectoryScanTask> tasks = new ArrayList<>();
 
-                        // Aggregates the data for analytics.
-                        totalCount++;
-                        totalSize += size;
+                for (Path path : stream) {
+                    if (Files.isDirectory(path)) {
+                        // Create a new task for each subdirectory and fork it
+                        DirectoryScanTask task = new DirectoryScanTask(path);
+                        task.fork();
+                        tasks.add(task);
+                    } else {
+                        if (isJunkFile(path, Files.readAttributes(path, BasicFileAttributes.class))) {
+                            // Gets the file's size
+                            long size = Files.size(path);
 
-                        // Prints the file path before deleting it.
-                        DebugUtil.debug("Cleaning junk file: " + file + " (" + size + " bytes)");
+                            // Aggregates the data for analytics
+                            totalCount++;
+                            totalSize += size;
 
-                        // Deletes the file.
-                        try {
-                            Files.delete(file);
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
+                            // Prints the file path before deleting it
+                            DebugUtil.debug("Cleaning junk file: " + path + " (" + size + " bytes)");
+
+                            // Deletes the file
+                            try {
+                                Files.delete(path);
+                            } catch (IOException ignored) {
+                            }
                         }
                     }
-                    return FileVisitResult.CONTINUE;
                 }
 
-                /**
-                 * Skips files that cannot be accessed.
-                 *
-                 * @param file The file to visit.
-                 * @param ex The exception that occurred.
-                 * @return {@code FileVisitResult.CONTINUE} if the file cannot be accessed,
-                 *         otherwise {@code super.visitFileFailed(file, ex)}.
-                 */
-                @Override
-                public FileVisitResult visitFileFailed(Path file, IOException ex) throws IOException {
-                    if (ex instanceof AccessDeniedException) {
-                        return FileVisitResult.CONTINUE;
-                    }
-                    return super.visitFileFailed(file, ex);
+                // Wait for all tasks to complete
+                for (DirectoryScanTask task : tasks) {
+                    task.join();
                 }
-            });
-        } catch (IOException ex) {
-            ex.printStackTrace();
+            } catch (IOException ignored) {
+            }
+            return null;
+        }
+
+        @Serial
+        private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+            throw new NotSerializableException("JunkFileUtil.DirectoryScanTask");
+        }
+
+        @Serial
+        private void writeObject(ObjectOutputStream out) throws IOException {
+            throw new NotSerializableException("JunkFileUtil.DirectoryScanTask");
         }
     }
 
@@ -151,10 +149,20 @@ public final class JunkFileUtil {
      * @return {@code true} if the file is a junk file, otherwise {@code false}.
      */
     private static boolean isJunkFile(@NotNull Path file, BasicFileAttributes attrs) {
+        // Ignores directories.
+        if (file.toFile().isDirectory()) {
+            return false;
+        }
+
+        // Ignores files accessed in the last 24 hours.
+        if (attrs.lastAccessTime().toMillis() > LAST_24_HOURS) {
+            return false;
+        }
+
         String fileName = file.getFileName().toString().toLowerCase(Locale.ROOT);
 
         for (String extension : JUNK_FILE_EXTENSIONS) {
-            if (fileName.endsWith(extension) && attrs.lastAccessTime().toMillis() < LAST_24_HOURS) {
+            if (fileName.equalsIgnoreCase(extension) || fileName.endsWith(extension)) {
                 return true;
             }
         }

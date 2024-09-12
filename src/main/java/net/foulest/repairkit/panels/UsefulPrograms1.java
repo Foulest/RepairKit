@@ -67,16 +67,18 @@ public class UsefulPrograms1 extends JPanel {
         List<Runnable> tasks = Arrays.asList(
                 this::setupCPUZ,
                 this::setupHWMonitor,
-                this::setupAutoruns,
-                this::setupProcessExplorer,
+                this::setupEmsisoftScan,
+                this::setupSophosScan,
+
                 this::setupTreeSize,
                 this::setupEverything,
                 this::setupCrystalDiskInfo,
-                this::setupEmsisoftScan,
                 this::setupCrystalDiskMark,
-                this::setupSophosScan,
-                this::setupBlueScreenView,
-                this::setupWingetAutoUpdate
+
+                this::setupAutoruns,
+                this::setupProcessExplorer,
+                this::setupProcessMonitor,
+                this::setupBlueScreenView
         );
 
         // Executes tasks using TaskUtil.
@@ -195,102 +197,104 @@ public class UsefulPrograms1 extends JPanel {
     }
 
     /**
-     * Sets up the Autoruns section.
+     * Sets up the Emsisoft Scan section.
      */
-    private void setupAutoruns() {
+    private void setupEmsisoftScan() {
         int baseHeight = 245;
         int baseWidth = 20;
 
-        // Adds a title label for Autoruns.
-        DebugUtil.debug("Creating the Autoruns title label...");
-        JLabel title = SwingUtil.createLabel("Autoruns",
+        // Adds a title label for Emsisoft Scan.
+        DebugUtil.debug("Creating the Emsisoft Scan title label...");
+        JLabel title = SwingUtil.createLabel("Emsisoft Scan",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
         add(title);
 
-        // Adds a description label for Autoruns.
-        DebugUtil.debug("Creating the Autoruns description label...");
-        JLabel description = SwingUtil.createLabel("Version: 14.11",
+        // Adds a description label for Emsisoft Scan.
+        DebugUtil.debug("Creating the Emsisoft Scan description label...");
+        JLabel description = SwingUtil.createLabel(ConstantUtil.VERSION_AUTO_UPDATED,
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
         add(description);
 
-        // Adds an icon for Autoruns.
-        DebugUtil.debug("Setting up the Autoruns icon...");
-        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/Autoruns.png"), this);
+        // Adds an icon for Emsisoft Scan.
+        DebugUtil.debug("Setting up the Emsisoft Scan icon...");
+        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/Emsisoft.png"), this);
 
-        // Adds a button to launch HWMonitor.
-        DebugUtil.debug("Creating the Autoruns launch button...");
-        JButton appButton = SwingUtil.createActionButton("Launch Autoruns",
-                "Displays startup items.",
-                new Rectangle(baseWidth, baseHeight + 50, 200, 30),
-                new Color(200, 200, 200), () -> {
-                    // Sets registry keys for Autoruns.
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "CheckVirusTotal", 1);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "EulaAccepted", 1);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideEmptyEntries", 1);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideMicrosoftEntries", 1);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideVirusTotalCleanEntries", 0);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideWindowsEntries", 1);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "ScanOnlyPerUserLocations", 0);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "SubmitUnknownImages", 1);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "VerifyCodeSignatures", 1);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns\\VirusTotal", "VirusTotalTermsAccepted", 1);
-
-                    // Unzips and launches Autoruns.
-                    SwingUtil.launchApplication("Autoruns.7z", "\\Autoruns.exe",
-                            true, FileUtil.tempDirectory.getPath());
-                }
-        );
+        // Adds a button to launch Emsisoft Scan.
+        DebugUtil.debug("Creating the Emsisoft Scan launch button...");
+        JButton appButton;
+        if (RepairKit.isOutdatedOperatingSystem()) {
+            appButton = SwingUtil.createActionButton("Launch Emsisoft Scan",
+                    "Scans for malware with Emsisoft.",
+                    new Rectangle(baseWidth, baseHeight + 50, 200, 30),
+                    new Color(200, 200, 200), () -> {
+                        SoundUtil.playSound(ConstantUtil.ERROR_SOUND);
+                        JOptionPane.showMessageDialog(null, ConstantUtil.OUTDATED_OS_MESSAGE, ConstantUtil.OUTDATED_OS_TITLE, JOptionPane.ERROR_MESSAGE);
+                    }
+            );
+        } else {
+            appButton = SwingUtil.createActionButton("Launch Emsisoft Scan",
+                    "Scans for malware with Emsisoft.",
+                    new Rectangle(baseWidth, baseHeight + 50, 200, 30),
+                    new Color(200, 200, 200), () -> {
+                        // Unzips and launches Emsisoft Scan.
+                        SwingUtil.launchApplication("Emsisoft.7z", "\\Emsisoft.exe",
+                                true, FileUtil.tempDirectory.getPath());
+                    }
+            );
+        }
         add(appButton);
     }
 
     /**
-     * Sets up the Process Explorer section.
+     * Sets up the Sophos Scan section.
      */
-    private void setupProcessExplorer() {
+    private void setupSophosScan() {
         int baseHeight = 340;
         int baseWidth = 20;
 
-        // Adds a title label for Process Explorer.
-        DebugUtil.debug("Creating the Process Explorer title label...");
-        JLabel title = SwingUtil.createLabel("Process Explorer",
+        // Adds a title label for Sophos Scan.
+        DebugUtil.debug("Creating the Sophos Scan title label...");
+        JLabel title = SwingUtil.createLabel("Sophos Scan",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
         add(title);
 
-        // Adds a description label for Process Explorer.
-        DebugUtil.debug("Creating the Process Explorer description label...");
-        JLabel description = SwingUtil.createLabel("Version: 17.06",
+        // Adds a description label for Sophos Scan.
+        DebugUtil.debug("Creating the Sophos Scan description label...");
+        JLabel description = SwingUtil.createLabel(ConstantUtil.VERSION_AUTO_UPDATED,
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
         add(description);
 
-        // Adds an icon for Process Explorer.
-        DebugUtil.debug("Setting up the Process Explorer icon...");
-        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/ProcessExplorer.png"), this);
+        // Adds an icon for Sophos Scan.
+        DebugUtil.debug("Setting up the Sophos Scan icon...");
+        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/Sophos.png"), this);
 
-        // Adds a button to launch Process Explorer.
-        DebugUtil.debug("Creating the Process Explorer launch button...");
-        JButton appButton = SwingUtil.createActionButton("Launch Process Explorer",
-                "Displays system processes.",
+        // Adds a button to launch Sophos Scan.
+        DebugUtil.debug("Creating the Sophos Scan launch button...");
+        JButton appButton = SwingUtil.createActionButton("Launch Sophos Scan",
+                "Scans for malware with Sophos.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
-                    // Sets registry keys for Process Explorer.
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "ConfirmKill", 1);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "EulaAccepted", 1);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VerifySignatures", 1);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VirusTotalCheck", 1);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VirusTotalSubmitUnknown", 1);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer\\VirusTotal", "VirusTotalTermsAccepted", 1);
+                    // Sets registry keys for Sophos Scan.
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "Registered", 1);
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "NoCookieScan", 1);
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "EULA37", 1);
 
-                    // Unzips and launches Process Explorer.
-                    SwingUtil.launchApplication("ProcessExplorer.7z", "\\ProcessExplorer.exe",
-                            true, FileUtil.tempDirectory.getPath());
+                    // Unzips and launches Sophos Scan.
+                    try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/Sophos.7z")) {
+                        FileUtil.saveFile(Objects.requireNonNull(input), FileUtil.tempDirectory + "\\Sophos.7z", true);
+                        FileUtil.unzipFile(FileUtil.tempDirectory + "\\Sophos.7z", FileUtil.tempDirectory.getPath());
+                        CommandUtil.runCommand("start \"\" \"" + FileUtil.tempDirectory + "\\Sophos.exe\"", true);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                 }
         );
         add(appButton);
@@ -473,104 +477,146 @@ public class UsefulPrograms1 extends JPanel {
     }
 
     /**
-     * Sets up the Emsisoft Scan section.
+     * Sets up the Autoruns section.
      */
-    private void setupEmsisoftScan() {
+    private void setupAutoruns() {
         int baseHeight = 55;
         int baseWidth = 480;
 
-        // Adds a title label for Emsisoft Scan.
-        DebugUtil.debug("Creating the Emsisoft Scan title label...");
-        JLabel title = SwingUtil.createLabel("Emsisoft Scan",
+        // Adds a title label for Autoruns.
+        DebugUtil.debug("Creating the Autoruns title label...");
+        JLabel title = SwingUtil.createLabel("Autoruns",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
         add(title);
 
-        // Adds a description label for Emsisoft Scan.
-        DebugUtil.debug("Creating the Emsisoft Scan description label...");
-        JLabel description = SwingUtil.createLabel(ConstantUtil.VERSION_AUTO_UPDATED,
+        // Adds a description label for Autoruns.
+        DebugUtil.debug("Creating the Autoruns description label...");
+        JLabel description = SwingUtil.createLabel("Version: 14.11",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
         add(description);
 
-        // Adds an icon for Emsisoft Scan.
-        DebugUtil.debug("Setting up the Emsisoft Scan icon...");
-        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/Emsisoft.png"), this);
+        // Adds an icon for Autoruns.
+        DebugUtil.debug("Setting up the Autoruns icon...");
+        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/Autoruns.png"), this);
 
-        // Adds a button to launch Emsisoft Scan.
-        DebugUtil.debug("Creating the Emsisoft Scan launch button...");
-        JButton appButton;
-        if (RepairKit.isOutdatedOperatingSystem()) {
-            appButton = SwingUtil.createActionButton("Launch Emsisoft Scan",
-                    "Scans for malware with Emsisoft.",
-                    new Rectangle(baseWidth, baseHeight + 50, 200, 30),
-                    new Color(200, 200, 200), () -> {
-                        SoundUtil.playSound(ConstantUtil.ERROR_SOUND);
-                        JOptionPane.showMessageDialog(null, ConstantUtil.OUTDATED_OS_MESSAGE, ConstantUtil.OUTDATED_OS_TITLE, JOptionPane.ERROR_MESSAGE);
-                    }
-            );
-        } else {
-            appButton = SwingUtil.createActionButton("Launch Emsisoft Scan",
-                    "Scans for malware with Emsisoft.",
-                    new Rectangle(baseWidth, baseHeight + 50, 200, 30),
-                    new Color(200, 200, 200), () -> {
-                        // Unzips and launches Emsisoft Scan.
-                        SwingUtil.launchApplication("Emsisoft.7z", "\\Emsisoft.exe",
-                                true, FileUtil.tempDirectory.getPath());
-                    }
-            );
-        }
+        // Adds a button to launch HWMonitor.
+        DebugUtil.debug("Creating the Autoruns launch button...");
+        JButton appButton = SwingUtil.createActionButton("Launch Autoruns",
+                "Displays startup items.",
+                new Rectangle(baseWidth, baseHeight + 50, 200, 30),
+                new Color(200, 200, 200), () -> {
+                    // Sets registry keys for Autoruns.
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "CheckVirusTotal", 1);
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "EulaAccepted", 1);
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideEmptyEntries", 1);
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideMicrosoftEntries", 1);
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideVirusTotalCleanEntries", 0);
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "HideWindowsEntries", 1);
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "ScanOnlyPerUserLocations", 0);
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "SubmitUnknownImages", 1);
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns", "VerifyCodeSignatures", 1);
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns\\VirusTotal", "VirusTotalTermsAccepted", 1);
+
+                    // Unzips and launches Autoruns.
+                    SwingUtil.launchApplication("Autoruns.7z", "\\Autoruns.exe",
+                            true, FileUtil.tempDirectory.getPath());
+                }
+        );
         add(appButton);
     }
 
     /**
-     * Sets up the Sophos Scan section.
+     * Sets up the Process Explorer section.
      */
-    private void setupSophosScan() {
+    private void setupProcessExplorer() {
         int baseHeight = 150;
         int baseWidth = 480;
 
-        // Adds a title label for Sophos Scan.
-        DebugUtil.debug("Creating the Sophos Scan title label...");
-        JLabel title = SwingUtil.createLabel("Sophos Scan",
+        // Adds a title label for Process Explorer.
+        DebugUtil.debug("Creating the Process Explorer title label...");
+        JLabel title = SwingUtil.createLabel("Process Explorer",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
         add(title);
 
-        // Adds a description label for Sophos Scan.
-        DebugUtil.debug("Creating the Sophos Scan description label...");
-        JLabel description = SwingUtil.createLabel(ConstantUtil.VERSION_AUTO_UPDATED,
+        // Adds a description label for Process Explorer.
+        DebugUtil.debug("Creating the Process Explorer description label...");
+        JLabel description = SwingUtil.createLabel("Version: 17.06",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
         add(description);
 
-        // Adds an icon for Sophos Scan.
-        DebugUtil.debug("Setting up the Sophos Scan icon...");
-        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/Sophos.png"), this);
+        // Adds an icon for Process Explorer.
+        DebugUtil.debug("Setting up the Process Explorer icon...");
+        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/ProcessExplorer.png"), this);
 
-        // Adds a button to launch Sophos Scan.
-        DebugUtil.debug("Creating the Sophos Scan launch button...");
-        JButton appButton = SwingUtil.createActionButton("Launch Sophos Scan",
-                "Scans for malware with Sophos.",
+        // Adds a button to launch Process Explorer.
+        DebugUtil.debug("Creating the Process Explorer launch button...");
+        JButton appButton = SwingUtil.createActionButton("Launch Process Explorer",
+                "Displays system processes.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
-                    // Sets registry keys for Sophos Scan.
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "Registered", 1);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "NoCookieScan", 1);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "EULA37", 1);
+                    // Sets registry keys for Process Explorer.
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "ConfirmKill", 1);
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "EulaAccepted", 1);
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VerifySignatures", 1);
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VirusTotalCheck", 1);
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VirusTotalSubmitUnknown", 1);
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer\\VirusTotal", "VirusTotalTermsAccepted", 1);
 
-                    // Unzips and launches Sophos Scan.
-                    try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/Sophos.7z")) {
-                        FileUtil.saveFile(Objects.requireNonNull(input), FileUtil.tempDirectory + "\\Sophos.7z", true);
-                        FileUtil.unzipFile(FileUtil.tempDirectory + "\\Sophos.7z", FileUtil.tempDirectory.getPath());
-                        CommandUtil.runCommand("start \"\" \"" + FileUtil.tempDirectory + "\\Sophos.exe\"", true);
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
+                    // Unzips and launches Process Explorer.
+                    SwingUtil.launchApplication("ProcessExplorer.7z", "\\ProcessExplorer.exe",
+                            true, FileUtil.tempDirectory.getPath());
+                }
+        );
+        add(appButton);
+    }
+
+    /**
+     * Sets up the Process Monitor section.
+     */
+    private void setupProcessMonitor() {
+        int baseHeight = 245;
+        int baseWidth = 480;
+
+        // Adds a title label for Process Monitor.
+        DebugUtil.debug("Creating the Process Monitor title label...");
+        JLabel title = SwingUtil.createLabel("Process Monitor",
+                new Rectangle(baseWidth + 43, baseHeight, 200, 30),
+                new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
+        );
+        add(title);
+
+        // Adds a description label for Process Monitor.
+        DebugUtil.debug("Creating the Process Monitor description label...");
+        JLabel description = SwingUtil.createLabel("Version: 4.01",
+                new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
+                new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
+        );
+        add(description);
+
+        // Adds an icon for Process Monitor.
+        DebugUtil.debug("Setting up the Process Monitor icon...");
+        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/ProcessMonitor.png"), this);
+
+        // Adds a button to launch Process Monitor.
+        DebugUtil.debug("Creating the Process Monitor launch button...");
+        JButton appButton = SwingUtil.createActionButton("Launch Process Monitor",
+                "Monitors system processes.",
+                new Rectangle(baseWidth, baseHeight + 50, 200, 30),
+                new Color(200, 200, 200), () -> {
+                    // Sets registry keys for Process Monitor.
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Monitor", "EulaAccepted", 1);
+
+                    // Unzips and launches Process Monitor.
+                    SwingUtil.launchApplication("ProcessMonitor.7z", "\\ProcessMonitor.exe",
+                            true, FileUtil.tempDirectory.getPath());
                 }
         );
         add(appButton);
@@ -580,7 +626,7 @@ public class UsefulPrograms1 extends JPanel {
      * Sets up the BlueScreenView section.
      */
     private void setupBlueScreenView() {
-        int baseHeight = 245;
+        int baseHeight = 340;
         int baseWidth = 480;
 
         // Adds a title label for BlueScreenView.
@@ -612,95 +658,6 @@ public class UsefulPrograms1 extends JPanel {
                     // Unzips and launches BlueScreenView.
                     SwingUtil.launchApplication("BlueScreenView.7z", "\\BlueScreenView.exe",
                             true, FileUtil.tempDirectory.getPath());
-                }
-        );
-        add(appButton);
-    }
-
-    /**
-     * Sets up the Winget-AutoUpdate section.
-     */
-    private void setupWingetAutoUpdate() {
-        int baseHeight = 340;
-        int baseWidth = 480;
-
-        // Adds a title label for Winget-AutoUpdate.
-        DebugUtil.debug("Creating the Winget-AutoUpdate title label...");
-        JLabel title = SwingUtil.createLabel("Winget-AutoUpdate",
-                new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
-        );
-        add(title);
-
-        // Adds a description label for Winget-AutoUpdate.
-        DebugUtil.debug("Creating the Winget-AutoUpdate description label...");
-        JLabel description = SwingUtil.createLabel(ConstantUtil.VERSION_AUTO_UPDATED,
-                new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
-        );
-        add(description);
-
-        // Adds an icon for TrafficLight.
-        DebugUtil.debug("Setting up the Winget-AutoUpdate icon...");
-        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/Winget-AutoUpdate.png"), this);
-
-        // Adds a button to launch Winget-AutoUpdate.
-        DebugUtil.debug("Creating the Winget-AutoUpdate launch button...");
-        JButton appButton = SwingUtil.createActionButton("Launch Winget-AutoUpdate",
-                "Automatically updates programs using Winget.",
-                new Rectangle(baseWidth, baseHeight + 50, 200, 30),
-                new Color(200, 200, 200), () -> {
-                    // Stops if Winget-AutoUpdate is currently running.
-                    if (ProcessUtil.isProcessRunning("wscript.exe")
-                            || ProcessUtil.isProcessRunning("winget.exe")
-                            || ProcessUtil.isProcessRunning("powershell.exe")) {
-                        SoundUtil.playSound(ConstantUtil.ERROR_SOUND);
-                        JOptionPane.showMessageDialog(null, """
-                                        Winget-AutoUpdate cannot be launched. It might be already running.
-
-                                        Please wait for the following processes to finish:
-                                        - wscript.exe
-                                        - winget.exe
-                                        - powershell.exe""",
-                                "Error", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    // Enables Windows Script Host for Winget-AutoUpdate.
-                    DebugUtil.debug("Enabling Windows Script Host for Winget-AutoUpdate...");
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows Script Host\\Settings", "Enabled", 1);
-
-                    try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/WAU.7z")) {
-                        // Saves and unzips the Winget-AutoUpdate files.
-                        DebugUtil.debug("Extracting Winget-AutoUpdate files...");
-                        FileUtil.saveFile(Objects.requireNonNull(input), FileUtil.tempDirectory + "\\WAU.7z", true);
-                        FileUtil.unzipFile(FileUtil.tempDirectory + "\\WAU.7z", FileUtil.tempDirectory.getPath());
-
-                        // Prompt the user if they want to check for updates on logon, or just once.
-                        int option = JOptionPane.showOptionDialog(null,
-                                "Would you like Winget-AutoUpdate to automatically update your programs?",
-                                "Winget-AutoUpdate", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-                                new String[]{"Yes", "No"}, "Yes");
-
-                        // Silently installs Winget-AutoUpdate.
-                        DebugUtil.debug("Silently installing Winget-AutoUpdate...");
-                        CommandUtil.runCommand("PowerShell -ExecutionPolicy Bypass \""
-                                + FileUtil.tempDirectory + "\\Winget-AutoUpdate-Install.ps1\" -Silent"
-                                + (option == JOptionPane.YES_OPTION
-                                ? " -UpdatesAtLogon -UpdatesInterval Daily"
-                                : " -UpdatesInterval Never")
-                                + " -NotificationLevel Full"
-                                + " -StartMenuShortcut -DoNotUpdate", false);
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-
-                    // Launches Winget-AutoUpdate.
-                    DebugUtil.debug("Running update check with Winget-AutoUpdate...");
-                    CommandUtil.runCommand("C:\\Windows\\system32\\wscript.exe"
-                            + " \"C:\\ProgramData\\Winget-AutoUpdate\\Invisible.vbs\" \"powershell.exe"
-                            + " -NoProfile -ExecutionPolicy Bypass -File"
-                            + " \"\"\"C:\\ProgramData\\Winget-AutoUpdate\\user-run.ps1\"\"", false);
                 }
         );
         add(appButton);

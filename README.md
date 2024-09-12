@@ -36,20 +36,25 @@ Access essential software tools for system maintenance, including:
 
 - **[CPU-Z](https://cpuid.com/softwares/cpu-z.html)**: Identify your system hardware details.
 - **[HWMonitor](https://cpuid.com/softwares/hwmonitor.html)**: Monitor hardware temperatures and specs.
-- **[Autoruns](https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns)**: An alternative to Windows Startup
-  Manager.
-- **[Process Explorer](https://learn.microsoft.com/en-us/sysinternals/downloads/process-explorer)**: An alternative to
-  Windows Task Manager.
+- **[Emsisoft Scan](https://emsisoft.com/en/home/emergency-kit)**: Scan for malware using Emsisoft Emergency Kit.
+- **[Sophos Scan](https://sophos.com/en-us/free-tools/virus-removal-tool)**: Scan for malware using Sophos Scan & Clean.
+
 - **[TreeSize](https://jam-software.com/treesize_free)**: Analyze and manage disk contents.
 - **[Everything](https://voidtools.com)**: An ultra-fast file search engine.
 - **[CrystalDiskInfo](https://sourceforge.net/projects/crystaldiskinfo)**: Monitor your disk drive's health and status.
 - **[CrystalDiskMark](https://crystalmark.info/en/software/crystaldiskmark)**: Benchmark your disk drive's read/write
   speeds.
-- **[Emsisoft Scan](https://emsisoft.com/en/home/emergency-kit)**: Scan for malware using Emsisoft Emergency Kit.
-- **[Sophos Scan](https://www.sophos.com/en-us/free-tools/virus-removal-tool)**: Scan for malware using Sophos Scan &
-  Clean.
+
+- **[Autoruns](https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns)**: An alternative to Windows Startup
+  Manager.
+- **[Process Explorer](https://learn.microsoft.com/en-us/sysinternals/downloads/process-explorer)**: An alternative to
+  Windows Task Manager.
+- **[Process Monitor](https://learn.microsoft.com/en-us/sysinternals/downloads/procmon)**: Monitor system activity and
+  processes.
 - **[BlueScreenView](https://nirsoft.net/utils/blue_screen_view.html)**: View and analyze Windows BSOD crash dumps.
-- **[Winget-AutoUpdate](https://github.com/Romanitho/Winget-AutoUpdate)**: Automatically update installed programs using Winget.
+
+- **[Winget-AutoUpdate](https://github.com/Romanitho/Winget-AutoUpdate)**: Automatically update installed programs using
+  Winget.
 - **[NVCleanstall](https://techpowerup.com/download/techpowerup-nvcleanstall)**: A lightweight NVIDIA graphics card
   driver updater.
 - **[DisplayDriverUninstaller](https://guru3d.com/files-details/display-driver-uninstaller-download.html)**: Remove
@@ -59,13 +64,14 @@ Access essential software tools for system maintenance, including:
 
 Additionally, RepairKit provides links to useful software tools, including:
 
+- **[7-Zip](https://7-zip.org)**: Link to the open-source file archiver.
+
+- **[Bitwarden](https://bitwarden.com/download/#downloads-web-browser)**: Link to the open-source password manager.
+- **[Sophos Home](https://home.sophos.com)**: Link to the Sophos Home antivirus software.
 - **[uBlock Origin](https://ublockorigin.com)**: Link to the powerful ad-blocker browser extension.
 - **[TrafficLight](https://bitdefender.com/solutions/trafficlight.html)**: Link to Bitdefender's TrafficLight browser
   extension.
-- **[Bitwarden](https://bitwarden.com/download/#downloads-web-browser)**: Link to the open-source password manager.
-- **[Sophos Home](https://home.sophos.com)**: Link to the Sophos Home antivirus software.
-- **[0patch](https://0patch.com)**: Link to the 0patch Windows micro-patching software.
-- **[7-Zip](https://7-zip.org)**: Link to the open-source file archiver.
+
 - **[Notepad++](https://notepad-plus-plus.org)**: Link to the open-source text editor.
 - **[Twinkle Tray](https://twinkletray.com)**: Link to the monitor brightness control software.
 - **[FanControl](https://getfancontrol.com)**: Link to the fan speed control software.
@@ -91,8 +97,7 @@ Not sure how to download and run RepairKit? Follow these steps:
 1. Download the latest version of RepairKit from
    the [Releases page](https://github.com/Foulest/RepairKit/releases/latest) (click the `RepairKit-X.X.X.zip` file).
 2. Extract the ZIP file to a folder on your computer. You can use a program like [7-Zip](https://7-zip.org) to extract
-   the
-   contents.
+   the contents.
 3. Double-click the `RepairKit-X.X.X.exe` file to run the program.
 4. If Windows Defender SmartScreen blocks the app, click `More info` and then `Run anyway`.
 5. Click `Yes` on the User Account Control prompt.
