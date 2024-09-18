@@ -1049,12 +1049,123 @@ public class AutomaticRepairs extends JPanel {
             DebugUtil.debug("Running Windows Defender tweaks...");
 
             List<Runnable> tasks = Arrays.asList(
-                    // Sets Windows Firewall to recommended settings
+                    // Enables Windows Firewall for all profiles.
                     () -> CommandUtil.runPowerShellCommand("Set-NetFirewallProfile"
                             + " -Profile Domain,Private,Public"
                             + " -Enabled True", false),
 
-                    // Sets Windows Defender to recommended settings
+                    // Removes all Windows Defender exclusions.
+                    () -> CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
+                            + " ExclusionPath | ForEach-Object { Remove-MpPreference -ExclusionPath $_ }", false),
+                    () -> CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
+                            + " ExclusionExtension | ForEach-Object { Remove-MpPreference -ExclusionExtension $_ }", false),
+                    () -> CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
+                            + " ExclusionProcess | ForEach-Object { Remove-MpPreference -ExclusionProcess $_ }", false),
+                    () -> CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
+                            + " ExclusionIpAddress | ForEach-Object { Remove-MpPreference -ExclusionIpAddress $_ }", false),
+                    () -> CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
+                            + " ThreatIDDefaultAction_Ids | ForEach-Object { Remove-MpPreference -ThreatIDDefaultAction_Ids $_ }", false),
+                    () -> CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
+                            + " ThreatIDDefaultAction_Actions | ForEach-Object { Remove-MpPreference -ThreatIDDefaultAction_Actions $_ }", false),
+                    () -> CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
+                            + " AttackSurfaceReductionOnlyExclusions | ForEach-Object { Remove-MpPreference -AttackSurfaceReductionOnlyExclusions $_ }", false),
+                    () -> CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
+                            + " ControlledFolderAccessAllowedApplications | ForEach-Object { Remove-MpPreference -ControlledFolderAccessAllowedApplications $_ }", false),
+                    () -> CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
+                            + " ControlledFolderAccessProtectedFolders | ForEach-Object { Remove-MpPreference -ControlledFolderAccessProtectedFolders $_ }", false),
+                    () -> CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
+                            + " AttackSurfaceReductionRules_Ids | ForEach-Object { Remove-MpPreference -AttackSurfaceReductionRules_Ids $_ }", false),
+                    () -> CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
+                            + " AttackSurfaceReductionRules_Actions | ForEach-Object { Remove-MpPreference -AttackSurfaceReductionRules_Actions $_ }", false),
+
+                    // Removes all previous Windows Defender settings.
+                    () -> CommandUtil.runPowerShellCommand("Remove-MpPreference"
+                            + " -RealTimeScanDirection"
+                            + " -QuarantinePurgeItemsAfterDelay"
+                            + " -RemediationScheduleDay"
+                            + " -RemediationScheduleTime"
+                            + " -ReportingAdditionalActionTimeOut"
+                            + " -ReportingCriticalFailureTimeOut"
+                            + " -ReportingNonCriticalTimeOut"
+                            + " -ScanAvgCPULoadFactor"
+                            + " -CheckForSignaturesBeforeRunningScan"
+                            + " -ScanPurgeItemsAfterDelay"
+                            + " -ScanOnlyIfIdleEnabled"
+                            + " -ScanParameters"
+                            + " -ScanScheduleDay"
+                            + " -ScanScheduleQuickScanTime"
+                            + " -ScanScheduleTime"
+                            + " -SignatureFirstAuGracePeriod"
+                            + " -SignatureAuGracePeriod"
+                            + " -SignatureDefinitionUpdateFileSharesSources"
+                            + " -SignatureDisableUpdateOnStartupWithoutEngine"
+                            + " -SignatureFallbackOrder"
+                            + " -SharedSignaturesPath"
+                            + " -SignatureScheduleDay"
+                            + " -SignatureScheduleTime"
+                            + " -SignatureUpdateCatchupInterval"
+                            + " -SignatureUpdateInterval"
+                            + " -SignatureBlobUpdateInterval"
+                            + " -SignatureBlobFileSharesSources"
+                            + " -MeteredConnectionUpdates"
+                            + " -AllowNetworkProtectionOnWinServer"
+                            + " -DisableDatagramProcessing"
+                            + " -DisableCpuThrottleOnIdleScans"
+                            + " -MAPSReporting"
+                            + " -SubmitSamplesConsent"
+                            + " -DisableAutoExclusions"
+                            + " -DisablePrivacyMode"
+                            + " -RandomizeScheduleTaskTimes"
+                            + " -SchedulerRandomizationTime"
+                            + " -DisableBehaviorMonitoring"
+                            + " -DisableIntrusionPreventionSystem"
+                            + " -DisableIOAVProtection"
+                            + " -DisableRealtimeMonitoring"
+                            + " -DisableScriptScanning"
+                            + " -DisableArchiveScanning"
+                            + " -DisableCatchupFullScan"
+                            + " -DisableCatchupQuickScan"
+                            + " -DisableEmailScanning"
+                            + " -DisableRemovableDriveScanning"
+                            + " -DisableRestorePoint"
+                            + " -DisableScanningMappedNetworkDrivesForFullScan"
+                            + " -DisableScanningNetworkFiles"
+                            + " -UILockdown"
+                            + " -UnknownThreatDefaultAction"
+                            + " -LowThreatDefaultAction"
+                            + " -ModerateThreatDefaultAction"
+                            + " -HighThreatDefaultAction"
+                            + " -SevereThreatDefaultAction"
+                            + " -DisableBlockAtFirstSeen"
+                            + " -PUAProtection"
+                            + " -CloudBlockLevel"
+                            + " -CloudExtendedTimeout"
+                            + " -EnableNetworkProtection"
+                            + " -EnableControlledFolderAccess"
+                            + " -EnableLowCpuPriority"
+                            + " -EnableFileHashComputation"
+                            + " -EnableFullScanOnBatteryPower"
+                            + " -ProxyPacUrl"
+                            + " -ProxyServer"
+                            + " -ProxyBypass"
+                            + " -ForceUseProxyOnly"
+                            + " -DisableTlsParsing"
+                            + " -DisableHttpParsing"
+                            + " -DisableDnsParsing"
+                            + " -DisableDnsOverTcpParsing"
+                            + " -DisableSshParsing"
+                            + " -PlatformUpdatesChannel"
+                            + " -EngineUpdatesChannel"
+                            + " -SignaturesUpdatesChannel"
+                            + " -DisableGradualRelease"
+                            + " -AllowNetworkProtectionDownLevel"
+                            + " -AllowDatagramProcessingOnWinServer"
+                            + " -EnableDnsSinkhole"
+                            + " -DisableInboundConnectionFiltering"
+                            + " -DisableRdpParsing"
+                            + " -Force", false),
+
+                    // Sets Windows Defender to recommended settings.
                     () -> CommandUtil.runPowerShellCommand("Set-MpPreference"
                             + " -CloudBlockLevel 4"
                             + " -CloudExtendedTimeout 10"
@@ -1081,7 +1192,7 @@ public class AutomaticRepairs extends JPanel {
                             + " -SignatureBlobUpdateInterval 120"
                             + " -SubmitSamplesConsent 3", false),
 
-                    // Sets Windows Defender ASR rules to recommended settings
+                    // Sets Windows Defender ASR rules to recommended settings.
                     () -> CommandUtil.runPowerShellCommand("Add-MpPreference"
                             + " -AttackSurfaceReductionRules_Ids "
                             + "26190899-1602-49e8-8b27-eb1d0a1ce869," // ASR: Block Adobe Reader from creating child processes
@@ -1098,7 +1209,7 @@ public class AutomaticRepairs extends JPanel {
                             + "e6db77e5-3df2-4cf1-b95a-636979351e5b" // ASR: Use advanced protection against ransomware
                             + " -AttackSurfaceReductionRules_Actions Enabled", false),
 
-                    // Disables certain ASR rules from blocking
+                    // Disables certain ASR rules from blocking.
                     () -> CommandUtil.runPowerShellCommand("Add-MpPreference"
                             + " -AttackSurfaceReductionRules_Ids "
                             + "01443614-cd74-433a-b99e-2ecdc07bfc25," // ASR: Don't block credential stealing from the Windows local security authority subsystem
@@ -1106,7 +1217,7 @@ public class AutomaticRepairs extends JPanel {
                             + "d1e49aac-8f56-4280-b9ba-993a6d77406c" // ASR: Don't block process creations originating from PSExec and WMI commands
                             + " -AttackSurfaceReductionRules_Actions Disabled", false),
 
-                    // Disables certain ASR rules from warning
+                    // Disables certain ASR rules from warning.
                     () -> CommandUtil.runPowerShellCommand("Add-MpPreference"
                             + " -AttackSurfaceReductionRules_Ids "
                             + "56a863a9-875e-4185-98a7-b882c64b5ce5," // ASR: Warn against abuse of exploited vulnerable signed drivers

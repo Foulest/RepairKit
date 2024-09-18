@@ -131,7 +131,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for CPU-Z.
         DebugUtil.debug("Creating the CPU-Z description label...");
-        JLabel description = SwingUtil.createLabel("Version: 2.10.0",
+        JLabel description = SwingUtil.createLabel("Version: 2.11.0",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -370,7 +370,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for Everything.
         DebugUtil.debug("Creating the Everything description label...");
-        JLabel description = SwingUtil.createLabel("Version: 1.4.1.1026",
+        JLabel description = SwingUtil.createLabel("Version: 1.5.0.1383a",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -566,8 +566,6 @@ public class UsefulPrograms1 extends JPanel {
                     RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "ConfirmKill", 1);
                     RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "EulaAccepted", 1);
                     RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VerifySignatures", 1);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VirusTotalCheck", 1);
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer", "VirusTotalSubmitUnknown", 1);
                     RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer\\VirusTotal", "VirusTotalTermsAccepted", 1);
 
                     // Unzips and launches Process Explorer.
