@@ -80,6 +80,7 @@ release.properties
 
 # Misc
 machinet.conf
+/config/
 
 # Node.js
 /node_modules/
