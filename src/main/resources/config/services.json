@@ -1,0 +1,22 @@
+{
+  "services": {
+    "enabled": true,
+    "values": {
+        "DiagTrack": "disabled",
+        "MapsBroker": "disabled",
+        "PcaSvc": "disabled",
+        "RemoteAccess": "disabled",
+        "RemoteRegistry": "disabled",
+        "RetailDemo": "disabled",
+        "VSStandardCollectorService150": "disabled",
+        "WMPNetworkSvc": "disabled",
+        "diagnosticshub.standardcollector.service": "disabled",
+        "diagsvc": "disabled",
+        "dmwappushservice": "disabled",
+        "fhsvc": "disabled",
+        "lmhosts": "disabled",
+        "wercplsupport": "disabled",
+        "wersvc": "disabled"
+    }
+  }
+}

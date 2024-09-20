@@ -25,6 +25,9 @@ Automatically perform a comprehensive system cleanup and repair, including:
 - Repairing various disk issues
 - Scanning for malware with security software
 
+Every function in the repair is fully customizable, allowing you to enable or disable specific repairs as needed using
+the configuration files located in the **config** folder. **Only modify these files if you know what you are doing.**
+
 > **Note:** The malware scan automatically runs a quick scan with Windows Defender. In the event that Windows Defender
 > is disabled or unavailable, a quick scan is performed with Sophos Scan & Clean instead.
 

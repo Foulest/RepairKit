@@ -1,0 +1,25 @@
+{
+  "junkFiles": {
+    "enabled": true,
+    "emptyRecycleBin": true,
+    "cleanUserTempFiles": true,
+    "cleanSystemTempFiles": true,
+    "fileExtensions": [
+      ".tmp",
+      ".temp",
+      ".old",
+      ".old.log",
+      ".old.txt",
+      ".old.ver",
+      ".dmp",
+      ".ds_store",
+      ".hprof"
+    ],
+    "excludedPaths": [
+      "C:\\$Recycle.Bin",
+      "C:\\Users\\Default",
+      "C:\\Users\\Public",
+      "%temp%"
+    ]
+  }
+}

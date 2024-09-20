@@ -152,4 +152,25 @@ public final class FileUtil {
         DebugUtil.debug("Getting image icon: " + path);
         return new ImageIcon(Objects.requireNonNull(RepairKit.class.getClassLoader().getResource(path)));
     }
+
+    /**
+     * Gets a file from the config directory.
+     * If it doesn't exist, it will be saved from the resources.
+     *
+     * @param fileName The name of the file to get.
+     * @return The file.
+     */
+    public static File getConfigFile(String fileName) {
+        File file = new File(System.getProperty("user.dir") + "/config/" + fileName);
+
+        if (!file.exists()) {
+            try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("config/" + fileName)) {
+                saveFile(Objects.requireNonNull(input), System.getProperty("user.dir") + "\\" + "config\\" + fileName, false);
+                file = new File(System.getProperty("user.dir") + "/config/" + fileName);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return file;
+    }
 }

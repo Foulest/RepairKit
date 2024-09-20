@@ -1,0 +1,15 @@
+{
+  "features": {
+    "enabled": true,
+    "values": [
+      "Internet-Explorer-Optional-amd64",
+      "MicrosoftWindowsPowerShellV2",
+      "MicrosoftWindowsPowerShellV2Root",
+      "SMB1Protocol",
+      "SMB1Protocol-Client",
+      "SMB1Protocol-Deprecation",
+      "SMB1Protocol-Server",
+      "TelnetClient"
+    ]
+  }
+}

@@ -36,7 +36,6 @@ public final class ProcessUtil {
      * @return Whether the service is running.
      */
     public static boolean isServiceRunning(String serviceName) {
-        DebugUtil.debug("Checking if service is running: " + serviceName);
         return CommandUtil.getCommandOutput("sc query \"" + serviceName + "\"",
                 false, false).toString().contains("RUNNING");
     }
@@ -48,7 +47,6 @@ public final class ProcessUtil {
      * @return Whether the process is running.
      */
     public static boolean isProcessRunning(CharSequence processName) {
-        DebugUtil.debug("Checking if process is running: " + processName);
         return CommandUtil.getCommandOutput("tasklist /FI \"IMAGENAME eq " + processName + "\"",
                 false, false).toString().contains(processName);
     }

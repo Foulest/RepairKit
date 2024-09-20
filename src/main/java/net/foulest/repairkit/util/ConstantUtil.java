@@ -43,6 +43,11 @@ public class ConstantUtil {
     public final String WARNING_SOUND = "win.sound.asterisk";
 
     /**
+     * Constant for the exclamation sound played when an exclamation occurs.
+     */
+    public final String EXCLAMATION_SOUND = "win.sound.exclamation";
+
+    /**
      * Constant for the version number when the program is auto-updated.
      */
     public final String VERSION_AUTO_UPDATED = "Version: Auto-Updated";

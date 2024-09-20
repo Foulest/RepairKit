@@ -1,0 +1,12 @@
+{
+  "capabilities": {
+    "enabled": true,
+    "values": [
+      "App.StepsRecorder~~~~*",
+      "Browser.InternetExplorer~~~~*",
+      "MathRecognizer~~~~*",
+      "Microsoft.Windows.WordPad~~~~*",
+      "Print.Fax.Scan~~~~*"
+    ]
+  }
+}

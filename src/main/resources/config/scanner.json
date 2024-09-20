@@ -1,0 +1,16 @@
+{
+  "defender": {
+    "enabled": true,
+    "fixFirewall": true,
+    "removeExclusions": true,
+    "removePreviousSettings": true,
+    "setRecommendedSettings": true,
+    "setASRRules": true,
+    "updateSignatures": true,
+    "runQuickScan": true
+  },
+  "sophos": {
+    "enabled": true,
+    "onlyRunAsBackup": true
+  }
+}

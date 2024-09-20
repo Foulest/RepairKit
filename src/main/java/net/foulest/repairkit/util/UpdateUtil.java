@@ -60,7 +60,7 @@ public final class UpdateUtil {
 
         if (latestVersion != null) {
             if (!latestVersion.equals(currentVersion)) {
-                SoundUtil.playSound("win.sound.exclamation");
+                SoundUtil.playSound(ConstantUtil.EXCLAMATION_SOUND);
 
                 // When the user clicks "Yes", the program will open the GitHub page in the default browser.
                 int result = JOptionPane.showConfirmDialog(null,
@@ -107,7 +107,7 @@ public final class UpdateUtil {
      * @return The latest release version or null if an error occurred.
      */
     @SuppressWarnings("OverlyBroadCatchBlock")
-    static @Nullable String getLatestReleaseVersion() {
+    private static @Nullable String getLatestReleaseVersion() {
         try {
             URL url = new URL(REPO_API_URL);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();

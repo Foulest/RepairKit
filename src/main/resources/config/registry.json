@@ -1,0 +1,222 @@
+{
+  "telemetry": {
+    "enabled": true,
+    "values": {
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Siuf\\Rules\\PeriodInNanoSeconds": "DELETE_VALUE",
+      "HKEY_CURRENT_USER\\Control Panel\\International\\User Profile\\HttpAcceptLanguageOptOut": 1,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\InputPersonalization\\RestrictImplicitInkCollection": 1,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\InputPersonalization\\RestrictImplicitTextCollection": 1,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\InputPersonalization\\TrainedDataStore\\HarvestContacts": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Input\\Settings\\InsightsEnabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Input\\TIPC\\Enabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\MediaPlayer\\Preferences\\UsageTracking": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Narrator\\NoRoam\\DetailedFeedback": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Personalization\\Settings\\AcceptedPrivacyPolicy": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Siuf\\Rules\\NumberOfSIUFInPeriod": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Speech_OneCore\\Settings\\OnlineSpeechPrivacy\\HasAccepted": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo\\Enabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications\\GlobalUserDisabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager\\SilentInstalledAppsEnabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager\\SoftLandingEnabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager\\SubscribedContent-310093Enabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager\\SubscribedContent-314563Enabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager\\SubscribedContent-338388Enabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager\\SubscribedContent-338389Enabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager\\SubscribedContent-338393Enabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager\\SubscribedContent-353694Enabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager\\SubscribedContent-353696Enabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager\\SubscribedContent-353698Enabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager\\SubscribedContent-88000105Enabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager\\SystemPaneSuggestionsEnabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Diagnostics\\DiagTrack\\ShowedToastAtLevel": 1,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\PenWorkspace\\PenWorkspaceAppSuggestionsEnabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Privacy\\TailoredExperiencesWithDiagnosticDataEnabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement\\ScoobeSystemSettingEnabled": 0,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Bluetooth\\AllowAdvertising": 0,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\System\\AllowExperimentation": 0,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\WcmSvc\\wifinetworkmanager\\features\\S-1-5-21-1376222853-718990322-3209866679-1001\\SocialNetworks\\ABCH\\OptInStatus": 0,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\WcmSvc\\wifinetworkmanager\\features\\S-1-5-21-1376222853-718990322-3209866679-1001\\SocialNetworks\\ABCH-SKYPE\\OptInStatus": 0,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\WcmSvc\\wifinetworkmanager\\features\\S-1-5-21-1376222853-718990322-3209866679-1001\\SocialNetworks\\FACEBOOK\\OptInStatus": 0,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Diagnostics\\DiagTrack\\DiagTrackAuthorization": 7,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Control\\WMI\\Autologger\\AutoLogger-Diagtrack-Listener\\Start": 0,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Services\\DiagTrack\\Start": 4,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\ControlSet001\\Services\\diagnosticshub.standardcollector.service\\Start": 4,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Remote Assistance\\fAllowFullControl": 0,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Remote Assistance\\fAllowToGetHelp": 0,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\'CompatTelRunner.exe'\\Debugger": "%windir%\\System32\\taskkill.exe",
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\'DeviceCensus.exe'\\Debugger": "%windir%\\System32\\taskkill.exe",
+      "HKEY_CURRENT_USER\\SOFTWARE\\Adobe\\MediaBrowser\\MRU": "DELETE_KEY",
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Direct3D\\MostRecentApplication": "DELETE_KEY",
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\MediaPlayer\\Player\\RecentFileList": "DELETE_KEY",
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\MediaPlayer\\Player\\RecentURLList": "DELETE_KEY",
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Search Assistant\\ACMru": "DELETE_KEY",
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Applets\\Paint\\Recent File List": "DELETE_KEY",
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit\\Favorites": "DELETE_KEY",
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Applets\\Wordpad\\Recent File List": "DELETE_KEY",
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ComDlg32\\LastVisitedPidlMRU": "DELETE_KEY",
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ComDlg32\\LastVisitedPidlMRULegacy": "DELETE_KEY",
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ComDlg32\\OpenSaveMRU": "DELETE_KEY",
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Map Network Drive MRU": "DELETE_KEY",
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RunMRU": "DELETE_KEY",
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\TypedPaths": "DELETE_KEY",
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Direct3D\\MostRecentApplication": "DELETE_KEY",
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MediaPlayer\\Player\\RecentFileList": "DELETE_KEY",
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\MediaPlayer\\Player\\RecentURLList": "DELETE_KEY",
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Applets\\Paint\\Recent File List": "DELETE_KEY",
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit": "DELETE_KEY",
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Applets\\Regedit\\Favorites": "DELETE_KEY",
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Map Network Drive MRU": "DELETE_KEY",
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\RecentDocs": "DELETE_KEY",
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Notifications\\Settings\\NOC_GLOBAL_SETTING_ALLOW_TOASTS_ABOVE_LOCK": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\PushNotifications\\LockScreenToastEnabled": 0,
+      "HKEY_CURRENT_USER\\Microsoft\\Windows\\CurrentVersion\\Feeds\\EnableFeeds": 0
+    }
+  },
+  "securityVulnerabilities": {
+    "enabled": true,
+    "values": {
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\SpecialAccounts\\UserList\\Administrator": 0,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon\\SpecialAccounts\\UserList\\Guest": 0,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\WindowsUpdate\\UX\\Settings\\AllowMUUpdateService": 1,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer\\NoDriveTypeAutoRun": 255,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\FVE\\UseAdvancedStartup": 1,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer\\NoDataExecutionPrevention": 0,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\Installer\\AlwaysInstallElevated": 0,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\SYSTEM\\DisableHHDEP": 0,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows\\WinRM\\Client\\AllowBasic": 0,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\LSA\\RestrictAnonymous": 1,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Lsa\\LmCompatibilityLevel": 5,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Lsa\\NoLMHash": 1,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel\\DisableExceptionChainValidation": 0,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\kernel\\RestrictAnonymousSAM": 1,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\fDenyTSConnections": 1,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\LanManServer\\Parameters\\RestrictNullSessAccess": 1
+    }
+  },
+  "search": {
+    "enabled": true,
+    "values": {
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Speech_OneCore\\Preferences\\ModelDownloadAllowed": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Speech_OneCore\\Preferences\\VoiceActivationDefaultOn": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Speech_OneCore\\Preferences\\VoiceActivationEnableAboveLockscreen": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Speech_OneCore\\Preferences\\VoiceActivationOn": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search \\BingSearchEnabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search\\CanCortanaBeEnabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search\\CortanaConsent": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search\\CortanaEnabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search\\CortanaInAmbientMode": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search\\DeviceHistoryEnabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search\\HistoryViewEnabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search\\VoiceShortcut": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\SearchSettings\\IsDeviceSearchHistoryEnabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\SearchSettings\\SafeSearchMode": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\SearchSettings\\IsDynamicSearchBoxEnabled": 0,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\PolicyManager\\default\\Experience\\AllowCortana\\value": 0,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\OOBE\\DisableVoice": 1,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search\\BingSearchEnabled": 0,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search\\CortanaEnabled": 0
+    }
+  },
+  "windowsErrorReporting": {
+    "enabled": true,
+    "values": {
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\Disabled": 1,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\DontSendAdditionalData": 1,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\LoggingDisabled": 1,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\Consent\\DefaultConsent": 0,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\Windows Error Reporting\\Consent\\DefaultOverrideBehavior": 1
+    }
+  },
+  "recycleBin": {
+    "enabled": true,
+    "values": {
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\CLSID\\{645FF040-5081-101B-9F08-00AA002F954E}\\DefaultIcon\\(Default)": "C:\\Windows\\System32\\imageres.dll,-54",
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\CLSID\\{645FF040-5081-101B-9F08-00AA002F954E}\\DefaultIcon\\empty": "C:\\Windows\\System32\\imageres.dll,-55",
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\CLSID\\{645FF040-5081-101B-9F08-00AA002F954E}\\DefaultIcon\\full": "C:\\Windows\\System32\\imageres.dll,-54"
+    }
+  },
+  "fileExplorer": {
+    "enabled": true,
+    "values": {
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\ShowFrequent": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\DontUsePowerShellOnWinX": 1,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\HideFileExt": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\ShowSyncProviderNotifications": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\Start_TrackDocs": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\Start_TrackProgs": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarMn": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\ShowCopilotButton": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\ShowCortanaButton": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\Start_AccountNotifications": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\Start_IrisRecommendations": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\AutoplayHandlers\\DisableAutoplay": 1,
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FolderDescriptions\\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\\PropertyBag\\ThisPCPolicy": "Hide",
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FolderDescriptions\\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\\PropertyBag\\ThisPCPolicy": "Hide"
+    }
+  },
+  "spectreMeltdown": {
+    "enabled": true
+  },
+  "gameDVR": {
+    "enabled": true,
+    "values": {
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\GameDVR\\AppCaptureEnabled": 0,
+      "HKEY_CURRENT_USER\\SYSTEM\\GameConfigStore\\GameDVR_Enabled": 0
+    }
+  },
+  "storageSense": {
+    "enabled": true,
+    "values": {
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\\01": 1,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\\04": 1,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\\08": 1,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\\2048": 1,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\\256": 30,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\\32": 1,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy\\512": 30
+    }
+  },
+  "networking": {
+    "enabled": true,
+    "values": {
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\LanmanServer\\Parameters\\IRPStackSize": 30,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\DefaultTTL": 64,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\MaxUserPort": 65534,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters\\Tcp1323Opts": 1
+    }
+  },
+  "keyboard": {
+    "enabled": true,
+    "values": {
+      "HKEY_CURRENT_USER\\Control Panel\\Accessibility\\Togglevalues\\Flags": "58",
+      "HKEY_CURRENT_USER\\Control Panel\\Accessibility\\Stickyvalues\\Flags": "506",
+      "HKEY_CURRENT_USER\\Control Panel\\Accessibility\\Keyboard Response\\Flags": "122",
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Keyboard Layout\\Scancode Map": "DELETE_VALUE"
+    }
+  },
+  "mouse": {
+    "enabled": true,
+    "values": {
+      "HKEY_CURRENT_USER\\Control Panel\\Mouse\\MouseSpeed": "0",
+      "HKEY_CURRENT_USER\\Control Panel\\Mouse\\MouseThreshold1": "0",
+      "HKEY_CURRENT_USER\\Control Panel\\Mouse\\MouseThreshold2": "0"
+    }
+  },
+  "battery": {
+    "enabled": true,
+    "values": {
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Power\\EnergyEstimationEnabled": 1,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Power\\EnergyEstimationDisabled": 0,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Power\\UserBatteryDischargeEstimator": 0
+    }
+  },
+  "services": {
+    "enabled": true,
+    "values": {
+      "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Search\\SetupCompletedSuccessfully": 0,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\WSearch\\Start": 2,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\WSearch\\VSS": 2,
+      "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Services\\WSearch\\PlugPlay": 2
+    }
+  }
+}
