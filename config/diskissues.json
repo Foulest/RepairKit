@@ -1,7 +1,0 @@
-{
-  "diskIssues": {
-    "repairWMI": true,
-    "repairWithSFC": true,
-    "repairWithDISM": true
-  }
-}
