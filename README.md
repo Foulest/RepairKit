@@ -4,7 +4,21 @@
 [![CodeQL](https://github.com/Foulest/RepairKit/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/Foulest/RepairKit/actions/workflows/github-code-scanning/codeql)
 [![Downloads](https://img.shields.io/github/downloads/Foulest/RepairKit/total.svg)](https://github.com/Foulest/RepairKit/releases)
 
-**RepairKit** is an all-in-one Java-based Windows repair and maintenance toolkit.
+Table of Contents:
+1. Introduction
+2. Features
+3. Automatic Repairs
+4. Useful programs
+5. System Shortcuts
+6. Download and Run
+7. Compiling Instructions
+8. Getting Help
+
+**RepairKit** is a versatile, Java-baesd toolkit that can maintain and repair Windows systems.
+ Designed to be used by both beginner and experienced users, it helps streamline
+ common repair tasks while offering customization options for advanced users.
+ Integrated malware scans and hardware diagnostic tools help to simplify system
+ maintenance, allowing for an all-in-on tookit.
 
 [Softpedia](https://softpedia.com/get/System/OS-Enhancements/RepairKit.shtml)
 • [MajorGeeks](https://m.majorgeeks.com/files/details/repairkit.html)
@@ -18,18 +32,29 @@
 
 Automatically perform a comprehensive system cleanup and repair, including:
 
-- Deleting restrictive system policies
-- Running registry and system tweaks
-- Removing pre-installed bloatware
-- Cleaning unnecessary junk files
-- Repairing various disk issues
-- Scanning for malware with security software
+- Deleting restrictive system policies: Removes policies set in place by third-party
+ applications, restoring full control back to the user.
+- Running registry and system tweaks: Helps to optimize system performance by applying safe registry changes
+ and system configuration changes.
+- Removing pre-installed bloatware: Automatically finds and removes unwanted applications
+ that makes your computer run worse.
+- Cleaning unnecessary junk files: Removes temporary files to free up disk space, giving the user
+ more space to use for what they really want.
+- Repairing various disk issues: Scans for and fixes disk errors to verify data integrity and 
+ improving overall system performance and stability.
+- Scanning for malware with security software: Detects and removes malware to protect your computer
+ from data threats.
 
 Every function in the repair is fully customizable, allowing you to enable or disable specific repairs as needed using
-the configuration files located in the **config** folder. **Only modify these files if you know what you are doing.**
+the configuration files located in the **config** folder.
+** Only modify configuration files in the config folder if you are experienced with system repair settings, **
+** incorrect changes can cause system instabilities. **
+ 
 
 > **Note:** The malware scan automatically runs a quick scan with Windows Defender. In the event that Windows Defender
-> is disabled or unavailable, a quick scan is performed with Sophos Scan & Clean instead.
+> is disabled or unavailable, a quick scan is performed with Sophos Scan & Clean instead. This is performed only
+> if Sophos Scan & Clean is already installed onto your system. If not, you will be given a prompt to 
+> download it.
 
 ![Automatic Repairs](https://i.imgur.com/MTx7Gg3.png)
 
