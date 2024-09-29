@@ -44,12 +44,13 @@ public final class TaskUtil {
         ExecutorService executor = Executors.newWorkStealingPool();
         CountDownLatch latch = new CountDownLatch(tasks.size());
 
+        // Submit each task to the executor
         for (Runnable task : tasks) {
             executor.submit(() -> {
                 try {
                     task.run();
                 } catch (RuntimeException ex) {
-                    ex.printStackTrace();
+                    DebugUtil.warn("Failed to execute task", ex);
                 } finally {
                     latch.countDown();
                 }
@@ -60,8 +61,8 @@ public final class TaskUtil {
         try {
             latch.await();
         } catch (InterruptedException ex) {
+            DebugUtil.warn("Failed to wait for tasks to complete", ex);
             Thread.currentThread().interrupt();
-            ex.printStackTrace();
         }
 
         // Shut down the executor

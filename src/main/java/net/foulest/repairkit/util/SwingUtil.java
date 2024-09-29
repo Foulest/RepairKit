@@ -87,7 +87,7 @@ public final class SwingUtil {
             try {
                 action.run();
             } catch (RuntimeException ex) {
-                ex.printStackTrace();
+                DebugUtil.warn("Failed to run action", ex);
             }
         }).start());
         return button;
@@ -126,7 +126,7 @@ public final class SwingUtil {
                 try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/" + appResource)) {
                     FileUtil.saveFile(Objects.requireNonNull(input), FileUtil.tempDirectory + "\\" + appResource, false);
                 } catch (IOException ex) {
-                    ex.printStackTrace();
+                    DebugUtil.warn("Failed to save application: " + appResource, ex);
                 }
 
                 if (isZipped) {
@@ -173,7 +173,7 @@ public final class SwingUtil {
                 try {
                     Desktop.getDesktop().browse(new URI(url));
                 } catch (IOException | URISyntaxException ex) {
-                    ex.printStackTrace();
+                    DebugUtil.warn("Failed to open URL: " + url, ex);
                 }
             }
 
@@ -193,21 +193,6 @@ public final class SwingUtil {
                 Map<TextAttribute, Object> attributes = new HashMap<>(font.getAttributes());
                 attributes.put(TextAttribute.UNDERLINE, -1);
                 label.setFont(font.deriveFont(attributes));
-            }
-        };
-    }
-
-    /**
-     * Creates a page button label.
-     *
-     * @param name The name of the button.
-     * @return The created mouse adapter.
-     */
-    public static @NotNull MouseAdapter createPageButtonLabel(String name) {
-        return new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent event) {
-                performPanelButtonAction(name);
             }
         };
     }
@@ -233,7 +218,7 @@ public final class SwingUtil {
             try {
                 performPanelButtonAction(panelName);
             } catch (RuntimeException ex) {
-                ex.printStackTrace();
+                DebugUtil.warn("Failed to switch panel: " + panelName, ex);
             }
         }).start());
         return button;

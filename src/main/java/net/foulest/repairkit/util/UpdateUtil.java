@@ -89,6 +89,9 @@ public final class UpdateUtil {
      */
     @SuppressWarnings("OverlyBroadCatchBlock")
     private static boolean connectedToInternet() {
+        // Prefer IPv4 over IPv6
+        System.setProperty("java.net.preferIPv4Stack", "true");
+
         try {
             URL url = new URL("https://www.google.com");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -97,6 +100,7 @@ public final class UpdateUtil {
             connection.disconnect();
             return true;
         } catch (IOException ex) {
+            DebugUtil.warn("Failed to get internet connection", ex);
             return false;
         }
     }
@@ -130,7 +134,7 @@ public final class UpdateUtil {
             connection.disconnect();
             return extractVersion(content.toString());
         } catch (IOException ex) {
-            ex.printStackTrace();
+            DebugUtil.warn("Failed to get latest release version", ex);
             return null;
         }
     }
@@ -168,8 +172,7 @@ public final class UpdateUtil {
                 return properties.getProperty("version");
             }
         } catch (IOException ex) {
-            DebugUtil.debug("[WARN] Failed to get version from properties");
-            ex.printStackTrace();
+            DebugUtil.warn("Failed to get version from properties", ex);
         }
         return "Unknown";
     }

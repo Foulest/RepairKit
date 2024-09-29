@@ -110,12 +110,12 @@ public final class RepairKit extends JFrame {
                 try {
                     new RepairKit().setVisible(true);
                 } catch (RuntimeException ex) {
-                    DebugUtil.debug("Exception in SwingUtilities.invokeLater: " + ex.getMessage());
+                    DebugUtil.warn("Failed to set the program visible", ex);
                     DebugUtil.debug(Arrays.toString(ex.getStackTrace()));
                 }
             });
         } catch (HeadlessException ex) {
-            DebugUtil.debug("Exception in main: " + ex.getMessage());
+            DebugUtil.warn("Failed to launch the program", ex);
             DebugUtil.debug(Arrays.toString(ex.getStackTrace()));
         }
     }
@@ -164,7 +164,7 @@ public final class RepairKit extends JFrame {
             pack();
             setLocationRelativeTo(null);
         } catch (RuntimeException ex) {
-            DebugUtil.debug("Exception in RepairKit constructor: " + ex.getMessage());
+            DebugUtil.warn("Failed to create a new instance of the program", ex);
             DebugUtil.debug(Arrays.toString(ex.getStackTrace()));
         }
     }

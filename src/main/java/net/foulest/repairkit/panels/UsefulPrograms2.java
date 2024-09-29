@@ -188,7 +188,7 @@ public class UsefulPrograms2 extends JPanel {
                                 + " -NotificationLevel Full"
                                 + " -StartMenuShortcut -DoNotUpdate", false);
                     } catch (IOException ex) {
-                        ex.printStackTrace();
+                        DebugUtil.warn("Failed to extract Winget-AutoUpdate files", ex);
                     }
 
                     // Launches Winget-AutoUpdate.

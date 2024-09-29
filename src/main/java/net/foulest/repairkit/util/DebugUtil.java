@@ -29,6 +29,7 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.locks.Lock;
@@ -68,6 +69,19 @@ public final class DebugUtil {
     }
 
     /**
+     * Prints a warning message to a log file.
+     *
+     * @param message The message to print.
+     */
+    public static void warn(@NotNull String message, @NotNull Exception ex) {
+        debug("[WARNING] " + message
+                + (ex.getMessage() == null ? "" : " (Message: " + ex.getMessage() + ")")
+                + (ex.getCause() == null ? "" : " (Cause: " + ex.getCause().getMessage() + ")")
+                + (ex.getStackTrace() == null ? "" : " (Stack Trace: " + Arrays.toString(ex.getStackTrace()) + ")")
+        );
+    }
+
+    /**
      * Creates a log file in the user's temp directory.
      *
      * @param args The command line arguments.
@@ -85,7 +99,7 @@ public final class DebugUtil {
             // Writes the initial message to the log file.
             printSystemInfo(args);
         } catch (IOException ex) {
-            ex.printStackTrace();
+            warn("Failed to create log file", ex);
         }
     }
 
@@ -164,6 +178,10 @@ public final class DebugUtil {
         long totalMemory = 0;
 
         for (String line : memoryInfo) {
+            if (line.trim().contains("No Instance(s) Available.")) {
+                return "- Memory: Information not available";
+            }
+
             if (line.trim().isEmpty() || line.contains("Capacity")) {
                 continue;
             }
@@ -171,7 +189,7 @@ public final class DebugUtil {
             try {
                 totalMemory += Long.parseLong(line.trim());
             } catch (NumberFormatException ex) {
-                ex.printStackTrace();
+                warn("Failed to parse memory info", ex);
             }
         }
 

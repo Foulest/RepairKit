@@ -221,8 +221,7 @@ public class AutomaticRepairs extends JPanel {
                     checkbox.setSelected(false);
                 }
             } catch (HeadlessException ex) {
-                DebugUtil.debug("[WARN] An error occurred while running Automatic Repairs.");
-                ex.printStackTrace();
+                DebugUtil.warn("Failed to run Automatic Repairs", ex);
             }
         });
 
@@ -253,7 +252,7 @@ public class AutomaticRepairs extends JPanel {
             TaskUtil.executeTasks(tasks);
             DebugUtil.debug("Completed deleting system policies.");
         } catch (IOException ex) {
-            ex.printStackTrace();
+            DebugUtil.warn("Failed to load policies.json configuration", ex);
         }
     }
 
@@ -271,7 +270,7 @@ public class AutomaticRepairs extends JPanel {
             TaskUtil.executeTasks(tasks);
             DebugUtil.debug("Completed removing installed bloatware apps.");
         } catch (IOException ex) {
-            ex.printStackTrace();
+            DebugUtil.warn("Failed to load bloatware.json configuration", ex);
         }
     }
 
@@ -322,7 +321,7 @@ public class AutomaticRepairs extends JPanel {
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            DebugUtil.warn("Failed to load diskissues.json configuration", ex);
         }
     }
 
@@ -364,7 +363,7 @@ public class AutomaticRepairs extends JPanel {
             TaskUtil.executeTasks(tasks);
             DebugUtil.debug("Completed registry tweaks.");
         } catch (IOException ex) {
-            ex.printStackTrace();
+            DebugUtil.warn("Failed to load registry.json configuration", ex);
         }
     }
 
@@ -471,7 +470,7 @@ public class AutomaticRepairs extends JPanel {
             TaskUtil.executeTasks(tasks);
             DebugUtil.debug("Completed system tweaks.");
         } catch (IOException ex) {
-            ex.printStackTrace();
+            DebugUtil.warn("Failed to load tweaks.json configuration", ex);
         }
     }
 
@@ -490,7 +489,7 @@ public class AutomaticRepairs extends JPanel {
                 TaskUtil.executeTasks(tasks);
                 DebugUtil.debug("Completed Windows features tweaks.");
             } catch (IOException ex) {
-                ex.printStackTrace();
+                DebugUtil.warn("Failed to load features.json configuration", ex);
             }
         }
     }
@@ -509,7 +508,7 @@ public class AutomaticRepairs extends JPanel {
             TaskUtil.executeTasks(tasks);
             DebugUtil.debug("Completed Windows capabilities tweaks.");
         } catch (IOException ex) {
-            ex.printStackTrace();
+            DebugUtil.warn("Failed to load capabilities.json configuration", ex);
         }
     }
 
@@ -527,7 +526,7 @@ public class AutomaticRepairs extends JPanel {
             TaskUtil.executeTasks(tasks);
             DebugUtil.debug("Completed services tweaks.");
         } catch (IOException ex) {
-            ex.printStackTrace();
+            DebugUtil.warn("Failed to load services.json configuration", ex);
         }
     }
 
@@ -559,7 +558,7 @@ public class AutomaticRepairs extends JPanel {
                 }
             }
         } catch (IOException ex) {
-            ex.printStackTrace();
+            DebugUtil.warn("Failed to load scanner.json configuration", ex);
         }
     }
 
@@ -803,7 +802,7 @@ public class AutomaticRepairs extends JPanel {
             FileUtil.unzipFile(FileUtil.tempDirectory + "\\Sophos.7z", FileUtil.tempDirectory + "\\Sophos Scan");
             CommandUtil.runCommand("start \"\" \"" + FileUtil.tempDirectory + "\\Sophos Scan\\Sophos.exe\" /scan /quiet", false);
         } catch (IOException ex) {
-            ex.printStackTrace();
+            DebugUtil.warn("Failed to load Sophos file", ex);
         }
 
         // Waits for the scan to finish.
@@ -812,7 +811,7 @@ public class AutomaticRepairs extends JPanel {
                 Thread.sleep(250);
             }
         } catch (InterruptedException ex) {
-            ex.printStackTrace();
+            DebugUtil.warn("Failed to wait for Sophos process", ex);
         }
 
         DebugUtil.debug("Completed Sophos Scan.");

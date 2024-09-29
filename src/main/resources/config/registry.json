@@ -45,7 +45,6 @@
       "HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Remote Assistance\\fAllowToGetHelp": 0,
       "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\'CompatTelRunner.exe'\\Debugger": "%windir%\\System32\\taskkill.exe",
       "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Image File Execution Options\\'DeviceCensus.exe'\\Debugger": "%windir%\\System32\\taskkill.exe",
-      "HKEY_CURRENT_USER\\SOFTWARE\\Adobe\\MediaBrowser\\MRU": "DELETE_KEY",
       "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Direct3D\\MostRecentApplication": "DELETE_KEY",
       "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\MediaPlayer\\Player\\RecentFileList": "DELETE_KEY",
       "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\MediaPlayer\\Player\\RecentURLList": "DELETE_KEY",

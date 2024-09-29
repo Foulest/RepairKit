@@ -94,15 +94,14 @@ public final class FileUtil {
                     }
                 }
             } catch (IOException ex) {
-                DebugUtil.debug("[WARN] Failed to unzip file: " + fileZip + " to " + fileDest);
-                ex.printStackTrace();
+                DebugUtil.warn("Failed to unzip file: " + fileZip + " to " + fileDest, ex);
             }
         } else {
             try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/7zr.exe")) {
                 saveFile(Objects.requireNonNull(input), tempDirectory + "\\7zr.exe", true);
                 CommandUtil.getCommandOutput("\"" + tempDirectory + "\\7zr.exe\" x \"" + fileZip + "\"" + " -y -o\"" + fileDest, true, false);
             } catch (IOException ex) {
-                ex.printStackTrace();
+                DebugUtil.warn("Failed to unzip file: " + fileZip + " to " + fileDest, ex);
             }
         }
     }
@@ -136,8 +135,7 @@ public final class FileUtil {
             DebugUtil.debug("Copying file: " + savedFilePath);
             Files.copy(input, savedFilePath, StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex) {
-            DebugUtil.debug("[WARN] Failed to save file: " + path);
-            ex.printStackTrace();
+            DebugUtil.warn("Failed to save file: " + path, ex);
         }
     }
 
@@ -168,7 +166,7 @@ public final class FileUtil {
                 saveFile(Objects.requireNonNull(input), System.getProperty("user.dir") + "\\" + "config\\" + fileName, false);
                 file = new File(System.getProperty("user.dir") + "/config/" + fileName);
             } catch (IOException ex) {
-                ex.printStackTrace();
+                DebugUtil.warn("Failed to get config file: " + fileName, ex);
             }
         }
         return file;

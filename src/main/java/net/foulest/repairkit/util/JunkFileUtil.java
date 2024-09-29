@@ -135,7 +135,7 @@ public final class JunkFileUtil {
             DebugUtil.debug("Total size: " + totalSize);
             DebugUtil.debug("Time taken: " + (System.currentTimeMillis() - now) + "ms");
         } catch (IOException ex) {
-            ex.printStackTrace();
+            DebugUtil.warn("Failed to load junkfiles.json configuration", ex);
         }
     }
 

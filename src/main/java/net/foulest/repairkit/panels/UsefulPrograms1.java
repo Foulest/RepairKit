@@ -293,7 +293,7 @@ public class UsefulPrograms1 extends JPanel {
                         FileUtil.unzipFile(FileUtil.tempDirectory + "\\Sophos.7z", FileUtil.tempDirectory.getPath());
                         CommandUtil.runCommand("start \"\" \"" + FileUtil.tempDirectory + "\\Sophos.exe\"", true);
                     } catch (IOException ex) {
-                        ex.printStackTrace();
+                        DebugUtil.warn("Failed to unzip file: Sophos.7z", ex);
                     }
                 }
         );

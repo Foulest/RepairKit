@@ -56,12 +56,12 @@ public final class CommandUtil {
                     try {
                         process.waitFor();
                     } catch (InterruptedException ex) {
+                        DebugUtil.warn("Failed to wait for command: " + command, ex);
                         Thread.currentThread().interrupt();
-                        ex.printStackTrace();
                     }
                 }).join();
             } catch (IOException ex) {
-                ex.printStackTrace();
+                DebugUtil.warn("Failed to run command: " + command, ex);
             }
         };
 
@@ -107,13 +107,13 @@ public final class CommandUtil {
                     try {
                         process.waitFor();
                     } catch (InterruptedException ex) {
+                        DebugUtil.warn("Failed to wait for command: " + command, ex);
                         Thread.currentThread().interrupt();
-                        ex.printStackTrace();
                     }
                 }).join();
             } catch (IOException ex) {
+                DebugUtil.warn("Failed to run command: " + command, ex);
                 Thread.currentThread().interrupt();
-                ex.printStackTrace();
             }
         };
 
