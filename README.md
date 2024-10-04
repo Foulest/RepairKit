@@ -31,7 +31,7 @@ the configuration files located in the **config** folder. **Only modify these fi
 > **Note:** The malware scan automatically runs a quick scan with Windows Defender. In the event that Windows Defender
 > is disabled or unavailable, a quick scan is performed with Sophos Scan & Clean instead.
 
-![Automatic Repairs](https://i.imgur.com/MTx7Gg3.png)
+![Automatic Repairs](https://i.imgur.com/su1R4PO.png)
 
 ### **Useful Programs**
 
@@ -63,7 +63,7 @@ Access essential software tools for system maintenance, including:
 - **[DisplayDriverUninstaller](https://guru3d.com/files-details/display-driver-uninstaller-download.html)**: Remove
   display drivers and packages.
 
-![Useful Programs (Page 1/2)](https://i.imgur.com/taP2Ia8.png)
+![Useful Programs (Page 1/2)](https://i.imgur.com/TivGxNG.png)
 
 Additionally, RepairKit provides links to useful software tools, including:
 
@@ -79,7 +79,7 @@ Additionally, RepairKit provides links to useful software tools, including:
 - **[Twinkle Tray](https://twinkletray.com)**: Link to the monitor brightness control software.
 - **[FanControl](https://getfancontrol.com)**: Link to the fan speed control software.
 
-![Useful Programs (Page 2/2)](https://i.imgur.com/KywjBoo.png)
+![Useful Programs (Page 2/2)](https://i.imgur.com/xFjfd34.png)
 
 ### **System Shortcuts**
 
@@ -91,7 +91,7 @@ Quickly access important Windows utilities like:
 - Windows Security
 - Task Manager
 
-![System Shortcuts](https://i.imgur.com/qSpo4x3.png)
+![System Shortcuts](https://i.imgur.com/OHUhZGf.png)
 
 ## Download and Run
 
