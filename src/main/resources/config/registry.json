@@ -99,7 +99,7 @@
       "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Speech_OneCore\\Preferences\\VoiceActivationDefaultOn": 0,
       "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Speech_OneCore\\Preferences\\VoiceActivationEnableAboveLockscreen": 0,
       "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Speech_OneCore\\Preferences\\VoiceActivationOn": 0,
-      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search \\BingSearchEnabled": 0,
+      "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search\\BingSearchEnabled": 0,
       "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search\\CanCortanaBeEnabled": 0,
       "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search\\CortanaConsent": 0,
       "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Search\\CortanaEnabled": 0,

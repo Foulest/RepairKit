@@ -172,7 +172,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for HWMonitor.
         DebugUtil.debug("Creating the HWMonitor description label...");
-        JLabel description = SwingUtil.createLabel("Version: 1.54.0",
+        JLabel description = SwingUtil.createLabel("Version: 1.55.0",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
