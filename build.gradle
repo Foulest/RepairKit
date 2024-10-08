@@ -39,7 +39,7 @@ dependencies {
 
     // JetBrains Annotations - for code inspection and documentation
     // https://mvnrepository.com/artifact/org.jetbrains/annotations
-    compileOnly group: 'org.jetbrains', name: 'annotations', version: '25.0.0'
+    compileOnly group: 'org.jetbrains', name: 'annotations', version: '26.0.0'
 
     // Lombok - for reducing boilerplate code
     // https://projectlombok.org
