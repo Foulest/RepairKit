@@ -136,7 +136,7 @@ public class UsefulPrograms2 extends JPanel {
         );
         add(description);
 
-        // Adds an icon for TrafficLight.
+        // Adds an icon for Winget-AutoUpdate.
         DebugUtil.debug("Setting up the Winget-AutoUpdate icon...");
         SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/Winget-AutoUpdate.png"), this);
 
