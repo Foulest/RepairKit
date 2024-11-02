@@ -17,12 +17,13 @@
  */
 package net.foulest.repairkit.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Cleanup;
+import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -35,9 +36,8 @@ import java.util.concurrent.CompletableFuture;
  *
  * @author Foulest
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@SuppressWarnings("unused")
-public final class CommandUtil {
+@Data
+public class CommandUtil {
 
     /**
      * Runs a command.
@@ -89,7 +89,9 @@ public final class CommandUtil {
                 processBuilder.redirectErrorStream(true);
                 Process process = processBuilder.start();
 
-                try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
+                @Cleanup InputStream inputStream = process.getInputStream();
+
+                try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
                     String line;
 
                     while (true) {

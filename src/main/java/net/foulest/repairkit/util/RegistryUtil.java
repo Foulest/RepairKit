@@ -20,8 +20,7 @@ package net.foulest.repairkit.util;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.ptr.IntByReference;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -32,8 +31,8 @@ import java.util.List;
  *
  * @author Foulest
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class RegistryUtil {
+@Data
+public class RegistryUtil {
 
     /**
      * Creates a registry key if it doesn't exist.
@@ -116,12 +115,13 @@ public final class RegistryUtil {
         DebugUtil.debug("Listing sub keys: " + keyPath);
         List<String> subKeysList = new ArrayList<>();
         WinReg.HKEYByReference hkeyRef = Advapi32Util.registryGetKey(root, keyPath, WinNT.KEY_READ);
+        WinReg.HKEY hkey = hkeyRef.getValue();
 
         try {
             IntByReference lpcSubKeys = new IntByReference();
             IntByReference lpcMaxSubKeyLen = new IntByReference();
 
-            if (Advapi32.INSTANCE.RegQueryInfoKey(hkeyRef.getValue(), null, null, null,
+            if (Advapi32.INSTANCE.RegQueryInfoKey(hkey, null, null, null,
                     lpcSubKeys, lpcMaxSubKeyLen, null, null, null,
                     null, null, null) == WinError.ERROR_SUCCESS) {
                 int maxSubKeyLen = lpcMaxSubKeyLen.getValue() + 1; // account for null-terminator
@@ -130,7 +130,7 @@ public final class RegistryUtil {
                 for (int index = 0; index < lpcSubKeys.getValue(); index++) {
                     IntByReference lpcchValueName = new IntByReference(maxSubKeyLen);
 
-                    if (Advapi32.INSTANCE.RegEnumKeyEx(hkeyRef.getValue(), index, nameBuffer, lpcchValueName,
+                    if (Advapi32.INSTANCE.RegEnumKeyEx(hkey, index, nameBuffer, lpcchValueName,
                             null, null, null, null) == WinError.ERROR_SUCCESS) {
                         subKeysList.add(Native.toString(nameBuffer));
                     }
@@ -138,7 +138,7 @@ public final class RegistryUtil {
             }
         } finally {
             DebugUtil.debug("Closing registry key: " + keyPath);
-            Advapi32.INSTANCE.RegCloseKey(hkeyRef.getValue());
+            Advapi32.INSTANCE.RegCloseKey(hkey);
         }
         return subKeysList;
     }

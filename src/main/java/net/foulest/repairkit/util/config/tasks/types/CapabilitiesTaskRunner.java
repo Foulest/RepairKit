@@ -31,7 +31,7 @@ import java.util.Map;
  *
  * @author Foulest
  */
-public final class CapabilitiesTaskRunner extends AbstractTaskRunner {
+public class CapabilitiesTaskRunner extends AbstractTaskRunner {
 
     /**
      * Constructs a new task runner instance.

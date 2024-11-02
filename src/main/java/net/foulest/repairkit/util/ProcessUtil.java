@@ -17,17 +17,15 @@
  */
 package net.foulest.repairkit.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 
 /**
  * Utility class for process operations.
  *
  * @author Foulest
  */
-@SuppressWarnings("unused")
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ProcessUtil {
+@Data
+public class ProcessUtil {
 
     /**
      * Checks if a service is running.

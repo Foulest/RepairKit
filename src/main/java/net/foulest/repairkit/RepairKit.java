@@ -70,7 +70,9 @@ public final class RepairKit extends JFrame {
 
             // Checks if RepairKit is running in the temp directory.
             DebugUtil.debug("Checking if RepairKit is running in the temp directory...");
-            if (System.getProperty("user.dir").equalsIgnoreCase(FileUtil.tempDirectory.getPath())) {
+            String path = FileUtil.tempDirectory.getPath();
+
+            if (System.getProperty("user.dir").equalsIgnoreCase(path)) {
                 SoundUtil.playSound(ConstantUtil.ERROR_SOUND);
                 JOptionPane.showMessageDialog(null, ConstantUtil.BAD_FILE_LOCATION, "Error", JOptionPane.ERROR_MESSAGE);
                 System.exit(0);
@@ -90,13 +92,13 @@ public final class RepairKit extends JFrame {
 
             // Deletes pre-existing RepairKit files.
             DebugUtil.debug("Deleting pre-existing RepairKit files...");
-            CommandUtil.runCommand("rd /s /q \"" + FileUtil.tempDirectory.getPath() + "\"", false);
+            CommandUtil.runCommand("rd /s /q \"" + path + "\"", false);
 
             // Deletes RepairKit files on shutdown.
             DebugUtil.debug("Deleting RepairKit files on shutdown...");
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 DebugUtil.debug("Shutting down RepairKit...");
-                CommandUtil.runCommand("rd /s /q \"" + FileUtil.tempDirectory.getPath() + "\"", false);
+                CommandUtil.runCommand("rd /s /q \"" + path + "\"", false);
             }));
 
             // Checks for updates.
@@ -111,12 +113,14 @@ public final class RepairKit extends JFrame {
                     new RepairKit().setVisible(true);
                 } catch (RuntimeException ex) {
                     DebugUtil.warn("Failed to set the program visible", ex);
-                    DebugUtil.debug(Arrays.toString(ex.getStackTrace()));
+                    StackTraceElement[] stackTrace = ex.getStackTrace();
+                    DebugUtil.debug(Arrays.toString(stackTrace));
                 }
             });
         } catch (HeadlessException ex) {
             DebugUtil.warn("Failed to launch the program", ex);
-            DebugUtil.debug(Arrays.toString(ex.getStackTrace()));
+            StackTraceElement[] stackTrace = ex.getStackTrace();
+            DebugUtil.debug(Arrays.toString(stackTrace));
         }
     }
 
@@ -165,7 +169,8 @@ public final class RepairKit extends JFrame {
             setLocationRelativeTo(null);
         } catch (RuntimeException ex) {
             DebugUtil.warn("Failed to create a new instance of the program", ex);
-            DebugUtil.debug(Arrays.toString(ex.getStackTrace()));
+            StackTraceElement[] stackTrace = ex.getStackTrace();
+            DebugUtil.debug(Arrays.toString(stackTrace));
         }
     }
 
@@ -180,7 +185,8 @@ public final class RepairKit extends JFrame {
         JPanel bannerPanel = new JPanel(new BorderLayout());
         bannerPanel.setLayout(null);
         bannerPanel.setBackground(new Color(0, 120, 215));
-        bannerPanel.setPreferredSize(new Dimension(getWidth(), 60));
+        int width = getWidth();
+        bannerPanel.setPreferredSize(new Dimension(width, 60));
 
         // Creates the RepairKit icon image.
         DebugUtil.debug("Creating the RepairKit icon image...");

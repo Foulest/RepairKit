@@ -17,8 +17,7 @@
  */
 package net.foulest.repairkit.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -40,8 +39,8 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @author Foulest
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DebugUtil {
+@Data
+public class DebugUtil {
 
     private static final Path logFile = Paths.get(System.getenv("TEMP") + "\\RepairKit.log");
     private static final Lock lock = new ReentrantLock();
@@ -74,10 +73,15 @@ public final class DebugUtil {
      * @param message The message to print.
      */
     public static void warn(@NotNull String message, @NotNull Exception ex) {
+        Throwable cause = ex.getCause();
+        String exMessage = ex.getMessage();
+        String causeMessage = cause.getMessage();
+        StackTraceElement[] stackTrace = ex.getStackTrace();
+
         debug("[WARNING] " + message
-                + (ex.getMessage() == null ? "" : " (Message: " + ex.getMessage() + ")")
-                + (ex.getCause() == null ? "" : " (Cause: " + ex.getCause().getMessage() + ")")
-                + (ex.getStackTrace() == null ? "" : " (Stack Trace: " + Arrays.toString(ex.getStackTrace()) + ")")
+                + (exMessage == null ? "" : " (Message: " + exMessage + ")")
+                + " (Cause: " + causeMessage + ")"
+                + (stackTrace == null ? "" : " (Stack Trace: " + Arrays.toString(stackTrace) + ")")
         );
     }
 
@@ -127,14 +131,19 @@ public final class DebugUtil {
         debug("System Date: " + formattedDate);
         debug("");
         debug("OS Information");
+
         debug("- Operating System: " + System.getProperty("os.name") + " ("
                 + System.getProperty("os.version") + " - " + System.getProperty("os.arch") + ")");
+
         debug("- Java Version: " + System.getProperty("java.version") + " ("
                 + System.getProperty("java.vendor") + ")");
+
         debug("- Java Home: " + System.getProperty("java.home"));
         debug("- User Directory: " + System.getProperty("user.dir"));
         debug("- Temp Directory: " + System.getenv("TEMP"));
-        debug("- Security Software: " + (securitySoftware.isEmpty() ? "No Antivirus Found" : String.join(", ", securitySoftware)));
+
+        boolean empty = securitySoftware.isEmpty();
+        debug("- Security Software: " + (empty ? "No Antivirus Found" : String.join(", ", securitySoftware)));
 
         debug("");
         debug("Hardware Information");
@@ -178,16 +187,18 @@ public final class DebugUtil {
         long totalMemory = 0;
 
         for (String line : memoryInfo) {
-            if (line.trim().contains("No Instance(s) Available.")) {
+            String trim = line.trim();
+
+            if (trim.contains("No Instance(s) Available.")) {
                 return "- Memory: Information not available";
             }
 
-            if (line.trim().isEmpty() || line.contains("Capacity")) {
+            if (trim.isEmpty() || line.contains("Capacity")) {
                 continue;
             }
 
             try {
-                totalMemory += Long.parseLong(line.trim());
+                totalMemory += Long.parseLong(trim);
             } catch (NumberFormatException ex) {
                 warn("Failed to parse memory info", ex);
             }

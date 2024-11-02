@@ -17,9 +17,8 @@
  */
 package net.foulest.repairkit.util;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 import net.foulest.repairkit.util.config.ConfigLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,8 +37,8 @@ import java.util.concurrent.RecursiveTask;
  *
  * @author Foulest
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class JunkFileUtil {
+@Data
+public class JunkFileUtil {
 
     // File extensions to scan for
     private static Set<String> JUNK_FILE_EXTENSIONS = Set.of();
@@ -61,7 +60,7 @@ public final class JunkFileUtil {
     /**
      * Checks for junk files on the system.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "NestedMethodCall"})
     public static void removeJunkFiles() {
         // Gets the file extensions to scan for from the config file.
         try {
@@ -75,14 +74,14 @@ public final class JunkFileUtil {
 
             // Returns if the feature is disabled.
             if (junkFilesConfig.get("enabled") != null
-                    && !Boolean.TRUE.equals(junkFilesConfig.get("enabled"))) {
+                    && !junkFilesConfig.get("enabled").equals(Boolean.TRUE)) {
                 return;
             }
 
             // Gets the file extensions to scan for from the config file.
-            if (junkFilesConfig.get("fileExtensions") != null
-                    && !((Collection<String>) junkFilesConfig.get("fileExtensions")).isEmpty()) {
-                JUNK_FILE_EXTENSIONS = Set.copyOf((Collection<String>) junkFilesConfig.get("fileExtensions"));
+            Object fileExtensions = junkFilesConfig.get("fileExtensions");
+            if (fileExtensions != null && !((Collection<String>) fileExtensions).isEmpty()) {
+                JUNK_FILE_EXTENSIONS = Set.copyOf((Collection<String>) fileExtensions);
             }
 
             // Gets the paths to exclude from scanning from the config file.
@@ -107,19 +106,19 @@ public final class JunkFileUtil {
 
             // Empties the Recycle Bin.
             if (junkFilesConfig.get("emptyRecycleBin") != null
-                    && Boolean.TRUE.equals(junkFilesConfig.get("emptyRecycleBin"))) {
+                    && junkFilesConfig.get("emptyRecycleBin").equals(Boolean.TRUE)) {
                 tasks.add(() -> CommandUtil.runPowerShellCommand("Clear-RecycleBin -Force", false));
             }
 
             // Deletes files in the Temp directory older than one day.
             if (junkFilesConfig.get("cleanUserTempFiles") != null
-                    && Boolean.TRUE.equals(junkFilesConfig.get("cleanUserTempFiles"))) {
+                    && junkFilesConfig.get("cleanUserTempFiles").equals(Boolean.TRUE)) {
                 tasks.add(() -> CommandUtil.runPowerShellCommand("Get-ChildItem -Path $env:TEMP -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-1) } | Remove-Item -Recurse -Force", false));
             }
 
             // Deletes files in the Windows temp directory.
             if (junkFilesConfig.get("cleanSystemTempFiles") != null
-                    && Boolean.TRUE.equals(junkFilesConfig.get("cleanSystemTempFiles"))) {
+                    && junkFilesConfig.get("cleanSystemTempFiles").equals(Boolean.TRUE)) {
                 tasks.add(() -> CommandUtil.runPowerShellCommand("Get-ChildItem -Path $env:windir\\Temp -Recurse | Remove-Item -Recurse -Force", false));
             }
 

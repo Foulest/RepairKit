@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
  *
  * @author Foulest
  */
-public final class BloatwareTaskRunner extends AbstractTaskRunner {
+public class BloatwareTaskRunner extends AbstractTaskRunner {
 
     /**
      * Constructs a new task runner instance.
@@ -43,7 +43,7 @@ public final class BloatwareTaskRunner extends AbstractTaskRunner {
 
     @NotNull
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "NestedMethodCall"})
     protected List<Runnable> createTasks(@NotNull Map<String, Object> entries) {
         List<Runnable> tasks = new ArrayList<>();
         List<String> values = (List<String>) entries.get("values");

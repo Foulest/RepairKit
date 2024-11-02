@@ -17,8 +17,7 @@
  */
 package net.foulest.repairkit.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 import net.foulest.repairkit.RepairKit;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -44,8 +43,8 @@ import java.util.Objects;
  *
  * @author Foulest
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SwingUtil {
+@Data
+public class SwingUtil {
 
     /**
      * Creates an action button without a tooltip.
@@ -72,6 +71,7 @@ public final class SwingUtil {
      * @param action      Action to run when the button is clicked.
      * @return The created button.
      */
+    @SuppressWarnings("NestedMethodCall")
     public static @NotNull JButton createActionButton(String buttonText, @NotNull String toolTipText, Rectangle bounds,
                                                       Color backgroundColor, Runnable action) {
         JButton button = new JButton(buttonText);
@@ -135,7 +135,8 @@ public final class SwingUtil {
             }
         }
 
-        CommandUtil.runCommand(path + (launchArgs.isEmpty() ? "" : " " + launchArgs), true);
+        boolean launchArgsEmpty = launchArgs.isEmpty();
+        CommandUtil.runCommand(path + (launchArgsEmpty ? "" : " " + launchArgs), true);
     }
 
     /**
@@ -181,18 +182,22 @@ public final class SwingUtil {
             public void mouseEntered(MouseEvent event) {
                 // Underlines the label text when the mouse enters.
                 Font font = label.getFont();
-                Map<TextAttribute, Object> attributes = new HashMap<>(font.getAttributes());
-                attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
-                label.setFont(font.deriveFont(attributes));
+                Map<TextAttribute, ?> attributes = font.getAttributes();
+                Map<TextAttribute, Object> attributeMap = new HashMap<>(attributes);
+                attributeMap.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+                Font derivedFont = font.deriveFont(attributeMap);
+                label.setFont(derivedFont);
             }
 
             @Override
             public void mouseExited(MouseEvent event) {
                 // Removes the underline when the mouse exits.
                 Font font = label.getFont();
-                Map<TextAttribute, Object> attributes = new HashMap<>(font.getAttributes());
-                attributes.put(TextAttribute.UNDERLINE, -1);
-                label.setFont(font.deriveFont(attributes));
+                Map<TextAttribute, ?> attributes = font.getAttributes();
+                Map<TextAttribute, Object> attributeMap = new HashMap<>(attributes);
+                attributeMap.put(TextAttribute.UNDERLINE, -1);
+                Font derivedFont = font.deriveFont(attributeMap);
+                label.setFont(derivedFont);
             }
         };
     }
@@ -205,6 +210,7 @@ public final class SwingUtil {
      * @param bounds The bounds of the button.
      * @return The created button.
      */
+    @SuppressWarnings("NestedMethodCall")
     public static @NotNull JButton createPanelButton(String buttonName, String panelName, Rectangle bounds) {
         JButton button = new JButton(buttonName);
         button.setBounds(bounds);
@@ -229,6 +235,7 @@ public final class SwingUtil {
      *
      * @param name The name of the panel to switch to.
      */
+    @SuppressWarnings("NestedMethodCall")
     private static void performPanelButtonAction(String name) {
         CardLayout cardLayout = (CardLayout) RepairKit.getMainPanel().getLayout();
         SwingUtilities.invokeLater(() -> cardLayout.show(RepairKit.getMainPanel(), name));

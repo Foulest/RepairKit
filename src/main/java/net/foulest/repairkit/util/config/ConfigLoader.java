@@ -19,11 +19,12 @@ package net.foulest.repairkit.util.config;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import lombok.Getter;
+import lombok.Data;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ import java.util.Map;
  *
  * @author Foulest
  */
-@Getter
+@Data
 public class ConfigLoader {
 
     private final Map<String, Map<String, Object>> config;
@@ -45,8 +46,10 @@ public class ConfigLoader {
      */
     public ConfigLoader(File file) throws IOException {
         try (FileReader reader = new FileReader(file, StandardCharsets.UTF_8)) {
-            config = new Gson().fromJson(reader, new TypeToken<Map<String, Map<String, Object>>>() {
-            }.getType());
+            Type type = new TypeToken<Map<String, Map<String, Object>>>() {
+            }.getType();
+
+            config = new Gson().fromJson(reader, type);
         }
     }
 }

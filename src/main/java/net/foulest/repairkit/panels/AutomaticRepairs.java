@@ -245,7 +245,8 @@ public class AutomaticRepairs extends JPanel {
         try {
             DebugUtil.debug("Deleting system policies...");
             ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("policies.json"));
-            RegistryTaskRunner taskRunner = new RegistryTaskRunner(configLoader.getConfig());
+            Map<String, Map<String, Object>> config = configLoader.getConfig();
+            RegistryTaskRunner taskRunner = new RegistryTaskRunner(config);
             List<Runnable> tasks = taskRunner.getTasks();
 
             // Execute tasks using TaskUtil.
@@ -263,7 +264,8 @@ public class AutomaticRepairs extends JPanel {
         try {
             DebugUtil.debug("Removing installed bloatware apps...");
             ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("bloatware.json"));
-            BloatwareTaskRunner taskRunner = new BloatwareTaskRunner(configLoader.getConfig());
+            Map<String, Map<String, Object>> config = configLoader.getConfig();
+            BloatwareTaskRunner taskRunner = new BloatwareTaskRunner(config);
             List<Runnable> tasks = taskRunner.getTasks();
 
             // Execute tasks using TaskUtil.
@@ -289,7 +291,7 @@ public class AutomaticRepairs extends JPanel {
 
             // Repairs the WMI repository.
             if (config.get("repairWMI") != null
-                    && Boolean.TRUE.equals(config.get("repairWMI"))) {
+                    && config.get("repairWMI").equals(Boolean.TRUE)) {
                 DebugUtil.debug("Repairing WMI repository...");
 
                 if (CommandUtil.getCommandOutput("winmgmt /verifyrepository", false, false).toString().contains("not consistent")
@@ -303,7 +305,7 @@ public class AutomaticRepairs extends JPanel {
 
             // Repairs disk issues with SFC.
             if (config.get("repairWithSFC") != null
-                    && Boolean.TRUE.equals(config.get("repairWithSFC"))) {
+                    && config.get("repairWithSFC").equals(Boolean.TRUE)) {
                 DebugUtil.debug("Repairing disk issues with SFC...");
 
                 if (CommandUtil.getCommandOutput("sfc /scannow", false, false).toString().contains("Windows Resource Protection found")) {
@@ -311,7 +313,7 @@ public class AutomaticRepairs extends JPanel {
 
                     // Repairs disk issues with DISM.
                     if (config.get("repairWithDISM") != null
-                            && Boolean.TRUE.equals(config.get("repairWithDISM"))) {
+                            && config.get("repairWithDISM").equals(Boolean.TRUE)) {
                         DebugUtil.debug("Repairing disk issues with DISM...");
                         CommandUtil.runCommand("DISM /Online /Cleanup-Image /RestoreHealth", false);
                         DebugUtil.debug("Repaired disk issues with DISM.");
@@ -332,18 +334,19 @@ public class AutomaticRepairs extends JPanel {
         try {
             DebugUtil.debug("Running registry tweaks...");
             ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("registry.json"));
-            RegistryTaskRunner taskRunner = new RegistryTaskRunner(configLoader.getConfig());
+            Map<String, Map<String, Object>> config = configLoader.getConfig();
+            RegistryTaskRunner taskRunner = new RegistryTaskRunner(config);
             List<Runnable> tasks = taskRunner.getTasks();
-            Map<String, Object> config = configLoader.getConfig().get("spectreMeltdown");
+            Map<String, Object> spectreMeltdown = configLoader.getConfig().get("spectreMeltdown");
 
             // Checks if the config is null.
-            if (config == null) {
+            if (spectreMeltdown == null) {
                 return;
             }
 
             // Patches Spectre & Meltdown security vulnerabilities.
-            if (config.get("enabled") != null
-                    && Boolean.TRUE.equals(config.get("enabled"))) {
+            if (spectreMeltdown.get("enabled") != null
+                    && spectreMeltdown.get("enabled").equals(Boolean.TRUE)) {
                 tasks.add(() -> {
                     String cpuName = CommandUtil.getCommandOutput("wmic cpu get name", false, false).toString();
                     RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverrideMask", 3);
@@ -384,7 +387,7 @@ public class AutomaticRepairs extends JPanel {
 
             // Fixes micro-stuttering in games.
             if (config.get("platformTickClock") != null
-                    && Boolean.TRUE.equals(config.get("platformTickClock"))) {
+                    && config.get("platformTickClock").equals(Boolean.TRUE)) {
                 tasks.add(() -> {
                     CommandUtil.runCommand("bcdedit /set useplatformtick yes", true);
                     CommandUtil.runCommand("bcdedit /deletevalue useplatformclock", true);
@@ -393,13 +396,13 @@ public class AutomaticRepairs extends JPanel {
 
             // Enables scheduled defrag.
             if (config.get("scheduledDefrag") != null
-                    && Boolean.TRUE.equals(config.get("scheduledDefrag"))) {
+                    && config.get("scheduledDefrag").equals(Boolean.TRUE)) {
                 tasks.add(() -> CommandUtil.runCommand("schtasks /Change /ENABLE /TN \"\\Microsoft\\Windows\\Defrag\\ScheduledDefrag\"", true));
             }
 
             // Disables various telemetry tasks.
             if (config.get("telemetry") != null
-                    && Boolean.TRUE.equals(config.get("telemetry"))) {
+                    && config.get("telemetry").equals(Boolean.TRUE)) {
                 tasks.add(() -> {
                     CommandUtil.runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser\" /disable", true);
                     CommandUtil.runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\ProgramDataUpdater\" /disable", true);
@@ -415,19 +418,19 @@ public class AutomaticRepairs extends JPanel {
 
             // Deletes the controversial 'defaultuser0' user.
             if (config.get("defaultuser0") != null
-                    && Boolean.TRUE.equals(config.get("defaultuser0"))) {
+                    && config.get("defaultuser0").equals(Boolean.TRUE)) {
                 tasks.add(() -> CommandUtil.runCommand("net user defaultuser0 /delete", true));
             }
 
             // Clears the Windows product key from registry.
             if (config.get("productKey") != null
-                    && Boolean.TRUE.equals(config.get("productKey"))) {
+                    && config.get("productKey").equals(Boolean.TRUE)) {
                 tasks.add(() -> CommandUtil.runCommand("cscript.exe //nologo \"%SystemRoot%\\system32\\slmgr.vbs\" /cpky", true));
             }
 
             // Resets network settings.
             if (config.get("networkReset") != null
-                    && Boolean.TRUE.equals(config.get("networkReset"))) {
+                    && config.get("networkReset").equals(Boolean.TRUE)) {
                 tasks.add(() -> {
                     CommandUtil.runCommand("netsh winsock reset", true);
                     CommandUtil.runCommand("netsh int ip reset", true);
@@ -441,13 +444,13 @@ public class AutomaticRepairs extends JPanel {
 
             // Re-registers ExplorerFrame.dll.
             if (config.get("explorerFrame") != null
-                    && Boolean.TRUE.equals(config.get("explorerFrame"))) {
+                    && config.get("explorerFrame").equals(Boolean.TRUE)) {
                 tasks.add(() -> CommandUtil.runCommand("regsvr32 /s ExplorerFrame.dll", true));
             }
 
             // Disables NetBios for all interfaces.
             if (config.get("netBios") != null
-                    && Boolean.TRUE.equals(config.get("netBios"))) {
+                    && config.get("netBios").equals(Boolean.TRUE)) {
                 String baseKeyPath = "SYSTEM\\CurrentControlSet\\services\\NetBT\\Parameters\\Interfaces";
                 java.util.List<String> subKeys = RegistryUtil.listSubKeys(WinReg.HKEY_LOCAL_MACHINE, baseKeyPath);
 
@@ -459,7 +462,7 @@ public class AutomaticRepairs extends JPanel {
 
             // Resets Windows Media Player.
             if (config.get("mediaPlayer") != null
-                    && Boolean.TRUE.equals(config.get("mediaPlayer"))) {
+                    && config.get("mediaPlayer").equals(Boolean.TRUE)) {
                 tasks.add(() -> {
                     CommandUtil.runCommand("regsvr32 /s jscript.dll", false);
                     CommandUtil.runCommand("regsvr32 /s vbscript.dll", true);
@@ -482,7 +485,8 @@ public class AutomaticRepairs extends JPanel {
             try {
                 DebugUtil.debug("Running Windows features tweaks...");
                 ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("features.json"));
-                FeaturesTaskRunner taskRunner = new FeaturesTaskRunner(configLoader.getConfig());
+                Map<String, Map<String, Object>> config = configLoader.getConfig();
+                FeaturesTaskRunner taskRunner = new FeaturesTaskRunner(config);
                 List<Runnable> tasks = taskRunner.getTasks();
 
                 // Execute tasks using TaskUtil.
@@ -501,7 +505,8 @@ public class AutomaticRepairs extends JPanel {
         try {
             DebugUtil.debug("Running Windows capabilities tweaks...");
             ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("capabilities.json"));
-            CapabilitiesTaskRunner taskRunner = new CapabilitiesTaskRunner(configLoader.getConfig());
+            Map<String, Map<String, Object>> config = configLoader.getConfig();
+            CapabilitiesTaskRunner taskRunner = new CapabilitiesTaskRunner(config);
             List<Runnable> tasks = taskRunner.getTasks();
 
             // Execute tasks using TaskUtil.
@@ -519,7 +524,8 @@ public class AutomaticRepairs extends JPanel {
         try {
             DebugUtil.debug("Running services tweaks...");
             ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("services.json"));
-            ServicesTaskRunner taskRunner = new ServicesTaskRunner(configLoader.getConfig());
+            Map<String, Map<String, Object>> config = configLoader.getConfig();
+            ServicesTaskRunner taskRunner = new ServicesTaskRunner(config);
             List<Runnable> tasks = taskRunner.getTasks();
 
             // Execute tasks using TaskUtil.
@@ -543,15 +549,15 @@ public class AutomaticRepairs extends JPanel {
             // Scan with Windows Defender if enabled and running.
             if (defenderRunning && defenderConfig != null
                     && defenderConfig.get("enabled") != null
-                    && Boolean.TRUE.equals(defenderConfig.get("enabled"))) {
+                    && defenderConfig.get("enabled").equals(Boolean.TRUE)) {
                 scanWithWindowsDefender(defenderConfig);
             }
 
             // Scan with Sophos if enabled.
             if (sophosConfig != null
                     && sophosConfig.get("enabled") != null
-                    && Boolean.TRUE.equals(sophosConfig.get("enabled"))) {
-                if (Boolean.TRUE.equals(sophosConfig.get("onlyRunAsBackup")) && defenderRunning) {
+                    && sophosConfig.get("enabled").equals(Boolean.TRUE)) {
+                if (sophosConfig.get("onlyRunAsBackup").equals(Boolean.TRUE) && defenderRunning) {
                     DebugUtil.debug("Skipping Sophos scan; Windows Defender is running.");
                 } else {
                     scanWithSophos();
@@ -571,7 +577,7 @@ public class AutomaticRepairs extends JPanel {
 
         // Enables Windows Firewall for all profiles.
         if (defenderConfig.get("fixFirewall") != null
-                && Boolean.TRUE.equals(defenderConfig.get("fixFirewall"))) {
+                && defenderConfig.get("fixFirewall").equals(Boolean.TRUE)) {
             tasks.add(() -> CommandUtil.runPowerShellCommand("Set-NetFirewallProfile"
                     + " -Profile Domain,Private,Public"
                     + " -Enabled True", false));
@@ -579,7 +585,7 @@ public class AutomaticRepairs extends JPanel {
 
         // Removes all Windows Defender exclusions.
         if (defenderConfig.get("removeExclusions") != null
-                && Boolean.TRUE.equals(defenderConfig.get("removeExclusions"))) {
+                && defenderConfig.get("removeExclusions").equals(Boolean.TRUE)) {
             tasks.add(() -> {
                 CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
                         + " ExclusionPath | ForEach-Object { Remove-MpPreference -ExclusionPath $_ }", false);
@@ -608,7 +614,7 @@ public class AutomaticRepairs extends JPanel {
 
         // Removes all previous Windows Defender settings.
         if (defenderConfig.get("removePreviousSettings") != null
-                && Boolean.TRUE.equals(defenderConfig.get("removePreviousSettings"))) {
+                && defenderConfig.get("removePreviousSettings").equals(Boolean.TRUE)) {
             tasks.add(() -> CommandUtil.runPowerShellCommand("Remove-MpPreference"
                     + " -RealTimeScanDirection"
                     + " -QuarantinePurgeItemsAfterDelay"
@@ -698,7 +704,7 @@ public class AutomaticRepairs extends JPanel {
 
         // Sets Windows Defender to recommended settings.
         if (defenderConfig.get("setRecommendedSettings") != null
-                && Boolean.TRUE.equals(defenderConfig.get("setRecommendedSettings"))) {
+                && defenderConfig.get("setRecommendedSettings").equals(Boolean.TRUE)) {
             tasks.add(() -> CommandUtil.runPowerShellCommand("Set-MpPreference"
                     + " -CloudBlockLevel 4"
                     + " -CloudExtendedTimeout 10"
@@ -728,7 +734,7 @@ public class AutomaticRepairs extends JPanel {
 
         // Sets Windows Defender ASR rules to recommended settings.
         if (defenderConfig.get("setASRRules") != null
-                && Boolean.TRUE.equals(defenderConfig.get("setASRRules"))) {
+                && defenderConfig.get("setASRRules").equals(Boolean.TRUE)) {
             tasks.add(() -> {
                 CommandUtil.runPowerShellCommand("Add-MpPreference"
                         + " -AttackSurfaceReductionRules_Ids "
@@ -770,7 +776,7 @@ public class AutomaticRepairs extends JPanel {
         // Updates Windows Defender signatures.
         if (!RepairKit.isSafeMode()
                 && defenderConfig.get("updateSignatures") != null
-                && Boolean.TRUE.equals(defenderConfig.get("updateSignatures"))) {
+                && defenderConfig.get("updateSignatures").equals(Boolean.TRUE)) {
             DebugUtil.debug("Updating Windows Defender signatures...");
             CommandUtil.runCommand("\"C:\\Program Files\\Windows Defender\\MpCmdRun.exe\" -SignatureUpdate", false);
             DebugUtil.debug("Completed Windows Defender signature update.");
@@ -778,7 +784,7 @@ public class AutomaticRepairs extends JPanel {
 
         // Runs a quick scan with Windows Defender.
         if (defenderConfig.get("runQuickScan") != null
-                && Boolean.TRUE.equals(defenderConfig.get("runQuickScan"))) {
+                && defenderConfig.get("runQuickScan").equals(Boolean.TRUE)) {
             DebugUtil.debug("Running a quick scan with Windows Defender...");
             CommandUtil.runCommand("\"C:\\Program Files\\Windows Defender\\MpCmdRun.exe\" -Scan -ScanType 1", false);
             DebugUtil.debug("Completed Windows Defender quick scan.");

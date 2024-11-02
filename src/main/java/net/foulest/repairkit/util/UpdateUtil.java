@@ -17,9 +17,8 @@
  */
 package net.foulest.repairkit.util;
 
-import lombok.AccessLevel;
 import lombok.Cleanup;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 import net.foulest.repairkit.RepairKit;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,8 +39,8 @@ import java.util.regex.Pattern;
  *
  * @author Foulest
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class UpdateUtil {
+@Data
+public class UpdateUtil {
 
     private static final String REPO_API_URL = "https://api.github.com/repos/Foulest/RepairKit/releases/latest";
     private static final String DOWNLOAD_URL = "https://github.com/Foulest/RepairKit/releases/latest";
@@ -114,10 +113,12 @@ public final class UpdateUtil {
     private static @Nullable String getLatestReleaseVersion() {
         try {
             URL url = new URL(REPO_API_URL);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            @Cleanup("disconnect") HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
-            @Cleanup BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+            @Cleanup InputStream inputStream = connection.getInputStream();
+            @Cleanup BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+
             String inputLine;
             StringBuilder content = new StringBuilder();
 
@@ -131,8 +132,8 @@ public final class UpdateUtil {
                 content.append(inputLine);
             }
 
-            connection.disconnect();
-            return extractVersion(content.toString());
+            String output = content.toString();
+            return extractVersion(output);
         } catch (IOException ex) {
             DebugUtil.warn("Failed to get latest release version", ex);
             return null;

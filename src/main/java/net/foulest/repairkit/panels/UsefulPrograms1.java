@@ -148,8 +148,8 @@ public class UsefulPrograms1 extends JPanel {
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     // Unzips and launches CPU-Z.
-                    SwingUtil.launchApplication("CPU-Z.7z", "\\CPU-Z.exe",
-                            true, FileUtil.tempDirectory.getPath());
+                    String path = FileUtil.tempDirectory.getPath();
+                    SwingUtil.launchApplication("CPU-Z.7z", "\\CPU-Z.exe", true, path);
                 }
         );
         add(appButton);
@@ -189,8 +189,8 @@ public class UsefulPrograms1 extends JPanel {
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     // Unzips and launches HWMonitor.
-                    SwingUtil.launchApplication("HWMonitor.7z", "\\HWMonitor.exe",
-                            true, FileUtil.tempDirectory.getPath());
+                    String path = FileUtil.tempDirectory.getPath();
+                    SwingUtil.launchApplication("HWMonitor.7z", "\\HWMonitor.exe", true, path);
                 }
         );
         add(appButton);
@@ -241,8 +241,8 @@ public class UsefulPrograms1 extends JPanel {
                     new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                     new Color(200, 200, 200), () -> {
                         // Unzips and launches Emsisoft Scan.
-                        SwingUtil.launchApplication("Emsisoft.7z", "\\Emsisoft.exe",
-                                true, FileUtil.tempDirectory.getPath());
+                        String path = FileUtil.tempDirectory.getPath();
+                        SwingUtil.launchApplication("Emsisoft.7z", "\\Emsisoft.exe", true, path);
                     }
             );
         }
@@ -290,7 +290,10 @@ public class UsefulPrograms1 extends JPanel {
                     // Unzips and launches Sophos Scan.
                     try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/Sophos.7z")) {
                         FileUtil.saveFile(Objects.requireNonNull(input), FileUtil.tempDirectory + "\\Sophos.7z", true);
-                        FileUtil.unzipFile(FileUtil.tempDirectory + "\\Sophos.7z", FileUtil.tempDirectory.getPath());
+
+                        String path = FileUtil.tempDirectory.getPath();
+                        FileUtil.unzipFile(FileUtil.tempDirectory + "\\Sophos.7z", path);
+
                         CommandUtil.runCommand("start \"\" \"" + FileUtil.tempDirectory + "\\Sophos.exe\"", true);
                     } catch (IOException ex) {
                         DebugUtil.warn("Failed to unzip file: Sophos.7z", ex);
@@ -345,8 +348,8 @@ public class UsefulPrograms1 extends JPanel {
                     new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                     new Color(200, 200, 200), () -> {
                         // Unzips and launches TreeSize.
-                        SwingUtil.launchApplication("TreeSize.7z", "\\TreeSize.exe",
-                                true, FileUtil.tempDirectory.getPath());
+                        String path = FileUtil.tempDirectory.getPath();
+                        SwingUtil.launchApplication("TreeSize.7z", "\\TreeSize.exe", true, path);
                     }
             );
         }
@@ -387,8 +390,8 @@ public class UsefulPrograms1 extends JPanel {
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     // Unzips and launches Everything.
-                    SwingUtil.launchApplication("Everything.7z", "\\Everything.exe",
-                            true, FileUtil.tempDirectory.getPath());
+                    String path = FileUtil.tempDirectory.getPath();
+                    SwingUtil.launchApplication("Everything.7z", "\\Everything.exe", true, path);
                 }
         );
         add(appButton);
@@ -428,8 +431,8 @@ public class UsefulPrograms1 extends JPanel {
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     // Unzips and launches CrystalDiskInfo.
-                    SwingUtil.launchApplication("CrystalDiskInfo.7z", "\\CrystalDiskInfo.exe",
-                            true, FileUtil.tempDirectory.getPath());
+                    String path = FileUtil.tempDirectory.getPath();
+                    SwingUtil.launchApplication("CrystalDiskInfo.7z", "\\CrystalDiskInfo.exe", true, path);
                 }
         );
         add(appButton);
@@ -469,8 +472,8 @@ public class UsefulPrograms1 extends JPanel {
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     // Unzips and launches CrystalDiskMark.
-                    SwingUtil.launchApplication("CrystalDiskMark.7z", "\\CrystalDiskMark.exe",
-                            true, FileUtil.tempDirectory.getPath());
+                    String path = FileUtil.tempDirectory.getPath();
+                    SwingUtil.launchApplication("CrystalDiskMark.7z", "\\CrystalDiskMark.exe", true, path);
                 }
         );
         add(appButton);
@@ -522,8 +525,8 @@ public class UsefulPrograms1 extends JPanel {
                     RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns\\VirusTotal", "VirusTotalTermsAccepted", 1);
 
                     // Unzips and launches Autoruns.
-                    SwingUtil.launchApplication("Autoruns.7z", "\\Autoruns.exe",
-                            true, FileUtil.tempDirectory.getPath());
+                    String path = FileUtil.tempDirectory.getPath();
+                    SwingUtil.launchApplication("Autoruns.7z", "\\Autoruns.exe", true, path);
                 }
         );
         add(appButton);
@@ -569,8 +572,8 @@ public class UsefulPrograms1 extends JPanel {
                     RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer\\VirusTotal", "VirusTotalTermsAccepted", 1);
 
                     // Unzips and launches Process Explorer.
-                    SwingUtil.launchApplication("ProcessExplorer.7z", "\\ProcessExplorer.exe",
-                            true, FileUtil.tempDirectory.getPath());
+                    String path = FileUtil.tempDirectory.getPath();
+                    SwingUtil.launchApplication("ProcessExplorer.7z", "\\ProcessExplorer.exe", true, path);
                 }
         );
         add(appButton);
@@ -613,8 +616,8 @@ public class UsefulPrograms1 extends JPanel {
                     RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Monitor", "EulaAccepted", 1);
 
                     // Unzips and launches Process Monitor.
-                    SwingUtil.launchApplication("ProcessMonitor.7z", "\\ProcessMonitor.exe",
-                            true, FileUtil.tempDirectory.getPath());
+                    String path = FileUtil.tempDirectory.getPath();
+                    SwingUtil.launchApplication("ProcessMonitor.7z", "\\ProcessMonitor.exe", true, path);
                 }
         );
         add(appButton);
@@ -654,8 +657,8 @@ public class UsefulPrograms1 extends JPanel {
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     // Unzips and launches BlueScreenView.
-                    SwingUtil.launchApplication("BlueScreenView.7z", "\\BlueScreenView.exe",
-                            true, FileUtil.tempDirectory.getPath());
+                    String path = FileUtil.tempDirectory.getPath();
+                    SwingUtil.launchApplication("BlueScreenView.7z", "\\BlueScreenView.exe", true, path);
                 }
         );
         add(appButton);

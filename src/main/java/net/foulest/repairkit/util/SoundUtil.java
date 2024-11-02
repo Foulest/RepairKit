@@ -17,8 +17,7 @@
  */
 package net.foulest.repairkit.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 
 import java.awt.*;
 import java.util.concurrent.ExecutorService;
@@ -29,8 +28,8 @@ import java.util.concurrent.Executors;
  *
  * @author Foulest
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SoundUtil {
+@Data
+public class SoundUtil {
 
     private static final ExecutorService threadPool = Executors.newCachedThreadPool();
 

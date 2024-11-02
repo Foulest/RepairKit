@@ -73,7 +73,7 @@ public class UsefulPrograms2 extends JPanel {
                 this::setupBitwarden,
                 this::setupSophosHome,
                 this::setupUBlockOrigin,
-                this::setupTrafficLight,
+                this::setupOsprey,
 
                 this::setupNotepadPlusPlus,
                 this::setupTwinkleTray,
@@ -170,7 +170,8 @@ public class UsefulPrograms2 extends JPanel {
                         // Saves and unzips the Winget-AutoUpdate files.
                         DebugUtil.debug("Extracting Winget-AutoUpdate files...");
                         FileUtil.saveFile(Objects.requireNonNull(input), FileUtil.tempDirectory + "\\WAU.7z", true);
-                        FileUtil.unzipFile(FileUtil.tempDirectory + "\\WAU.7z", FileUtil.tempDirectory.getPath());
+                        String path = FileUtil.tempDirectory.getPath();
+                        FileUtil.unzipFile(FileUtil.tempDirectory + "\\WAU.7z", path);
 
                         // Prompt the user if they want to check for updates on logon, or just once.
                         int option = JOptionPane.showOptionDialog(null,
@@ -242,8 +243,8 @@ public class UsefulPrograms2 extends JPanel {
                     }
 
                     // Unzips and launches NVCleanstall.
-                    SwingUtil.launchApplication("NVCleanstall.7z", "\\NVCleanstall.exe",
-                            true, FileUtil.tempDirectory.getPath());
+                    String path = FileUtil.tempDirectory.getPath();
+                    SwingUtil.launchApplication("NVCleanstall.7z", "\\NVCleanstall.exe", true, path);
                 }
         );
         add(appButton);
@@ -266,7 +267,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a description label for DDU.
         DebugUtil.debug("Creating the DDU description label...");
-        JLabel description = SwingUtil.createLabel("Version: 18.0.8.1",
+        JLabel description = SwingUtil.createLabel("Version: 18.0.8.4",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -283,8 +284,8 @@ public class UsefulPrograms2 extends JPanel {
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     // Unzips and launches DDU.
-                    SwingUtil.launchApplication("DDU.7z", "\\DDU.exe",
-                            true, FileUtil.tempDirectory.getPath());
+                    String path = FileUtil.tempDirectory.getPath();
+                    SwingUtil.launchApplication("DDU.7z", "\\DDU.exe", true, path);
                 }
         );
         add(appButton);
@@ -443,39 +444,39 @@ public class UsefulPrograms2 extends JPanel {
     }
 
     /**
-     * Sets up the TrafficLight section.
+     * Sets up the Osprey: Browser Protection section.
      */
-    private void setupTrafficLight() {
+    private void setupOsprey() {
         int baseHeight = 340;
         int baseWidth = 250;
 
-        // Adds a title label for TrafficLight.
-        DebugUtil.debug("Creating the TrafficLight title label...");
-        JLabel title = SwingUtil.createLabel("TrafficLight",
+        // Adds a title label for Osprey.
+        DebugUtil.debug("Creating the Osprey title label...");
+        JLabel title = SwingUtil.createLabel("Osprey",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
         add(title);
 
-        // Adds a description label for TrafficLight.
-        DebugUtil.debug("Creating the TrafficLight description label...");
+        // Adds a description label for Osprey.
+        DebugUtil.debug("Creating the Osprey description label...");
         JLabel description = SwingUtil.createLabel("Price: Free",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
         add(description);
 
-        // Adds an icon for TrafficLight.
-        DebugUtil.debug("Setting up the TrafficLight icon...");
-        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/TrafficLight.png"), this);
+        // Adds an icon for Osprey.
+        DebugUtil.debug("Setting up the Osprey icon...");
+        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/Osprey.png"), this);
 
-        // Adds a button to launch TrafficLight.
-        DebugUtil.debug("Creating the TrafficLight launch button...");
-        JButton appButton = SwingUtil.createActionButton("Visit TrafficLight",
+        // Adds a button to launch Osprey.
+        DebugUtil.debug("Creating the Osprey launch button...");
+        JButton appButton = SwingUtil.createActionButton("Visit Osprey",
                 "Browser extension for safe browsing.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
-                () -> CommandUtil.runCommand("start https://bitdefender.com/solutions/trafficlight.html", true)
+                () -> CommandUtil.runCommand("start https://chromewebstore.google.com/detail/jmnpibhfpmpfjhhkmpadlbgjnbhpjgnd", true)
         );
         add(appButton);
     }

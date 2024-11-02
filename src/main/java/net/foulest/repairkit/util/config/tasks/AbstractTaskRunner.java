@@ -18,6 +18,7 @@
 package net.foulest.repairkit.util.config.tasks;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import net.foulest.repairkit.util.DebugUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -31,6 +32,7 @@ import java.util.Map;
  *
  * @author Foulest
  */
+@Data
 @AllArgsConstructor
 public abstract class AbstractTaskRunner implements TaskRunner {
 
@@ -60,7 +62,8 @@ public abstract class AbstractTaskRunner implements TaskRunner {
                 return;
             }
 
-            tasks.addAll(createTasks(entries));
+            List<Runnable> runnables = createTasks(entries);
+            tasks.addAll(runnables);
         });
         return tasks;
     }

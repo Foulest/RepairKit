@@ -17,8 +17,7 @@
  */
 package net.foulest.repairkit.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -31,9 +30,8 @@ import java.util.concurrent.Executors;
  *
  * @author Foulest
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@SuppressWarnings("unused")
-public final class TaskUtil {
+@Data
+public class TaskUtil {
 
     /**
      * Executes a list of tasks concurrently using an ExecutorService and CountDownLatch.
@@ -42,7 +40,8 @@ public final class TaskUtil {
      */
     public static void executeTasks(@NotNull Collection<Runnable> tasks) {
         ExecutorService executor = Executors.newWorkStealingPool();
-        CountDownLatch latch = new CountDownLatch(tasks.size());
+        int size = tasks.size();
+        CountDownLatch latch = new CountDownLatch(size);
 
         // Submit each task to the executor
         for (Runnable task : tasks) {

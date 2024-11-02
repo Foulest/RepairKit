@@ -32,7 +32,7 @@ import java.util.Map;
  *
  * @author Foulest
  */
-public final class RegistryTaskRunner extends AbstractTaskRunner {
+public class RegistryTaskRunner extends AbstractTaskRunner {
 
     /**
      * Constructs a new task runner instance.

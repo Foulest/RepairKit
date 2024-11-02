@@ -17,8 +17,7 @@
  */
 package net.foulest.repairkit.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 import net.foulest.repairkit.RepairKit;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -27,6 +26,7 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,8 +40,8 @@ import java.util.zip.ZipInputStream;
  *
  * @author Foulest
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class FileUtil {
+@Data
+public class FileUtil {
 
     /**
      * The temporary directory for the program.
@@ -70,12 +70,13 @@ public final class FileUtil {
                     ZipEntry zipEntry = zis.getNextEntry();
 
                     while (zipEntry != null) {
-                        DebugUtil.debug("Opening zip entry: " + zipEntry.getName());
-                        Path newPath = targetPath.resolve(zipEntry.getName()).normalize();
+                        String entryName = zipEntry.getName();
+                        DebugUtil.debug("Opening zip entry: " + entryName);
+                        Path newPath = targetPath.resolve(entryName).normalize();
 
                         // Check for path traversal vulnerabilities
                         if (!newPath.startsWith(targetPath)) {
-                            throw new IOException("Bad zip entry (potential path traversal): " + zipEntry.getName());
+                            throw new IOException("Bad zip entry (potential path traversal): " + entryName);
                         }
 
                         if (zipEntry.isDirectory()) {
@@ -83,13 +84,14 @@ public final class FileUtil {
                             Files.createDirectories(newPath);
                         } else {
                             DebugUtil.debug("Creating file: " + newPath);
-                            Files.createDirectories(newPath.getParent());
+                            Path parent = newPath.getParent();
+                            Files.createDirectories(parent);
 
                             DebugUtil.debug("Copying file: " + newPath);
                             Files.copy(zis, newPath, StandardCopyOption.REPLACE_EXISTING);
                         }
 
-                        DebugUtil.debug("Closing zip entry: " + zipEntry.getName());
+                        DebugUtil.debug("Closing zip entry: " + entryName);
                         zipEntry = zis.getNextEntry();
                     }
                 }
@@ -127,9 +129,11 @@ public final class FileUtil {
                 }
             }
 
-            if (!Files.exists(savedFilePath.getParent())) {
-                DebugUtil.debug("Creating directories: " + savedFilePath.getParent());
-                Files.createDirectories(savedFilePath.getParent());
+            Path parent = savedFilePath.getParent();
+
+            if (!Files.exists(parent)) {
+                DebugUtil.debug("Creating directories: " + parent);
+                Files.createDirectories(parent);
             }
 
             DebugUtil.debug("Copying file: " + savedFilePath);
@@ -148,7 +152,9 @@ public final class FileUtil {
     @Contract("_ -> new")
     public static @NotNull ImageIcon getImageIcon(String path) {
         DebugUtil.debug("Getting image icon: " + path);
-        return new ImageIcon(Objects.requireNonNull(RepairKit.class.getClassLoader().getResource(path)));
+        ClassLoader classLoader = RepairKit.class.getClassLoader();
+        URL resource = classLoader.getResource(path);
+        return new ImageIcon(Objects.requireNonNull(resource));
     }
 
     /**
