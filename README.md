@@ -31,7 +31,7 @@ the configuration files located in the **config** folder. **Only modify these fi
 > **Note:** The malware scan automatically runs a quick scan with Windows Defender. In the event that Windows Defender
 > is disabled or unavailable, a quick scan is performed with Sophos Scan & Clean instead.
 
-![Automatic Repairs](https://i.imgur.com/su1R4PO.png)
+![Automatic Repairs](https://i.imgur.com/zqSGyy7.png)
 
 ### **Useful Programs**
 
@@ -63,7 +63,7 @@ Access essential software tools for system maintenance, including:
 - **[DisplayDriverUninstaller](https://guru3d.com/files-details/display-driver-uninstaller-download.html)**: Remove
   display drivers and packages.
 
-![Useful Programs (Page 1/2)](https://i.imgur.com/TivGxNG.png)
+![Useful Programs (Page 1/2)](https://i.imgur.com/3H0geaW.png)
 
 Additionally, RepairKit provides links to useful software tools, including:
 
@@ -72,14 +72,14 @@ Additionally, RepairKit provides links to useful software tools, including:
 - **[Bitwarden](https://bitwarden.com/download/#downloads-web-browser)**: Link to the open-source password manager.
 - **[Sophos Home](https://home.sophos.com)**: Link to the Sophos Home antivirus software.
 - **[uBlock Origin](https://ublockorigin.com)**: Link to the powerful ad-blocker browser extension.
-- **[TrafficLight](https://bitdefender.com/solutions/trafficlight.html)**: Link to Bitdefender's TrafficLight browser
-  extension.
+- **[Osprey](https://chromewebstore.google.com/detail/jmnpibhfpmpfjhhkmpadlbgjnbhpjgnd)**: Link to the browser
+  protection extension.
 
 - **[Notepad++](https://notepad-plus-plus.org)**: Link to the open-source text editor.
 - **[Twinkle Tray](https://twinkletray.com)**: Link to the monitor brightness control software.
 - **[FanControl](https://getfancontrol.com)**: Link to the fan speed control software.
 
-![Useful Programs (Page 2/2)](https://i.imgur.com/xFjfd34.png)
+![Useful Programs (Page 2/2)](https://i.imgur.com/GZZ4cSl.png)
 
 ### **System Shortcuts**
 
@@ -91,7 +91,7 @@ Quickly access important Windows utilities like:
 - Windows Security
 - Task Manager
 
-![System Shortcuts](https://i.imgur.com/OHUhZGf.png)
+![System Shortcuts](https://i.imgur.com/efbPJ8M.png)
 
 ## Download and Run
 
