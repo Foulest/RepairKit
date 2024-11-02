@@ -72,8 +72,7 @@ Additionally, RepairKit provides links to useful software tools, including:
 - **[Bitwarden](https://bitwarden.com/download/#downloads-web-browser)**: Link to the open-source password manager.
 - **[Sophos Home](https://home.sophos.com)**: Link to the Sophos Home antivirus software.
 - **[uBlock Origin](https://ublockorigin.com)**: Link to the powerful ad-blocker browser extension.
-- **[Osprey](https://chromewebstore.google.com/detail/jmnpibhfpmpfjhhkmpadlbgjnbhpjgnd)**: Link to the browser
-  protection extension.
+- **[Osprey](https://github.com/Foulest/Osprey)**: Link to the browser protection extension.
 
 - **[Notepad++](https://notepad-plus-plus.org)**: Link to the open-source text editor.
 - **[Twinkle Tray](https://twinkletray.com)**: Link to the monitor brightness control software.
