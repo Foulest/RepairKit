@@ -1,6 +1,5 @@
 {
   "junkFiles": {
-    "enabled": true,
     "emptyRecycleBin": true,
     "cleanUserTempFiles": true,
     "cleanSystemTempFiles": true,

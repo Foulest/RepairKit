@@ -1,6 +1,5 @@
 {
   "policies": {
-    "enabled": true,
     "values": {
       "HKEY_CURRENT_USER\\SOFTWARE\\Policies\\Microsoft\\MMC": "DELETE_KEY",
       "HKEY_CURRENT_USER\\SOFTWARE\\Policies\\Microsoft\\Windows\\System": "DELETE_KEY",

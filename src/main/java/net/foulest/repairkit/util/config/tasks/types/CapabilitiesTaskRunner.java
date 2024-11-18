@@ -53,10 +53,9 @@ public class CapabilitiesTaskRunner extends AbstractTaskRunner {
             Runnable task = () -> {
                 DebugUtil.debug("Removing capability: " + value);
 
-                if (CommandUtil.getPowerShellCommandOutput("Get-WindowsCapability -Name '" + value
-                        + "' -Online | Where-Object State -eq 'Installed'", false, false).toString().contains("Installed")) {
-                    CommandUtil.runCommand("DISM /Online /Remove-Capability /CapabilityName:\"" + value + "\" /NoRestart", false);
-                }
+                CommandUtil.runPowerShellCommand("$name = (Get-WindowsCapability -Name '" + value + "' -Online"
+                        + " | Where-Object State -eq 'Installed').Name;DISM /Online /Remove-Capability"
+                        + " /CapabilityName:\"$name\" /NoRestart", false);
             };
 
             tasks.add(task);

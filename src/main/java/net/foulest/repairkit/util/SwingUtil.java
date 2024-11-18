@@ -46,13 +46,15 @@ import java.util.Objects;
 @Data
 public class SwingUtil {
 
+    public static TrayIcon trayIcon;
+
     /**
      * Creates an action button without a tooltip.
      *
-     * @param buttonText Text to display on the button.
-     * @param bounds     Bounds of the button.
+     * @param buttonText      Text to display on the button.
+     * @param bounds          Bounds of the button.
      * @param backgroundColor Background color of the button.
-     * @param action    Action to run when the button is clicked.
+     * @param action          Action to run when the button is clicked.
      * @return The created button.
      * @see #createActionButton(String, String, Rectangle, Color, Runnable)
      */
@@ -64,11 +66,11 @@ public class SwingUtil {
     /**
      * Creates an action button.
      *
-     * @param buttonText  Text to display on the button.
-     * @param toolTipText Text to display when hovering over the button.
-     * @param bounds      Bounds of the button.
+     * @param buttonText      Text to display on the button.
+     * @param toolTipText     Text to display when hovering over the button.
+     * @param bounds          Bounds of the button.
      * @param backgroundColor Background color of the button.
-     * @param action      Action to run when the button is clicked.
+     * @param action          Action to run when the button is clicked.
      * @return The created button.
      */
     @SuppressWarnings("NestedMethodCall")
@@ -142,10 +144,10 @@ public class SwingUtil {
     /**
      * Sets up an application icon.
      *
-     * @param baseHeight  The base height of the panel.
-     * @param baseWidth   The base width of the panel.
-     * @param imageIcon   The icon to display.
-     * @param panel       The panel to add the icon to.
+     * @param baseHeight The base height of the panel.
+     * @param baseWidth  The base width of the panel.
+     * @param imageIcon  The icon to display.
+     * @param panel      The panel to add the icon to.
      */
     public static void setupAppIcon(int baseHeight, int baseWidth,
                                     @NotNull ImageIcon imageIcon,
@@ -163,7 +165,7 @@ public class SwingUtil {
      * Creates a hyperlink label that opens a URL when clicked.
      *
      * @param label The label to make a hyperlink.
-     * @param url  The URL to open when the label is clicked.
+     * @param url   The URL to open when the label is clicked.
      * @return The created mouse adapter.
      */
     @Contract(value = "_, _ -> new", pure = true)
@@ -205,9 +207,9 @@ public class SwingUtil {
     /**
      * Creates a panel button (located at the top of the panel).
      *
-     * @param buttonName   The name of the button.
-     * @param panelName    The name of the panel to switch to.
-     * @param bounds The bounds of the button.
+     * @param buttonName The name of the button.
+     * @param panelName  The name of the panel to switch to.
+     * @param bounds     The bounds of the button.
      * @return The created button.
      */
     @SuppressWarnings("NestedMethodCall")
@@ -244,9 +246,9 @@ public class SwingUtil {
     /**
      * Creates a label.
      *
-     * @param text The text to display on the label.
+     * @param text   The text to display on the label.
      * @param bounds The bounds of the label.
-     * @param font The font of the label.
+     * @param font   The font of the label.
      * @return The created label.
      */
     public static @NotNull JLabel createLabel(String text, Rectangle bounds, Font font) {

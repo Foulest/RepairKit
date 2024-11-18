@@ -75,9 +75,10 @@ public abstract class AbstractTaskRunner implements TaskRunner {
      * @return {@code true} if the category is enabled, otherwise {@code false}
      */
     private static boolean isEnabled(@NotNull Map<String, Object> entries) {
-        return entries.containsKey("enabled")
+        return !entries.containsKey("enabled")
+                || (entries.containsKey("enabled")
                 && entries.get("enabled") instanceof Boolean
-                && (Boolean) entries.get("enabled");
+                && (Boolean) entries.get("enabled"));
     }
 
     /**

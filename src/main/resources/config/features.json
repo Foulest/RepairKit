@@ -1,6 +1,5 @@
 {
   "features": {
-    "enabled": true,
     "values": [
       "Internet-Explorer-Optional-amd64",
       "MicrosoftWindowsPowerShellV2",

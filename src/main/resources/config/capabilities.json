@@ -1,6 +1,5 @@
 {
   "capabilities": {
-    "enabled": true,
     "values": [
       "App.StepsRecorder~~~~*",
       "Browser.InternetExplorer~~~~*",

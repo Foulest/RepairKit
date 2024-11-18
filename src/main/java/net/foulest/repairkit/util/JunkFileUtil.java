@@ -209,7 +209,7 @@ public class JunkFileUtil {
      * This is classified as a file that ends with one of the junk file
      * extensions, and was not accessed in the last 24 hours.
      *
-     * @param file The file to check.
+     * @param file  The file to check.
      * @param attrs The file's attributes.
      * @return {@code true} if the file is a junk file, otherwise {@code false}.
      */

@@ -17,17 +17,13 @@
  */
 package net.foulest.repairkit.panels;
 
-import com.sun.jna.platform.win32.WinReg;
 import net.foulest.repairkit.RepairKit;
 import net.foulest.repairkit.util.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Useful Programs panel (Page 2).
@@ -65,17 +61,16 @@ public class UsefulPrograms2 extends JPanel {
 
         // Creates tasks for the executor.
         List<Runnable> tasks = Arrays.asList(
-                this::setupWingetAutoUpdate,
                 this::setupNVCleanstall,
                 this::setupDDU,
                 this::setup7Zip,
+                this::setupNotepadPlusPlus,
 
                 this::setupBitwarden,
                 this::setupSophosHome,
                 this::setupUBlockOrigin,
                 this::setupOsprey,
 
-                this::setupNotepadPlusPlus,
                 this::setupTwinkleTray,
                 this::setupFanControl
         );
@@ -114,100 +109,10 @@ public class UsefulPrograms2 extends JPanel {
     }
 
     /**
-     * Sets up the Winget-AutoUpdate section.
-     */
-    private void setupWingetAutoUpdate() {
-        int baseHeight = 55;
-        int baseWidth = 20;
-
-        // Adds a title label for Winget-AutoUpdate.
-        DebugUtil.debug("Creating the Winget-AutoUpdate title label...");
-        JLabel title = SwingUtil.createLabel("Winget-AutoUpdate",
-                new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
-        );
-        add(title);
-
-        // Adds a description label for Winget-AutoUpdate.
-        DebugUtil.debug("Creating the Winget-AutoUpdate description label...");
-        JLabel description = SwingUtil.createLabel(ConstantUtil.VERSION_AUTO_UPDATED,
-                new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
-        );
-        add(description);
-
-        // Adds an icon for Winget-AutoUpdate.
-        DebugUtil.debug("Setting up the Winget-AutoUpdate icon...");
-        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/Winget-AutoUpdate.png"), this);
-
-        // Adds a button to launch Winget-AutoUpdate.
-        DebugUtil.debug("Creating the Winget-AutoUpdate launch button...");
-        JButton appButton = SwingUtil.createActionButton("Launch Winget-AutoUpdate",
-                "Automatically updates programs using Winget.",
-                new Rectangle(baseWidth, baseHeight + 50, 200, 30),
-                new Color(200, 200, 200), () -> {
-                    // Stops if Winget-AutoUpdate is currently running.
-                    if (ProcessUtil.isProcessRunning("wscript.exe")
-                            || ProcessUtil.isProcessRunning("winget.exe")
-                            || ProcessUtil.isProcessRunning("powershell.exe")) {
-                        SoundUtil.playSound(ConstantUtil.ERROR_SOUND);
-                        JOptionPane.showMessageDialog(null, """
-                                        Winget-AutoUpdate cannot be launched. It might be already running.
-                                        
-                                        Please wait for the following processes to finish:
-                                        - wscript.exe
-                                        - winget.exe
-                                        - powershell.exe""",
-                                "Error", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
-
-                    // Enables Windows Script Host for Winget-AutoUpdate.
-                    DebugUtil.debug("Enabling Windows Script Host for Winget-AutoUpdate...");
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows Script Host\\Settings", "Enabled", 1);
-
-                    try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/WAU.7z")) {
-                        // Saves and unzips the Winget-AutoUpdate files.
-                        DebugUtil.debug("Extracting Winget-AutoUpdate files...");
-                        FileUtil.saveFile(Objects.requireNonNull(input), FileUtil.tempDirectory + "\\WAU.7z", true);
-                        String path = FileUtil.tempDirectory.getPath();
-                        FileUtil.unzipFile(FileUtil.tempDirectory + "\\WAU.7z", path);
-
-                        // Prompt the user if they want to check for updates on logon, or just once.
-                        int option = JOptionPane.showOptionDialog(null,
-                                "Would you like Winget-AutoUpdate to automatically update your programs?",
-                                "Winget-AutoUpdate", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-                                new String[]{"Yes", "No"}, "Yes");
-
-                        // Silently installs Winget-AutoUpdate.
-                        DebugUtil.debug("Silently installing Winget-AutoUpdate...");
-                        CommandUtil.runCommand("PowerShell -ExecutionPolicy Bypass \""
-                                + FileUtil.tempDirectory + "\\Winget-AutoUpdate-Install.ps1\" -Silent"
-                                + (option == JOptionPane.YES_OPTION
-                                ? " -UpdatesAtLogon -UpdatesInterval Daily"
-                                : " -UpdatesInterval Never")
-                                + " -NotificationLevel Full"
-                                + " -StartMenuShortcut -DoNotUpdate", false);
-                    } catch (IOException ex) {
-                        DebugUtil.warn("Failed to extract Winget-AutoUpdate files", ex);
-                    }
-
-                    // Launches Winget-AutoUpdate.
-                    DebugUtil.debug("Running update check with Winget-AutoUpdate...");
-                    CommandUtil.runCommand("C:\\Windows\\system32\\wscript.exe"
-                            + " \"C:\\ProgramData\\Winget-AutoUpdate\\Invisible.vbs\" \"powershell.exe"
-                            + " -NoProfile -ExecutionPolicy Bypass -File"
-                            + " \"\"\"C:\\ProgramData\\Winget-AutoUpdate\\user-run.ps1\"\"", false);
-                }
-        );
-        add(appButton);
-    }
-
-    /**
      * Sets up the NVCleanstall section.
      */
     private void setupNVCleanstall() {
-        int baseHeight = 150;
+        int baseHeight = 55;
         int baseWidth = 20;
 
         // Adds a title label for NVCleanstall.
@@ -254,7 +159,7 @@ public class UsefulPrograms2 extends JPanel {
      * Sets up the DDU section.
      */
     private void setupDDU() {
-        int baseHeight = 245;
+        int baseHeight = 150;
         int baseWidth = 20;
 
         // Adds a title label for DDU.
@@ -295,7 +200,7 @@ public class UsefulPrograms2 extends JPanel {
      * Sets up the 7-Zip section.
      */
     private void setup7Zip() {
-        int baseHeight = 340;
+        int baseHeight = 245;
         int baseWidth = 20;
 
         // Adds a title label for 7-Zip.
@@ -325,6 +230,44 @@ public class UsefulPrograms2 extends JPanel {
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
                 () -> CommandUtil.runCommand("start https://7-zip.org/download.html", true)
+        );
+        add(appButton);
+    }
+
+    /**
+     * Sets up the Notepad++ section.
+     */
+    private void setupNotepadPlusPlus() {
+        int baseHeight = 340;
+        int baseWidth = 20;
+
+        // Adds a title label for Notepad++.
+        DebugUtil.debug("Creating the Notepad++ title label...");
+        JLabel title = SwingUtil.createLabel("Notepad++",
+                new Rectangle(baseWidth + 43, baseHeight, 200, 30),
+                new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
+        );
+        add(title);
+
+        // Adds a description label for Notepad++.
+        DebugUtil.debug("Creating the Notepad++ description label...");
+        JLabel description = SwingUtil.createLabel("Price: Free",
+                new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
+                new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
+        );
+        add(description);
+
+        // Adds an icon for Notepad++.
+        DebugUtil.debug("Setting up the Notepad++ icon...");
+        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/Notepad++.png"), this);
+
+        // Adds a button to launch Notepad++.
+        DebugUtil.debug("Creating the Notepad++ launch button...");
+        JButton appButton = SwingUtil.createActionButton("Visit Notepad++",
+                "Free and open-source text editor.",
+                new Rectangle(baseWidth, baseHeight + 50, 200, 30),
+                new Color(200, 200, 200),
+                () -> CommandUtil.runCommand("start https://notepad-plus-plus.org/downloads", true)
         );
         add(appButton);
     }
@@ -482,48 +425,10 @@ public class UsefulPrograms2 extends JPanel {
     }
 
     /**
-     * Sets up the Notepad++ section.
-     */
-    private void setupNotepadPlusPlus() {
-        int baseHeight = 55;
-        int baseWidth = 480;
-
-        // Adds a title label for Notepad++.
-        DebugUtil.debug("Creating the Notepad++ title label...");
-        JLabel title = SwingUtil.createLabel("Notepad++",
-                new Rectangle(baseWidth + 43, baseHeight, 200, 30),
-                new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
-        );
-        add(title);
-
-        // Adds a description label for Notepad++.
-        DebugUtil.debug("Creating the Notepad++ description label...");
-        JLabel description = SwingUtil.createLabel("Price: Free",
-                new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
-                new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
-        );
-        add(description);
-
-        // Adds an icon for Notepad++.
-        DebugUtil.debug("Setting up the Notepad++ icon...");
-        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/Notepad++.png"), this);
-
-        // Adds a button to launch Notepad++.
-        DebugUtil.debug("Creating the Notepad++ launch button...");
-        JButton appButton = SwingUtil.createActionButton("Visit Notepad++",
-                "Free and open-source text editor.",
-                new Rectangle(baseWidth, baseHeight + 50, 200, 30),
-                new Color(200, 200, 200),
-                () -> CommandUtil.runCommand("start https://notepad-plus-plus.org/downloads", true)
-        );
-        add(appButton);
-    }
-
-    /**
      * Sets up the Twinkle Tray section.
      */
     private void setupTwinkleTray() {
-        int baseHeight = 150;
+        int baseHeight = 55;
         int baseWidth = 480;
 
         // Adds a title label for Twinkle Tray.
@@ -561,7 +466,7 @@ public class UsefulPrograms2 extends JPanel {
      * Sets up the FanControl section.
      */
     private void setupFanControl() {
-        int baseHeight = 245;
+        int baseHeight = 150;
         int baseWidth = 480;
 
         // Adds a title label for FanControl.

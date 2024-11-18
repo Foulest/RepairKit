@@ -53,6 +53,7 @@ public class AutomaticRepairs extends JPanel {
     /**
      * Creates the Automatic Repairs panel.
      */
+    @SuppressWarnings("NestedMethodCall")
     public AutomaticRepairs() {
         // Sets the panel's layout to null.
         DebugUtil.debug("Setting the Automatic Repairs panel layout to null...");
@@ -99,21 +100,38 @@ public class AutomaticRepairs extends JPanel {
                 "Delete System Policies",
                 "Run Registry Tweaks",
                 "Run System Tweaks",
+                "Run Features Tweaks",
+                "Run Capabilities Tweaks",
+                "Run Services Tweaks",
                 "Remove Junk Files",
                 "Remove Bloatware",
                 "Repair Disk Issues",
-                "Scan for Malware"
+                "Scan for Malware",
+                "Update Outdated Programs"
         };
 
         // Creates the progress checkboxes.
         DebugUtil.debug("Creating the Automatic Repairs progress checkboxes...");
         progressCheckboxes = new JCheckBox[progressItems.length];
         int numberOfItems = progressItems.length;
+
+        int x = 16;
+        int y = 235;
+        int maxWidth = 450;
+        int checkboxHeight = 28;
+        int checkboxWidth = 220; // Adjust width as needed
+
         for (int i = 0; i < numberOfItems; i++) {
             progressCheckboxes[i] = new JCheckBox(progressItems[i]);
             progressCheckboxes[i].setFont(new Font(ConstantUtil.ARIAL, Font.PLAIN, 14));
-            progressCheckboxes[i].setBounds(16, 235 + (i * 28), 500, 30);
-            progressCheckboxes[i].setEnabled(false);
+            progressCheckboxes[i].setBounds(x, y, checkboxWidth, checkboxHeight);
+            progressCheckboxes[i].setSelected(false);
+
+            y += checkboxHeight;
+            if (y + checkboxHeight > maxWidth) {
+                y = 235;
+                x += checkboxWidth;
+            }
         }
 
         // Adds the progress checkboxes to the panel.
@@ -130,6 +148,7 @@ public class AutomaticRepairs extends JPanel {
     /**
      * Runs the automatic repairs.
      */
+    @SuppressWarnings("NestedMethodCall")
     private void runAutomaticRepairs() {
         DebugUtil.debug("Running Automatic Repairs...");
 
@@ -141,6 +160,54 @@ public class AutomaticRepairs extends JPanel {
         // Creates a new thread to run the automatic repairs.
         Thread repairThread = new Thread(() -> {
             try {
+                // Sets the state of all checkboxes to variables.
+                boolean deleteSystemPolicies = progressCheckboxes[0].isSelected();
+                boolean runRegistryTweaks = progressCheckboxes[1].isSelected();
+                boolean runSystemTweaks = progressCheckboxes[2].isSelected();
+                boolean runFeaturesTweaks = progressCheckboxes[3].isSelected();
+                boolean runCapabilitiesTweaks = progressCheckboxes[4].isSelected();
+                boolean runServicesTweaks = progressCheckboxes[5].isSelected();
+                boolean removeJunkFiles = progressCheckboxes[6].isSelected();
+                boolean removeBloatware = progressCheckboxes[7].isSelected();
+                boolean repairDiskIssues = progressCheckboxes[8].isSelected();
+                boolean scanForMalware = progressCheckboxes[9].isSelected();
+                boolean updateOutdatedPrograms = progressCheckboxes[10].isSelected();
+
+                // Disables all checkboxes.
+                for (JCheckBox checkbox : progressCheckboxes) {
+                    checkbox.setEnabled(false);
+                    checkbox.setSelected(false);
+                }
+
+                // Checks if no repair options are selected.
+                if (!deleteSystemPolicies
+                        && !runRegistryTweaks
+                        && !runSystemTweaks
+                        && !runFeaturesTweaks
+                        && !runCapabilitiesTweaks
+                        && !runServicesTweaks
+                        && !removeJunkFiles
+                        && !removeBloatware
+                        && !repairDiskIssues
+                        && !scanForMalware
+                        && !updateOutdatedPrograms) {
+                    SoundUtil.playSound(ConstantUtil.ERROR_SOUND);
+                    JOptionPane.showMessageDialog(null, "Please select at least one repair option.", "Error", JOptionPane.ERROR_MESSAGE);
+
+                    // Resets the run button.
+                    DebugUtil.debug("Resetting the run button...");
+                    runButton.setEnabled(true);
+                    runButton.setBackground(new Color(0, 120, 215));
+
+                    // Resets the checkboxes.
+                    DebugUtil.debug("Resetting the Automatic Repairs progress checkboxes...");
+                    for (JCheckBox checkbox : progressCheckboxes) {
+                        checkbox.setEnabled(true);
+                        checkbox.setSelected(false);
+                    }
+                    return;
+                }
+
                 // Checks if the operating system is outdated.
                 DebugUtil.debug("Checking if the operating system is outdated...");
                 if (RepairKit.isOutdatedOperatingSystem()) {
@@ -150,52 +217,94 @@ public class AutomaticRepairs extends JPanel {
                 }
 
                 // Creates a restore point.
+                runButton.setText("Creating Restore Point");
                 createRestorePoint();
+                runButton.setText("Running Repairs...");
 
                 // Deletes system policies.
-                deleteSystemPolicies();
-                SwingUtilities.invokeLater(() -> progressCheckboxes[0].setSelected(true));
+                if (deleteSystemPolicies) {
+                    deleteSystemPolicies();
+                    SwingUtilities.invokeLater(() -> progressCheckboxes[0].setSelected(true));
+                }
 
                 // Creates tasks for the executor.
                 List<Runnable> tasks = List.of(
                         () -> {
-                            // Runs registry tweaks.
-                            runRegistryTweaks();
-                            SwingUtilities.invokeLater(() -> progressCheckboxes[1].setSelected(true));
-                        },
-
-                        () -> {
-                            // Runs system tweaks.
-                            runSystemTweaks();
-                            runFeaturesTweaks();
-                            runCapabilitiesTweaks();
-                            runServicesTweaks();
-                            SwingUtilities.invokeLater(() -> progressCheckboxes[2].setSelected(true));
-
-                            // Repairs disk issues.
-                            // This has to be done after the DISM commands in the system tweaks.
-                            repairDiskIssues();
-                            SwingUtilities.invokeLater(() -> progressCheckboxes[5].setSelected(true));
-                        },
-
-                        () -> {
-                            // Removes junk files.
-                            JunkFileUtil.removeJunkFiles();
-                            SwingUtilities.invokeLater(() -> progressCheckboxes[3].setSelected(true));
-                        },
-
-                        () -> {
-                            // Removes bloatware if the system is not in safe mode.
-                            if (!RepairKit.isSafeMode()) {
-                                removeBloatware();
+                            if (runRegistryTweaks) {
+                                // Runs registry tweaks.
+                                runRegistryTweaks();
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[1].setSelected(true));
                             }
-                            SwingUtilities.invokeLater(() -> progressCheckboxes[4].setSelected(true));
                         },
 
                         () -> {
-                            // Scans the system for malware.
-                            scanForMalware();
-                            SwingUtilities.invokeLater(() -> progressCheckboxes[6].setSelected(true));
+                            if (runSystemTweaks) {
+                                // Runs system tweaks.
+                                runSystemTweaks();
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[2].setSelected(true));
+                            }
+                        },
+
+                        () -> {
+                            if (runFeaturesTweaks) {
+                                // Runs features tweaks.
+                                runFeaturesTweaks();
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[3].setSelected(true));
+                            }
+
+                            if (runCapabilitiesTweaks) {
+                                // Runs capabilities tweaks.
+                                runCapabilitiesTweaks();
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[4].setSelected(true));
+                            }
+
+                            if (repairDiskIssues) {
+                                // Repairs disk issues.
+                                // This has to be done after the DISM commands in the above tweaks.
+                                repairDiskIssues();
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[8].setSelected(true));
+                            }
+                        },
+
+                        () -> {
+                            if (runServicesTweaks) {
+                                runServicesTweaks();
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[5].setSelected(true));
+                            }
+                        },
+
+                        () -> {
+                            if (removeJunkFiles) {
+                                // Removes junk files.
+                                JunkFileUtil.removeJunkFiles();
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[6].setSelected(true));
+                            }
+                        },
+
+                        () -> {
+                            if (removeBloatware) {
+                                // Removes bloatware if the system is not in safe mode.
+                                if (!RepairKit.isSafeMode()) {
+                                    removeBloatware();
+                                }
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[7].setSelected(true));
+                            }
+                        },
+
+                        () -> {
+                            if (scanForMalware) {
+                                // Scans the system for malware.
+                                scanForMalware();
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[9].setSelected(true));
+                            }
+                        },
+
+                        () -> {
+                            if (updateOutdatedPrograms) {
+                                // Updates outdated programs.
+                                updateOutdatedPrograms();
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[10].setSelected(true));
+                            }
                         }
                 );
 
@@ -212,12 +321,14 @@ public class AutomaticRepairs extends JPanel {
 
                 // Resets the run button.
                 DebugUtil.debug("Resetting the run button...");
+                runButton.setText("Run Automatic Repairs");
                 runButton.setEnabled(true);
                 runButton.setBackground(new Color(0, 120, 215));
 
                 // Resets the checkboxes.
                 DebugUtil.debug("Resetting the Automatic Repairs progress checkboxes...");
                 for (JCheckBox checkbox : progressCheckboxes) {
+                    checkbox.setEnabled(true);
                     checkbox.setSelected(false);
                 }
             } catch (HeadlessException ex) {
@@ -547,7 +658,8 @@ public class AutomaticRepairs extends JPanel {
             boolean defenderRunning = ProcessUtil.isProcessRunning("MsMpEng.exe");
 
             // Scan with Windows Defender if enabled and running.
-            if (defenderRunning && defenderConfig != null
+            if (defenderRunning
+                    && defenderConfig != null
                     && defenderConfig.get("enabled") != null
                     && defenderConfig.get("enabled").equals(Boolean.TRUE)) {
                 scanWithWindowsDefender(defenderConfig);
@@ -821,5 +933,19 @@ public class AutomaticRepairs extends JPanel {
         }
 
         DebugUtil.debug("Completed Sophos Scan.");
+    }
+
+    /**
+     * Updates outdated programs using WinGet.
+     */
+    private static void updateOutdatedPrograms() {
+        DebugUtil.debug("Updating outdated programs...");
+
+        // Updates outdated programs using Winget.
+//        CommandUtil.getCommandOutput("winget upgrade --all --disable-interactivity --silent"
+//                + " --accept-package-agreements --accept-source-agreements", true, false);
+        WinGetUtil.updateAllPrograms();
+
+        DebugUtil.debug("Completed updating outdated programs.");
     }
 }

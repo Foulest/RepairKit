@@ -1,6 +1,5 @@
 {
   "telemetry": {
-    "enabled": true,
     "values": {
       "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Siuf\\Rules\\PeriodInNanoSeconds": "DELETE_VALUE",
       "HKEY_CURRENT_USER\\Control Panel\\International\\User Profile\\HttpAcceptLanguageOptOut": 1,

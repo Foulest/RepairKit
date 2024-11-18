@@ -23,15 +23,17 @@ Automatically perform a comprehensive system cleanup and repair, including:
 - Removing pre-installed bloatware
 - Cleaning unnecessary junk files
 - Repairing various disk issues
+- Updating outdated installed programs
 - Scanning for malware with security software
 
 Every function in the repair is fully customizable, allowing you to enable or disable specific repairs as needed using
-the configuration files located in the **config** folder. **Only modify these files if you know what you are doing.**
+either the checkboxes on the panel, or the configuration files located in the **config** folder. **Only modify these
+files if you know what you are doing.**
 
 > **Note:** The malware scan automatically runs a quick scan with Windows Defender. In the event that Windows Defender
 > is disabled or unavailable, a quick scan is performed with Sophos Scan & Clean instead.
 
-![Automatic Repairs](https://i.imgur.com/zqSGyy7.png)
+![Automatic Repairs](https://i.imgur.com/xLZoNXh.png)
 
 ### **Useful Programs**
 
@@ -56,14 +58,12 @@ Access essential software tools for system maintenance, including:
   processes.
 - **[BlueScreenView](https://nirsoft.net/utils/blue_screen_view.html)**: View and analyze Windows BSOD crash dumps.
 
-- **[Winget-AutoUpdate](https://github.com/Romanitho/Winget-AutoUpdate)**: Automatically update installed programs using
-  Winget.
 - **[NVCleanstall](https://techpowerup.com/download/techpowerup-nvcleanstall)**: A lightweight NVIDIA graphics card
   driver updater.
 - **[DisplayDriverUninstaller](https://guru3d.com/files-details/display-driver-uninstaller-download.html)**: Remove
   display drivers and packages.
 
-![Useful Programs (Page 1/2)](https://i.imgur.com/3H0geaW.png)
+![Useful Programs (Page 1/2)](https://i.imgur.com/xZxomZf.png)
 
 Additionally, RepairKit provides links to useful software tools, including:
 
@@ -78,7 +78,7 @@ Additionally, RepairKit provides links to useful software tools, including:
 - **[Twinkle Tray](https://twinkletray.com)**: Link to the monitor brightness control software.
 - **[FanControl](https://getfancontrol.com)**: Link to the fan speed control software.
 
-![Useful Programs (Page 2/2)](https://i.imgur.com/GZZ4cSl.png)
+![Useful Programs (Page 2/2)](https://i.imgur.com/MMaiGzM.png)
 
 ### **System Shortcuts**
 
@@ -90,7 +90,7 @@ Quickly access important Windows utilities like:
 - Windows Security
 - Task Manager
 
-![System Shortcuts](https://i.imgur.com/efbPJ8M.png)
+![System Shortcuts](https://i.imgur.com/OTog97t.png)
 
 ## Download and Run
 

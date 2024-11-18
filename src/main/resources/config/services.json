@@ -1,6 +1,5 @@
 {
   "services": {
-    "enabled": true,
     "values": {
         "DiagTrack": "disabled",
         "MapsBroker": "disabled",
