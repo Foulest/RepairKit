@@ -71,6 +71,7 @@ public class DebugUtil {
      * Prints a warning message to a log file.
      *
      * @param message The message to print.
+     * @param ex      The exception to print.
      */
     public static void warn(@NotNull String message, @NotNull Exception ex) {
         Throwable cause = ex.getCause();

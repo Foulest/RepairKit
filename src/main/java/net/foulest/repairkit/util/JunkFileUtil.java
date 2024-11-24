@@ -63,79 +63,75 @@ public class JunkFileUtil {
     @SuppressWarnings({"unchecked", "NestedMethodCall"})
     public static void removeJunkFiles() {
         // Gets the file extensions to scan for from the config file.
-        try {
-            ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("junkfiles.json"));
-            Map<String, Object> junkFilesConfig = configLoader.getConfig().get("junkFiles");
+        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("junkfiles.json"));
+        Map<String, Object> junkFilesConfig = configLoader.getConfig().get("junkFiles");
 
-            // Returns if the config file is missing.
-            if (junkFilesConfig == null) {
-                return;
-            }
-
-            // Returns if the feature is disabled.
-            if (junkFilesConfig.get("enabled") != null
-                    && !junkFilesConfig.get("enabled").equals(Boolean.TRUE)) {
-                return;
-            }
-
-            // Gets the file extensions to scan for from the config file.
-            Object fileExtensions = junkFilesConfig.get("fileExtensions");
-            if (fileExtensions != null && !((Collection<String>) fileExtensions).isEmpty()) {
-                JUNK_FILE_EXTENSIONS = Set.copyOf((Collection<String>) fileExtensions);
-            }
-
-            // Gets the paths to exclude from scanning from the config file.
-            if (junkFilesConfig.get("excludedPaths") != null
-                    && !((Collection<String>) junkFilesConfig.get("excludedPaths")).isEmpty()) {
-                Set<Path> excludedPaths = new HashSet<>();
-
-                for (String path : (Iterable<String>) junkFilesConfig.get("excludedPaths")) {
-                    String fixedPath = path.replace("%temp%", System.getenv("TEMP"));
-                    excludedPaths.add(Paths.get(fixedPath));
-                }
-
-                EXCLUDED_PATHS = Set.copyOf(excludedPaths);
-            }
-
-            // Collects data for analytics.
-            long now = System.currentTimeMillis();
-            totalCount = 0;
-            totalSize = 0;
-
-            List<Runnable> tasks = new ArrayList<>(List.of());
-
-            // Empties the Recycle Bin.
-            if (junkFilesConfig.get("emptyRecycleBin") != null
-                    && junkFilesConfig.get("emptyRecycleBin").equals(Boolean.TRUE)) {
-                tasks.add(() -> CommandUtil.runPowerShellCommand("Clear-RecycleBin -Force", false));
-            }
-
-            // Deletes files in the Temp directory older than one day.
-            if (junkFilesConfig.get("cleanUserTempFiles") != null
-                    && junkFilesConfig.get("cleanUserTempFiles").equals(Boolean.TRUE)) {
-                tasks.add(() -> CommandUtil.runPowerShellCommand("Get-ChildItem -Path $env:TEMP -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-1) } | Remove-Item -Recurse -Force", false));
-            }
-
-            // Deletes files in the Windows temp directory.
-            if (junkFilesConfig.get("cleanSystemTempFiles") != null
-                    && junkFilesConfig.get("cleanSystemTempFiles").equals(Boolean.TRUE)) {
-                tasks.add(() -> CommandUtil.runPowerShellCommand("Get-ChildItem -Path $env:windir\\Temp -Recurse | Remove-Item -Recurse -Force", false));
-            }
-
-            // Scans each drive for junk files.
-            Iterable<Path> rootDirectories = FileSystems.getDefault().getRootDirectories();
-            for (Path root : rootDirectories) {
-                tasks.add(() -> pool.invoke(new DirectoryScanTask(root)));
-            }
-
-            // Executes tasks using TaskUtil.
-            TaskUtil.executeTasks(tasks);
-            DebugUtil.debug("Junk files found: " + totalCount);
-            DebugUtil.debug("Total size: " + totalSize);
-            DebugUtil.debug("Time taken: " + (System.currentTimeMillis() - now) + "ms");
-        } catch (IOException ex) {
-            DebugUtil.warn("Failed to load junkfiles.json configuration", ex);
+        // Returns if the config file is missing.
+        if (junkFilesConfig == null) {
+            return;
         }
+
+        // Returns if the feature is disabled.
+        if (junkFilesConfig.get("enabled") != null
+                && !junkFilesConfig.get("enabled").equals(Boolean.TRUE)) {
+            return;
+        }
+
+        // Gets the file extensions to scan for from the config file.
+        Object fileExtensions = junkFilesConfig.get("fileExtensions");
+        if (fileExtensions != null && !((Collection<String>) fileExtensions).isEmpty()) {
+            JUNK_FILE_EXTENSIONS = Set.copyOf((Collection<String>) fileExtensions);
+        }
+
+        // Gets the paths to exclude from scanning from the config file.
+        if (junkFilesConfig.get("excludedPaths") != null
+                && !((Collection<String>) junkFilesConfig.get("excludedPaths")).isEmpty()) {
+            Set<Path> excludedPaths = new HashSet<>();
+
+            for (String path : (Iterable<String>) junkFilesConfig.get("excludedPaths")) {
+                String fixedPath = path.replace("%temp%", System.getenv("TEMP"));
+                excludedPaths.add(Paths.get(fixedPath));
+            }
+
+            EXCLUDED_PATHS = Set.copyOf(excludedPaths);
+        }
+
+        // Collects data for analytics.
+        long now = System.currentTimeMillis();
+        totalCount = 0;
+        totalSize = 0;
+
+        List<Runnable> tasks = new ArrayList<>(List.of());
+
+        // Empties the Recycle Bin.
+        if (junkFilesConfig.get("emptyRecycleBin") != null
+                && junkFilesConfig.get("emptyRecycleBin").equals(Boolean.TRUE)) {
+            tasks.add(() -> CommandUtil.runPowerShellCommand("Clear-RecycleBin -Force", false));
+        }
+
+        // Deletes files in the Temp directory older than one day.
+        if (junkFilesConfig.get("cleanUserTempFiles") != null
+                && junkFilesConfig.get("cleanUserTempFiles").equals(Boolean.TRUE)) {
+            tasks.add(() -> CommandUtil.runPowerShellCommand("Get-ChildItem -Path $env:TEMP -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-1) } | Remove-Item -Recurse -Force", false));
+        }
+
+        // Deletes files in the Windows temp directory.
+        if (junkFilesConfig.get("cleanSystemTempFiles") != null
+                && junkFilesConfig.get("cleanSystemTempFiles").equals(Boolean.TRUE)) {
+            tasks.add(() -> CommandUtil.runPowerShellCommand("Get-ChildItem -Path $env:windir\\Temp -Recurse | Remove-Item -Recurse -Force", false));
+        }
+
+        // Scans each drive for junk files.
+        Iterable<Path> rootDirectories = FileSystems.getDefault().getRootDirectories();
+        for (Path root : rootDirectories) {
+            tasks.add(() -> pool.invoke(new DirectoryScanTask(root)));
+        }
+
+        // Executes tasks using TaskUtil.
+        TaskUtil.executeTasks(tasks);
+        DebugUtil.debug("Junk files found: " + totalCount);
+        DebugUtil.debug("Total size: " + totalSize);
+        DebugUtil.debug("Time taken: " + (System.currentTimeMillis() - now) + "ms");
     }
 
     @AllArgsConstructor

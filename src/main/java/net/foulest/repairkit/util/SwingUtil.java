@@ -46,8 +46,6 @@ import java.util.Objects;
 @Data
 public class SwingUtil {
 
-    public static TrayIcon trayIcon;
-
     /**
      * Creates an action button without a tooltip.
      *

@@ -156,7 +156,7 @@ public class UsefulPrograms2 extends JPanel {
     }
 
     /**
-     * Sets up the DDU section.
+     * Sets up the Display Driver Uninstaller (DDU) section.
      */
     private void setupDDU() {
         int baseHeight = 150;
@@ -172,7 +172,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a description label for DDU.
         DebugUtil.debug("Creating the DDU description label...");
-        JLabel description = SwingUtil.createLabel("Version: 18.0.8.4",
+        JLabel description = SwingUtil.createLabel("Version: 18.0.8.7",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -190,7 +190,7 @@ public class UsefulPrograms2 extends JPanel {
                 new Color(200, 200, 200), () -> {
                     // Unzips and launches DDU.
                     String path = FileUtil.tempDirectory.getPath();
-                    SwingUtil.launchApplication("DDU.7z", "\\DDU.exe", true, path);
+                    SwingUtil.launchApplication("DDU.7z", "\\Display Driver Uninstaller.exe", true, path);
                 }
         );
         add(appButton);

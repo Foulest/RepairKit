@@ -1,0 +1,8 @@
+{
+  "excludedPrograms": {
+    "values": [
+      "Discord.Discord",
+      "Roblox.Roblox"
+    ]
+  }
+}

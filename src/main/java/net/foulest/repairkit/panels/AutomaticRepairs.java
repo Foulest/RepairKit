@@ -353,88 +353,76 @@ public class AutomaticRepairs extends JPanel {
      * Deletes any existing system policies.
      */
     private static void deleteSystemPolicies() {
-        try {
-            DebugUtil.debug("Deleting system policies...");
-            ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("policies.json"));
-            Map<String, Map<String, Object>> config = configLoader.getConfig();
-            RegistryTaskRunner taskRunner = new RegistryTaskRunner(config);
-            List<Runnable> tasks = taskRunner.getTasks();
+        DebugUtil.debug("Deleting system policies...");
+        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("policies.json"));
+        Map<String, Map<String, Object>> config = configLoader.getConfig();
+        RegistryTaskRunner taskRunner = new RegistryTaskRunner(config);
+        List<Runnable> tasks = taskRunner.getTasks();
 
-            // Execute tasks using TaskUtil.
-            TaskUtil.executeTasks(tasks);
-            DebugUtil.debug("Completed deleting system policies.");
-        } catch (IOException ex) {
-            DebugUtil.warn("Failed to load policies.json configuration", ex);
-        }
+        // Execute tasks using TaskUtil.
+        TaskUtil.executeTasks(tasks);
+        DebugUtil.debug("Completed deleting system policies.");
     }
 
     /**
      * Removes various bloatware applications from the system.
      */
     private static void removeBloatware() {
-        try {
-            DebugUtil.debug("Removing installed bloatware apps...");
-            ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("bloatware.json"));
-            Map<String, Map<String, Object>> config = configLoader.getConfig();
-            BloatwareTaskRunner taskRunner = new BloatwareTaskRunner(config);
-            List<Runnable> tasks = taskRunner.getTasks();
+        DebugUtil.debug("Removing installed bloatware apps...");
+        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("bloatware.json"));
+        Map<String, Map<String, Object>> config = configLoader.getConfig();
+        BloatwareTaskRunner taskRunner = new BloatwareTaskRunner(config);
+        List<Runnable> tasks = taskRunner.getTasks();
 
-            // Execute tasks using TaskUtil.
-            TaskUtil.executeTasks(tasks);
-            DebugUtil.debug("Completed removing installed bloatware apps.");
-        } catch (IOException ex) {
-            DebugUtil.warn("Failed to load bloatware.json configuration", ex);
-        }
+        // Execute tasks using TaskUtil.
+        TaskUtil.executeTasks(tasks);
+        DebugUtil.debug("Completed removing installed bloatware apps.");
     }
 
     /**
      * Repairs various disk issues.
      */
     private static void repairDiskIssues() {
-        try {
-            ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("diskissues.json"));
-            Map<String, Object> config = configLoader.getConfig().get("diskIssues");
+        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("diskissues.json"));
+        Map<String, Object> config = configLoader.getConfig().get("diskIssues");
 
-            // Checks if the config is null.
-            if (config == null) {
-                return;
+        // Checks if the config is null.
+        if (config == null) {
+            return;
+        }
+
+        // Repairs the WMI repository.
+        if (config.get("repairWMI") != null
+                && config.get("repairWMI").equals(Boolean.TRUE)) {
+            DebugUtil.debug("Repairing WMI repository...");
+
+            if (CommandUtil.getCommandOutput("winmgmt /verifyrepository", false, false).toString().contains("not consistent")
+                    && CommandUtil.getCommandOutput("winmgmt /salvagerepository", false, false).toString().contains("not consistent")) {
+                CommandUtil.runCommand("winmgmt /resetrepository", false);
+                DebugUtil.debug("Repaired WMI repository.");
+            } else {
+                DebugUtil.debug("WMI repository is already consistent.");
             }
+        }
 
-            // Repairs the WMI repository.
-            if (config.get("repairWMI") != null
-                    && config.get("repairWMI").equals(Boolean.TRUE)) {
-                DebugUtil.debug("Repairing WMI repository...");
+        // Repairs disk issues with SFC.
+        if (config.get("repairWithSFC") != null
+                && config.get("repairWithSFC").equals(Boolean.TRUE)) {
+            DebugUtil.debug("Repairing disk issues with SFC...");
 
-                if (CommandUtil.getCommandOutput("winmgmt /verifyrepository", false, false).toString().contains("not consistent")
-                        && CommandUtil.getCommandOutput("winmgmt /salvagerepository", false, false).toString().contains("not consistent")) {
-                    CommandUtil.runCommand("winmgmt /resetrepository", false);
-                    DebugUtil.debug("Repaired WMI repository.");
-                } else {
-                    DebugUtil.debug("WMI repository is already consistent.");
+            if (CommandUtil.getCommandOutput("sfc /scannow", false, false).toString().contains("Windows Resource Protection found")) {
+                DebugUtil.debug("Found disk issues with SFC.");
+
+                // Repairs disk issues with DISM.
+                if (config.get("repairWithDISM") != null
+                        && config.get("repairWithDISM").equals(Boolean.TRUE)) {
+                    DebugUtil.debug("Repairing disk issues with DISM...");
+                    CommandUtil.runCommand("DISM /Online /Cleanup-Image /RestoreHealth", false);
+                    DebugUtil.debug("Repaired disk issues with DISM.");
                 }
+            } else {
+                DebugUtil.debug("No disk issues found with SFC.");
             }
-
-            // Repairs disk issues with SFC.
-            if (config.get("repairWithSFC") != null
-                    && config.get("repairWithSFC").equals(Boolean.TRUE)) {
-                DebugUtil.debug("Repairing disk issues with SFC...");
-
-                if (CommandUtil.getCommandOutput("sfc /scannow", false, false).toString().contains("Windows Resource Protection found")) {
-                    DebugUtil.debug("Found disk issues with SFC.");
-
-                    // Repairs disk issues with DISM.
-                    if (config.get("repairWithDISM") != null
-                            && config.get("repairWithDISM").equals(Boolean.TRUE)) {
-                        DebugUtil.debug("Repairing disk issues with DISM...");
-                        CommandUtil.runCommand("DISM /Online /Cleanup-Image /RestoreHealth", false);
-                        DebugUtil.debug("Repaired disk issues with DISM.");
-                    }
-                } else {
-                    DebugUtil.debug("No disk issues found with SFC.");
-                }
-            }
-        } catch (IOException ex) {
-            DebugUtil.warn("Failed to load diskissues.json configuration", ex);
         }
     }
 
@@ -442,150 +430,142 @@ public class AutomaticRepairs extends JPanel {
      * Runs tweaks to the Windows registry.
      */
     private static void runRegistryTweaks() {
-        try {
-            DebugUtil.debug("Running registry tweaks...");
-            ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("registry.json"));
-            Map<String, Map<String, Object>> config = configLoader.getConfig();
-            RegistryTaskRunner taskRunner = new RegistryTaskRunner(config);
-            List<Runnable> tasks = taskRunner.getTasks();
-            Map<String, Object> spectreMeltdown = configLoader.getConfig().get("spectreMeltdown");
+        DebugUtil.debug("Running registry tweaks...");
+        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("registry.json"));
+        Map<String, Map<String, Object>> config = configLoader.getConfig();
+        RegistryTaskRunner taskRunner = new RegistryTaskRunner(config);
+        List<Runnable> tasks = taskRunner.getTasks();
+        Map<String, Object> spectreMeltdown = configLoader.getConfig().get("spectreMeltdown");
 
-            // Checks if the config is null.
-            if (spectreMeltdown == null) {
-                return;
-            }
-
-            // Patches Spectre & Meltdown security vulnerabilities.
-            if (spectreMeltdown.get("enabled") != null
-                    && spectreMeltdown.get("enabled").equals(Boolean.TRUE)) {
-                tasks.add(() -> {
-                    String cpuName = CommandUtil.getCommandOutput("wmic cpu get name", false, false).toString();
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverrideMask", 3);
-                    RegistryUtil.setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Virtualization", "MinVmVersionForCpuBasedMitigations", "1.0");
-
-                    if (cpuName.contains("Intel")) {
-                        RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverride", 8);
-                    } else if (cpuName.contains("AMD")) {
-                        RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverride", 72);
-                    } else if (cpuName.contains("ARM")) {
-                        RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverride", 64);
-                    }
-                });
-            }
-
-            // Execute tasks using TaskUtil.
-            TaskUtil.executeTasks(tasks);
-            DebugUtil.debug("Completed registry tweaks.");
-        } catch (IOException ex) {
-            DebugUtil.warn("Failed to load registry.json configuration", ex);
+        // Checks if the config is null.
+        if (spectreMeltdown == null) {
+            return;
         }
+
+        // Patches Spectre & Meltdown security vulnerabilities.
+        if (spectreMeltdown.get("enabled") != null
+                && spectreMeltdown.get("enabled").equals(Boolean.TRUE)) {
+            tasks.add(() -> {
+                String cpuName = CommandUtil.getCommandOutput("wmic cpu get name", false, false).toString();
+                RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverrideMask", 3);
+                RegistryUtil.setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Virtualization", "MinVmVersionForCpuBasedMitigations", "1.0");
+
+                if (cpuName.contains("Intel")) {
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverride", 8);
+                } else if (cpuName.contains("AMD")) {
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverride", 72);
+                } else if (cpuName.contains("ARM")) {
+                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverride", 64);
+                }
+            });
+        }
+
+        // Execute tasks using TaskUtil.
+        TaskUtil.executeTasks(tasks);
+        DebugUtil.debug("Completed registry tweaks.");
     }
 
     /**
      * Runs tweaks to the system.
      */
     private static void runSystemTweaks() {
-        try {
-            DebugUtil.debug("Running system tweaks...");
-            List<Runnable> tasks = new ArrayList<>();
-            ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("tweaks.json"));
-            Map<String, Object> config = configLoader.getConfig().get("tweaks");
+        DebugUtil.debug("Running system tweaks...");
+        List<Runnable> tasks = new ArrayList<>();
+        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("tweaks.json"));
+        Map<String, Object> config = configLoader.getConfig().get("tweaks");
 
-            // Checks if the config is null.
-            if (config == null) {
-                return;
-            }
-
-            // Fixes micro-stuttering in games.
-            if (config.get("platformTickClock") != null
-                    && config.get("platformTickClock").equals(Boolean.TRUE)) {
-                tasks.add(() -> {
-                    CommandUtil.runCommand("bcdedit /set useplatformtick yes", true);
-                    CommandUtil.runCommand("bcdedit /deletevalue useplatformclock", true);
-                });
-            }
-
-            // Enables scheduled defrag.
-            if (config.get("scheduledDefrag") != null
-                    && config.get("scheduledDefrag").equals(Boolean.TRUE)) {
-                tasks.add(() -> CommandUtil.runCommand("schtasks /Change /ENABLE /TN \"\\Microsoft\\Windows\\Defrag\\ScheduledDefrag\"", true));
-            }
-
-            // Disables various telemetry tasks.
-            if (config.get("telemetry") != null
-                    && config.get("telemetry").equals(Boolean.TRUE)) {
-                tasks.add(() -> {
-                    CommandUtil.runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser\" /disable", true);
-                    CommandUtil.runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\ProgramDataUpdater\" /disable", true);
-                    CommandUtil.runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\StartupAppTask\" /disable", true);
-                    CommandUtil.runCommand("schtasks /change /TN \"Microsoft\\Windows\\Customer Experience Improvement Program\\Consolidator\" /disable", true);
-                    CommandUtil.runCommand("schtasks /change /TN \"Microsoft\\Windows\\Customer Experience Improvement Program\\UsbCeip\" /disable", true);
-                    CommandUtil.runCommand("schtasks /change /TN \"Microsoft\\Windows\\Device Information\\Device\" /disable", true);
-                    CommandUtil.runCommand("schtasks /change /TN \"Microsoft\\Windows\\Windows Error Reporting\\QueueReporting\" /disable", true);
-                    CommandUtil.runCommand("setx DOTNET_CLI_TELEMETRY_OPTOUT 1", true);
-                    CommandUtil.runCommand("setx POWERSHELL_TELEMETRY_OPTOUT 1", true);
-                });
-            }
-
-            // Deletes the controversial 'defaultuser0' user.
-            if (config.get("defaultuser0") != null
-                    && config.get("defaultuser0").equals(Boolean.TRUE)) {
-                tasks.add(() -> CommandUtil.runCommand("net user defaultuser0 /delete", true));
-            }
-
-            // Clears the Windows product key from registry.
-            if (config.get("productKey") != null
-                    && config.get("productKey").equals(Boolean.TRUE)) {
-                tasks.add(() -> CommandUtil.runCommand("cscript.exe //nologo \"%SystemRoot%\\system32\\slmgr.vbs\" /cpky", true));
-            }
-
-            // Resets network settings.
-            if (config.get("networkReset") != null
-                    && config.get("networkReset").equals(Boolean.TRUE)) {
-                tasks.add(() -> {
-                    CommandUtil.runCommand("netsh winsock reset", true);
-                    CommandUtil.runCommand("netsh int ip reset", true);
-                    CommandUtil.runCommand("ipconfig /flushdns", true);
-
-                    // Repairs broken Wi-Fi settings.
-                    RegistryUtil.deleteRegistryKey(WinReg.HKEY_CLASSES_ROOT, "CLSID\\{988248f3-a1ad-49bf-9170-676cbbc36ba3}");
-                    CommandUtil.runCommand("netcfg -v -u dni_dne", true);
-                });
-            }
-
-            // Re-registers ExplorerFrame.dll.
-            if (config.get("explorerFrame") != null
-                    && config.get("explorerFrame").equals(Boolean.TRUE)) {
-                tasks.add(() -> CommandUtil.runCommand("regsvr32 /s ExplorerFrame.dll", true));
-            }
-
-            // Disables NetBios for all interfaces.
-            if (config.get("netBios") != null
-                    && config.get("netBios").equals(Boolean.TRUE)) {
-                String baseKeyPath = "SYSTEM\\CurrentControlSet\\services\\NetBT\\Parameters\\Interfaces";
-                java.util.List<String> subKeys = RegistryUtil.listSubKeys(WinReg.HKEY_LOCAL_MACHINE, baseKeyPath);
-
-                for (String subKey : subKeys) {
-                    String fullPath = baseKeyPath + "\\" + subKey;
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, fullPath, "NetbiosOptions", 2);
-                }
-            }
-
-            // Resets Windows Media Player.
-            if (config.get("mediaPlayer") != null
-                    && config.get("mediaPlayer").equals(Boolean.TRUE)) {
-                tasks.add(() -> {
-                    CommandUtil.runCommand("regsvr32 /s jscript.dll", false);
-                    CommandUtil.runCommand("regsvr32 /s vbscript.dll", true);
-                });
-            }
-
-            // Execute system tasks using TaskUtil.
-            TaskUtil.executeTasks(tasks);
-            DebugUtil.debug("Completed system tweaks.");
-        } catch (IOException ex) {
-            DebugUtil.warn("Failed to load tweaks.json configuration", ex);
+        // Checks if the config is null.
+        if (config == null) {
+            return;
         }
+
+        // Fixes micro-stuttering in games.
+        if (config.get("platformTickClock") != null
+                && config.get("platformTickClock").equals(Boolean.TRUE)) {
+            tasks.add(() -> {
+                CommandUtil.runCommand("bcdedit /set useplatformtick yes", true);
+                CommandUtil.runCommand("bcdedit /deletevalue useplatformclock", true);
+            });
+        }
+
+        // Enables scheduled defrag.
+        if (config.get("scheduledDefrag") != null
+                && config.get("scheduledDefrag").equals(Boolean.TRUE)) {
+            tasks.add(() -> CommandUtil.runCommand("schtasks /Change /ENABLE /TN \"\\Microsoft\\Windows\\Defrag\\ScheduledDefrag\"", true));
+        }
+
+        // Disables various telemetry tasks.
+        if (config.get("telemetry") != null
+                && config.get("telemetry").equals(Boolean.TRUE)) {
+            tasks.add(() -> {
+                CommandUtil.runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser\" /disable", true);
+                CommandUtil.runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\ProgramDataUpdater\" /disable", true);
+                CommandUtil.runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\StartupAppTask\" /disable", true);
+                CommandUtil.runCommand("schtasks /change /TN \"Microsoft\\Windows\\Customer Experience Improvement Program\\Consolidator\" /disable", true);
+                CommandUtil.runCommand("schtasks /change /TN \"Microsoft\\Windows\\Customer Experience Improvement Program\\UsbCeip\" /disable", true);
+                CommandUtil.runCommand("schtasks /change /TN \"Microsoft\\Windows\\Device Information\\Device\" /disable", true);
+                CommandUtil.runCommand("schtasks /change /TN \"Microsoft\\Windows\\Windows Error Reporting\\QueueReporting\" /disable", true);
+                CommandUtil.runCommand("setx DOTNET_CLI_TELEMETRY_OPTOUT 1", true);
+                CommandUtil.runCommand("setx POWERSHELL_TELEMETRY_OPTOUT 1", true);
+            });
+        }
+
+        // Deletes the controversial 'defaultuser0' user.
+        if (config.get("defaultuser0") != null
+                && config.get("defaultuser0").equals(Boolean.TRUE)) {
+            tasks.add(() -> CommandUtil.runCommand("net user defaultuser0 /delete", true));
+        }
+
+        // Clears the Windows product key from registry.
+        if (config.get("productKey") != null
+                && config.get("productKey").equals(Boolean.TRUE)) {
+            tasks.add(() -> CommandUtil.runCommand("cscript.exe //nologo \"%SystemRoot%\\system32\\slmgr.vbs\" /cpky", true));
+        }
+
+        // Resets network settings.
+        if (config.get("networkReset") != null
+                && config.get("networkReset").equals(Boolean.TRUE)) {
+            tasks.add(() -> {
+                CommandUtil.runCommand("netsh winsock reset", true);
+                CommandUtil.runCommand("netsh int ip reset", true);
+                CommandUtil.runCommand("ipconfig /flushdns", true);
+
+                // Repairs broken Wi-Fi settings.
+                RegistryUtil.deleteRegistryKey(WinReg.HKEY_CLASSES_ROOT, "CLSID\\{988248f3-a1ad-49bf-9170-676cbbc36ba3}");
+                CommandUtil.runCommand("netcfg -v -u dni_dne", true);
+            });
+        }
+
+        // Re-registers ExplorerFrame.dll.
+        if (config.get("explorerFrame") != null
+                && config.get("explorerFrame").equals(Boolean.TRUE)) {
+            tasks.add(() -> CommandUtil.runCommand("regsvr32 /s ExplorerFrame.dll", true));
+        }
+
+        // Disables NetBios for all interfaces.
+        if (config.get("netBios") != null
+                && config.get("netBios").equals(Boolean.TRUE)) {
+            String baseKeyPath = "SYSTEM\\CurrentControlSet\\services\\NetBT\\Parameters\\Interfaces";
+            java.util.List<String> subKeys = RegistryUtil.listSubKeys(WinReg.HKEY_LOCAL_MACHINE, baseKeyPath);
+
+            for (String subKey : subKeys) {
+                String fullPath = baseKeyPath + "\\" + subKey;
+                RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, fullPath, "NetbiosOptions", 2);
+            }
+        }
+
+        // Resets Windows Media Player.
+        if (config.get("mediaPlayer") != null
+                && config.get("mediaPlayer").equals(Boolean.TRUE)) {
+            tasks.add(() -> {
+                CommandUtil.runCommand("regsvr32 /s jscript.dll", false);
+                CommandUtil.runCommand("regsvr32 /s vbscript.dll", true);
+            });
+        }
+
+        // Execute system tasks using TaskUtil.
+        TaskUtil.executeTasks(tasks);
+        DebugUtil.debug("Completed system tweaks.");
     }
 
     /**
@@ -593,19 +573,15 @@ public class AutomaticRepairs extends JPanel {
      */
     private static void runFeaturesTweaks() {
         if (!RepairKit.isWindowsUpdateInProgress()) {
-            try {
-                DebugUtil.debug("Running Windows features tweaks...");
-                ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("features.json"));
-                Map<String, Map<String, Object>> config = configLoader.getConfig();
-                FeaturesTaskRunner taskRunner = new FeaturesTaskRunner(config);
-                List<Runnable> tasks = taskRunner.getTasks();
+            DebugUtil.debug("Running Windows features tweaks...");
+            ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("features.json"));
+            Map<String, Map<String, Object>> config = configLoader.getConfig();
+            FeaturesTaskRunner taskRunner = new FeaturesTaskRunner(config);
+            List<Runnable> tasks = taskRunner.getTasks();
 
-                // Execute tasks using TaskUtil.
-                TaskUtil.executeTasks(tasks);
-                DebugUtil.debug("Completed Windows features tweaks.");
-            } catch (IOException ex) {
-                DebugUtil.warn("Failed to load features.json configuration", ex);
-            }
+            // Execute tasks using TaskUtil.
+            TaskUtil.executeTasks(tasks);
+            DebugUtil.debug("Completed Windows features tweaks.");
         }
     }
 
@@ -613,70 +589,58 @@ public class AutomaticRepairs extends JPanel {
      * Runs tweaks to Windows capabilities.
      */
     private static void runCapabilitiesTweaks() {
-        try {
-            DebugUtil.debug("Running Windows capabilities tweaks...");
-            ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("capabilities.json"));
-            Map<String, Map<String, Object>> config = configLoader.getConfig();
-            CapabilitiesTaskRunner taskRunner = new CapabilitiesTaskRunner(config);
-            List<Runnable> tasks = taskRunner.getTasks();
+        DebugUtil.debug("Running Windows capabilities tweaks...");
+        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("capabilities.json"));
+        Map<String, Map<String, Object>> config = configLoader.getConfig();
+        CapabilitiesTaskRunner taskRunner = new CapabilitiesTaskRunner(config);
+        List<Runnable> tasks = taskRunner.getTasks();
 
-            // Execute tasks using TaskUtil.
-            TaskUtil.executeTasks(tasks);
-            DebugUtil.debug("Completed Windows capabilities tweaks.");
-        } catch (IOException ex) {
-            DebugUtil.warn("Failed to load capabilities.json configuration", ex);
-        }
+        // Execute tasks using TaskUtil.
+        TaskUtil.executeTasks(tasks);
+        DebugUtil.debug("Completed Windows capabilities tweaks.");
     }
 
     /**
      * Runs tweaks to Windows services.
      */
     private static void runServicesTweaks() {
-        try {
-            DebugUtil.debug("Running services tweaks...");
-            ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("services.json"));
-            Map<String, Map<String, Object>> config = configLoader.getConfig();
-            ServicesTaskRunner taskRunner = new ServicesTaskRunner(config);
-            List<Runnable> tasks = taskRunner.getTasks();
+        DebugUtil.debug("Running services tweaks...");
+        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("services.json"));
+        Map<String, Map<String, Object>> config = configLoader.getConfig();
+        ServicesTaskRunner taskRunner = new ServicesTaskRunner(config);
+        List<Runnable> tasks = taskRunner.getTasks();
 
-            // Execute tasks using TaskUtil.
-            TaskUtil.executeTasks(tasks);
-            DebugUtil.debug("Completed services tweaks.");
-        } catch (IOException ex) {
-            DebugUtil.warn("Failed to load services.json configuration", ex);
-        }
+        // Execute tasks using TaskUtil.
+        TaskUtil.executeTasks(tasks);
+        DebugUtil.debug("Completed services tweaks.");
     }
 
     /**
      * Scans for malware with supported security software.
      */
     private static void scanForMalware() {
-        try {
-            ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("scanner.json"));
-            Map<String, Object> defenderConfig = configLoader.getConfig().get("defender");
-            Map<String, Object> sophosConfig = configLoader.getConfig().get("sophos");
-            boolean defenderRunning = ProcessUtil.isProcessRunning("MsMpEng.exe");
+        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("scanner.json"));
+        Map<String, Object> defenderConfig = configLoader.getConfig().get("defender");
+        Map<String, Object> sophosConfig = configLoader.getConfig().get("sophos");
+        boolean defenderRunning = ProcessUtil.isProcessRunning("MsMpEng.exe");
 
-            // Scan with Windows Defender if enabled and running.
-            if (defenderRunning
-                    && defenderConfig != null
-                    && defenderConfig.get("enabled") != null
-                    && defenderConfig.get("enabled").equals(Boolean.TRUE)) {
-                scanWithWindowsDefender(defenderConfig);
-            }
+        // Scan with Windows Defender if enabled and running.
+        if (defenderRunning
+                && defenderConfig != null
+                && defenderConfig.get("enabled") != null
+                && defenderConfig.get("enabled").equals(Boolean.TRUE)) {
+            scanWithWindowsDefender(defenderConfig);
+        }
 
-            // Scan with Sophos if enabled.
-            if (sophosConfig != null
-                    && sophosConfig.get("enabled") != null
-                    && sophosConfig.get("enabled").equals(Boolean.TRUE)) {
-                if (sophosConfig.get("onlyRunAsBackup").equals(Boolean.TRUE) && defenderRunning) {
-                    DebugUtil.debug("Skipping Sophos scan; Windows Defender is running.");
-                } else {
-                    scanWithSophos();
-                }
+        // Scan with Sophos if enabled.
+        if (sophosConfig != null
+                && sophosConfig.get("enabled") != null
+                && sophosConfig.get("enabled").equals(Boolean.TRUE)) {
+            if (sophosConfig.get("onlyRunAsBackup").equals(Boolean.TRUE) && defenderRunning) {
+                DebugUtil.debug("Skipping Sophos scan; Windows Defender is running.");
+            } else {
+                scanWithSophos();
             }
-        } catch (IOException ex) {
-            DebugUtil.warn("Failed to load scanner.json configuration", ex);
         }
     }
 

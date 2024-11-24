@@ -42,14 +42,15 @@ public class ConfigLoader {
      * Constructs a new config loader instance.
      *
      * @param file The file to load
-     * @throws IOException If an I/O error occurs
      */
-    public ConfigLoader(File file) throws IOException {
+    public ConfigLoader(File file) {
         try (FileReader reader = new FileReader(file, StandardCharsets.UTF_8)) {
             Type type = new TypeToken<Map<String, Map<String, Object>>>() {
             }.getType();
 
             config = new Gson().fromJson(reader, type);
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to load config file: " + file.getName(), ex);
         }
     }
 }
