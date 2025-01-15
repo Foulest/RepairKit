@@ -21,6 +21,7 @@ import lombok.Data;
 import net.foulest.repairkit.RepairKit;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.io.File;
@@ -31,7 +32,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -63,16 +63,16 @@ public class FileUtil {
 
         if (fileZip.endsWith(".zip")) {
             try {
-                Path sourcePath = Paths.get(fileZip);
-                Path targetPath = Paths.get(fileDest);
+                @NotNull Path sourcePath = Paths.get(fileZip);
+                @NotNull Path targetPath = Paths.get(fileDest);
 
-                try (ZipInputStream zis = new ZipInputStream(Files.newInputStream(sourcePath))) {
-                    ZipEntry zipEntry = zis.getNextEntry();
+                try (@NotNull ZipInputStream zis = new ZipInputStream(Files.newInputStream(sourcePath))) {
+                    @Nullable ZipEntry zipEntry = zis.getNextEntry();
 
                     while (zipEntry != null) {
-                        String entryName = zipEntry.getName();
+                        @NotNull String entryName = zipEntry.getName();
                         DebugUtil.debug("Opening zip entry: " + entryName);
-                        Path newPath = targetPath.resolve(entryName).normalize();
+                        @NotNull Path newPath = targetPath.resolve(entryName).normalize();
 
                         // Check for path traversal vulnerabilities
                         if (!newPath.startsWith(targetPath)) {
@@ -99,8 +99,15 @@ public class FileUtil {
                 DebugUtil.warn("Failed to unzip file: " + fileZip + " to " + fileDest, ex);
             }
         } else {
-            try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/7zr.exe")) {
-                saveFile(Objects.requireNonNull(input), tempDirectory + "\\7zr.exe", true);
+            try (@Nullable InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/7zr.exe")) {
+                if (input == null) {
+                    JOptionPane.showMessageDialog(null,
+                            "Failed to load 7-Zip file.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                saveFile(input, tempDirectory + "\\7zr.exe", true);
                 CommandUtil.getCommandOutput("\"" + tempDirectory + "\\7zr.exe\" x \"" + fileZip + "\"" + " -y -o\"" + fileDest, true, false);
             } catch (IOException ex) {
                 DebugUtil.warn("Failed to unzip file: " + fileZip + " to " + fileDest, ex);
@@ -115,9 +122,9 @@ public class FileUtil {
      * @param path           The path to save the file to.
      * @param replaceOldFile Whether to replace the old file.
      */
-    public static void saveFile(InputStream input, String path, boolean replaceOldFile) {
+    public static void saveFile(@NotNull InputStream input, @NotNull String path, boolean replaceOldFile) {
         DebugUtil.debug("Saving file: " + path);
-        Path savedFilePath = Paths.get(path);
+        @NotNull Path savedFilePath = Paths.get(path);
 
         try {
             if (Files.exists(savedFilePath)) {
@@ -153,8 +160,15 @@ public class FileUtil {
     public static @NotNull ImageIcon getImageIcon(String path) {
         DebugUtil.debug("Getting image icon: " + path);
         ClassLoader classLoader = RepairKit.class.getClassLoader();
-        URL resource = classLoader.getResource(path);
-        return new ImageIcon(Objects.requireNonNull(resource));
+        @Nullable URL resource = classLoader.getResource(path);
+
+        if (resource == null) {
+            JOptionPane.showMessageDialog(null,
+                    "Failed to load image icon: " + path,
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return new ImageIcon();
+        }
+        return new ImageIcon(resource);
     }
 
     /**
@@ -164,12 +178,19 @@ public class FileUtil {
      * @param fileName The name of the file to get.
      * @return The file.
      */
-    public static File getConfigFile(String fileName) {
-        File file = new File(System.getProperty("user.dir") + "/config/" + fileName);
+    public static @NotNull File getConfigFile(String fileName) {
+        @NotNull File file = new File(System.getProperty("user.dir") + "/config/" + fileName);
 
         if (!file.exists()) {
-            try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("config/" + fileName)) {
-                saveFile(Objects.requireNonNull(input), System.getProperty("user.dir") + "\\" + "config\\" + fileName, false);
+            try (@Nullable InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("config/" + fileName)) {
+                if (input == null) {
+                    JOptionPane.showMessageDialog(null,
+                            "Failed to load config file: " + fileName,
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    return new File(System.getProperty("user.dir") + "/config/" + fileName);
+                }
+
+                saveFile(input, System.getProperty("user.dir") + "\\" + "config\\" + fileName, false);
                 file = new File(System.getProperty("user.dir") + "/config/" + fileName);
             } catch (IOException ex) {
                 DebugUtil.warn("Failed to get config file: " + fileName, ex);

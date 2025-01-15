@@ -2,7 +2,8 @@
   "excludedPrograms": {
     "values": [
       "Discord.Discord",
-      "Roblox.Roblox"
+      "Roblox.Roblox",
+      "PokeMMO.PokeMMO"
     ]
   }
 }

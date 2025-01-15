@@ -113,22 +113,22 @@ public class RegistryUtil {
      */
     public static @NotNull List<String> listSubKeys(WinReg.HKEY root, String keyPath) {
         DebugUtil.debug("Listing sub keys: " + keyPath);
-        List<String> subKeysList = new ArrayList<>();
-        WinReg.HKEYByReference hkeyRef = Advapi32Util.registryGetKey(root, keyPath, WinNT.KEY_READ);
+        @NotNull List<String> subKeysList = new ArrayList<>();
+        WinReg.@NotNull HKEYByReference hkeyRef = Advapi32Util.registryGetKey(root, keyPath, WinNT.KEY_READ);
         WinReg.HKEY hkey = hkeyRef.getValue();
 
         try {
-            IntByReference lpcSubKeys = new IntByReference();
-            IntByReference lpcMaxSubKeyLen = new IntByReference();
+            @NotNull IntByReference lpcSubKeys = new IntByReference();
+            @NotNull IntByReference lpcMaxSubKeyLen = new IntByReference();
 
             if (Advapi32.INSTANCE.RegQueryInfoKey(hkey, null, null, null,
                     lpcSubKeys, lpcMaxSubKeyLen, null, null, null,
                     null, null, null) == WinError.ERROR_SUCCESS) {
                 int maxSubKeyLen = lpcMaxSubKeyLen.getValue() + 1; // account for null-terminator
-                char[] nameBuffer = new char[maxSubKeyLen];
+                char @NotNull [] nameBuffer = new char[maxSubKeyLen];
 
                 for (int index = 0; index < lpcSubKeys.getValue(); index++) {
-                    IntByReference lpcchValueName = new IntByReference(maxSubKeyLen);
+                    @NotNull IntByReference lpcchValueName = new IntByReference(maxSubKeyLen);
 
                     if (Advapi32.INSTANCE.RegEnumKeyEx(hkey, index, nameBuffer, lpcchValueName,
                             null, null, null, null) == WinError.ERROR_SUCCESS) {

@@ -20,6 +20,8 @@ package net.foulest.repairkit.panels;
 import com.sun.jna.platform.win32.WinReg;
 import net.foulest.repairkit.RepairKit;
 import net.foulest.repairkit.util.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Useful Programs panel (Page 1).
@@ -46,7 +47,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Creates the title label.
         DebugUtil.debug("Creating the Useful Programs (Page 1) title label...");
-        JLabel titleLabel = SwingUtil.createLabel("Useful Programs",
+        @NotNull JLabel titleLabel = SwingUtil.createLabel("Useful Programs",
                 new Rectangle(20, 15, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 18)
         );
@@ -54,7 +55,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Creates the page label.
         DebugUtil.debug("Creating the Useful Programs (Page 1) page label...");
-        JLabel pageLabel = SwingUtil.createLabel("(Page 1/2)",
+        @NotNull JLabel pageLabel = SwingUtil.createLabel("(Page 1/2)",
                 new Rectangle(172, 15, 69, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 14)
         );
@@ -64,7 +65,7 @@ public class UsefulPrograms1 extends JPanel {
         DebugUtil.debug("Adding components to the Useful Programs (Page 1) panel...");
 
         // Creates tasks for the executor.
-        List<Runnable> tasks = Arrays.asList(
+        @NotNull List<Runnable> tasks = Arrays.asList(
                 this::setupCPUZ,
                 this::setupHWMonitor,
                 this::setupEmsisoftScan,
@@ -89,7 +90,7 @@ public class UsefulPrograms1 extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Adds a label for the previous page button.
-        JLabel previousPage = SwingUtil.createLabel("<",
+        @NotNull JLabel previousPage = SwingUtil.createLabel("<",
                 new Rectangle(250, 21, 22, 22),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 25)
         );
@@ -97,7 +98,7 @@ public class UsefulPrograms1 extends JPanel {
         add(previousPage);
 
         // Adds a label for the next page button.
-        JLabel nextPage = SwingUtil.createLabel(">",
+        @NotNull JLabel nextPage = SwingUtil.createLabel(">",
                 new Rectangle(270, 21, 22, 22),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 25)
         );
@@ -105,7 +106,7 @@ public class UsefulPrograms1 extends JPanel {
         add(nextPage);
 
         // Adds a button under the next page label.
-        JButton nextPageButton = SwingUtil.createPanelButton("",
+        @NotNull JButton nextPageButton = SwingUtil.createPanelButton("",
                 "Useful Programs (Page 2)",
                 new Rectangle(267, 20, 22, 23)
         );
@@ -123,7 +124,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a title label for CPU-Z.
         DebugUtil.debug("Creating the CPU-Z title label...");
-        JLabel title = SwingUtil.createLabel("CPU-Z",
+        @NotNull JLabel title = SwingUtil.createLabel("CPU-Z",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -131,7 +132,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for CPU-Z.
         DebugUtil.debug("Creating the CPU-Z description label...");
-        JLabel description = SwingUtil.createLabel("Version: 2.12.0",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 2.13.0",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -143,12 +144,12 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a button to launch CPU-Z.
         DebugUtil.debug("Creating the CPU-Z launch button...");
-        JButton appButton = SwingUtil.createActionButton("Launch CPU-Z",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Launch CPU-Z",
                 "Displays system hardware information.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     // Unzips and launches CPU-Z.
-                    String path = FileUtil.tempDirectory.getPath();
+                    @NotNull String path = FileUtil.tempDirectory.getPath();
                     SwingUtil.launchApplication("CPU-Z.7z", "\\CPU-Z.exe", true, path);
                 }
         );
@@ -164,7 +165,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a title label for the HWMonitor.
         DebugUtil.debug("Creating the HWMonitor title label...");
-        JLabel title = SwingUtil.createLabel("HWMonitor",
+        @NotNull JLabel title = SwingUtil.createLabel("HWMonitor",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -172,7 +173,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for HWMonitor.
         DebugUtil.debug("Creating the HWMonitor description label...");
-        JLabel description = SwingUtil.createLabel("Version: 1.55.0",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 1.55.0",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -184,12 +185,12 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a button to launch HWMonitor.
         DebugUtil.debug("Creating the HWMonitor launch button...");
-        JButton appButton = SwingUtil.createActionButton("Launch HWMonitor",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Launch HWMonitor",
                 "Displays hardware voltages & temperatures.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     // Unzips and launches HWMonitor.
-                    String path = FileUtil.tempDirectory.getPath();
+                    @NotNull String path = FileUtil.tempDirectory.getPath();
                     SwingUtil.launchApplication("HWMonitor.7z", "\\HWMonitor.exe", true, path);
                 }
         );
@@ -205,7 +206,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a title label for Emsisoft Scan.
         DebugUtil.debug("Creating the Emsisoft Scan title label...");
-        JLabel title = SwingUtil.createLabel("Emsisoft Scan",
+        @NotNull JLabel title = SwingUtil.createLabel("Emsisoft Scan",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -213,7 +214,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for Emsisoft Scan.
         DebugUtil.debug("Creating the Emsisoft Scan description label...");
-        JLabel description = SwingUtil.createLabel(ConstantUtil.VERSION_AUTO_UPDATED,
+        @NotNull JLabel description = SwingUtil.createLabel(ConstantUtil.VERSION_AUTO_UPDATED,
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -241,7 +242,7 @@ public class UsefulPrograms1 extends JPanel {
                     new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                     new Color(200, 200, 200), () -> {
                         // Unzips and launches Emsisoft Scan.
-                        String path = FileUtil.tempDirectory.getPath();
+                        @NotNull String path = FileUtil.tempDirectory.getPath();
                         SwingUtil.launchApplication("Emsisoft.7z", "\\Emsisoft.exe", true, path);
                     }
             );
@@ -258,7 +259,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a title label for Sophos Scan.
         DebugUtil.debug("Creating the Sophos Scan title label...");
-        JLabel title = SwingUtil.createLabel("Sophos Scan",
+        @NotNull JLabel title = SwingUtil.createLabel("Sophos Scan",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -266,7 +267,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for Sophos Scan.
         DebugUtil.debug("Creating the Sophos Scan description label...");
-        JLabel description = SwingUtil.createLabel(ConstantUtil.VERSION_AUTO_UPDATED,
+        @NotNull JLabel description = SwingUtil.createLabel(ConstantUtil.VERSION_AUTO_UPDATED,
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -278,7 +279,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a button to launch Sophos Scan.
         DebugUtil.debug("Creating the Sophos Scan launch button...");
-        JButton appButton = SwingUtil.createActionButton("Launch Sophos Scan",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Launch Sophos Scan",
                 "Scans for malware with Sophos.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
@@ -288,10 +289,16 @@ public class UsefulPrograms1 extends JPanel {
                     RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "EULA37", 1);
 
                     // Unzips and launches Sophos Scan.
-                    try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/Sophos.7z")) {
-                        FileUtil.saveFile(Objects.requireNonNull(input), FileUtil.tempDirectory + "\\Sophos.7z", true);
+                    try (@Nullable InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/Sophos.7z")) {
+                        if (input == null) {
+                            JOptionPane.showMessageDialog(null,
+                                    "Failed to load Sophos file.",
+                                    "Error", JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
 
-                        String path = FileUtil.tempDirectory.getPath();
+                        FileUtil.saveFile(input, FileUtil.tempDirectory + "\\Sophos.7z", true);
+                        @NotNull String path = FileUtil.tempDirectory.getPath();
                         FileUtil.unzipFile(FileUtil.tempDirectory + "\\Sophos.7z", path);
 
                         CommandUtil.runCommand("start \"\" \"" + FileUtil.tempDirectory + "\\Sophos.exe\"", true);
@@ -312,7 +319,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a title label for TreeSize.
         DebugUtil.debug("Creating the TreeSize title label...");
-        JLabel title = SwingUtil.createLabel("TreeSize",
+        @NotNull JLabel title = SwingUtil.createLabel("TreeSize",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -320,7 +327,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for TreeSize.
         DebugUtil.debug("Creating the TreeSize description label...");
-        JLabel description = SwingUtil.createLabel("Version: 4.6.3.520",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 4.6.3.520",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -348,7 +355,7 @@ public class UsefulPrograms1 extends JPanel {
                     new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                     new Color(200, 200, 200), () -> {
                         // Unzips and launches TreeSize.
-                        String path = FileUtil.tempDirectory.getPath();
+                        @NotNull String path = FileUtil.tempDirectory.getPath();
                         SwingUtil.launchApplication("TreeSize.7z", "\\TreeSize.exe", true, path);
                     }
             );
@@ -365,7 +372,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a title label for Everything.
         DebugUtil.debug("Creating the Everything title label...");
-        JLabel title = SwingUtil.createLabel("Everything",
+        @NotNull JLabel title = SwingUtil.createLabel("Everything",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -373,7 +380,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for Everything.
         DebugUtil.debug("Creating the Everything description label...");
-        JLabel description = SwingUtil.createLabel("Version: 1.5.0.1383a",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 1.5.0.1383a",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -385,12 +392,12 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a button to launch Everything.
         DebugUtil.debug("Creating the Everything launch button...");
-        JButton appButton = SwingUtil.createActionButton("Launch Everything",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Launch Everything",
                 "Displays all files on your system.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     // Unzips and launches Everything.
-                    String path = FileUtil.tempDirectory.getPath();
+                    @NotNull String path = FileUtil.tempDirectory.getPath();
                     SwingUtil.launchApplication("Everything.7z", "\\Everything.exe", true, path);
                 }
         );
@@ -406,7 +413,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a title label for CrystalDiskInfo.
         DebugUtil.debug("Creating the CrystalDiskInfo title label...");
-        JLabel title = SwingUtil.createLabel("CrystalDiskInfo",
+        @NotNull JLabel title = SwingUtil.createLabel("CrystalDiskInfo",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -414,7 +421,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for CrystalDiskInfo.
         DebugUtil.debug("Creating the CrystalDiskInfo description label...");
-        JLabel description = SwingUtil.createLabel("Version: 9.4.4",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 9.5.0",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -426,12 +433,12 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a button to launch CrystalDiskInfo.
         DebugUtil.debug("Creating the CrystalDiskInfo launch button...");
-        JButton appButton = SwingUtil.createActionButton("Launch CrystalDiskInfo",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Launch CrystalDiskInfo",
                 "Displays system storage information.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     // Unzips and launches CrystalDiskInfo.
-                    String path = FileUtil.tempDirectory.getPath();
+                    @NotNull String path = FileUtil.tempDirectory.getPath();
                     SwingUtil.launchApplication("CrystalDiskInfo.7z", "\\CrystalDiskInfo.exe", true, path);
                 }
         );
@@ -447,7 +454,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a title label for CrystalDiskMark.
         DebugUtil.debug("Creating the CrystalDiskMark title label...");
-        JLabel title = SwingUtil.createLabel("CrystalDiskMark",
+        @NotNull JLabel title = SwingUtil.createLabel("CrystalDiskMark",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -455,7 +462,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for CrystalDiskMark.
         DebugUtil.debug("Creating the CrystalDiskMark description label...");
-        JLabel description = SwingUtil.createLabel("Version: 8.0.5",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 8.0.6",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -467,12 +474,12 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a button to launch CrystalDiskMark.
         DebugUtil.debug("Creating the CrystalDiskMark launch button...");
-        JButton appButton = SwingUtil.createActionButton("Launch CrystalDiskMark",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Launch CrystalDiskMark",
                 "Tests system storage performance.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     // Unzips and launches CrystalDiskMark.
-                    String path = FileUtil.tempDirectory.getPath();
+                    @NotNull String path = FileUtil.tempDirectory.getPath();
                     SwingUtil.launchApplication("CrystalDiskMark.7z", "\\CrystalDiskMark.exe", true, path);
                 }
         );
@@ -488,7 +495,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a title label for Autoruns.
         DebugUtil.debug("Creating the Autoruns title label...");
-        JLabel title = SwingUtil.createLabel("Autoruns",
+        @NotNull JLabel title = SwingUtil.createLabel("Autoruns",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -496,7 +503,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for Autoruns.
         DebugUtil.debug("Creating the Autoruns description label...");
-        JLabel description = SwingUtil.createLabel("Version: 14.11",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 14.11",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -508,7 +515,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a button to launch HWMonitor.
         DebugUtil.debug("Creating the Autoruns launch button...");
-        JButton appButton = SwingUtil.createActionButton("Launch Autoruns",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Launch Autoruns",
                 "Displays startup items.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
@@ -525,7 +532,7 @@ public class UsefulPrograms1 extends JPanel {
                     RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Autoruns\\VirusTotal", "VirusTotalTermsAccepted", 1);
 
                     // Unzips and launches Autoruns.
-                    String path = FileUtil.tempDirectory.getPath();
+                    @NotNull String path = FileUtil.tempDirectory.getPath();
                     SwingUtil.launchApplication("Autoruns.7z", "\\Autoruns.exe", true, path);
                 }
         );
@@ -541,7 +548,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a title label for Process Explorer.
         DebugUtil.debug("Creating the Process Explorer title label...");
-        JLabel title = SwingUtil.createLabel("Process Explorer",
+        @NotNull JLabel title = SwingUtil.createLabel("Process Explorer",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -549,7 +556,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for Process Explorer.
         DebugUtil.debug("Creating the Process Explorer description label...");
-        JLabel description = SwingUtil.createLabel("Version: 17.06",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 17.06",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -561,7 +568,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a button to launch Process Explorer.
         DebugUtil.debug("Creating the Process Explorer launch button...");
-        JButton appButton = SwingUtil.createActionButton("Launch Process Explorer",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Launch Process Explorer",
                 "Displays system processes.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
@@ -572,7 +579,7 @@ public class UsefulPrograms1 extends JPanel {
                     RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Explorer\\VirusTotal", "VirusTotalTermsAccepted", 1);
 
                     // Unzips and launches Process Explorer.
-                    String path = FileUtil.tempDirectory.getPath();
+                    @NotNull String path = FileUtil.tempDirectory.getPath();
                     SwingUtil.launchApplication("ProcessExplorer.7z", "\\ProcessExplorer.exe", true, path);
                 }
         );
@@ -588,7 +595,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a title label for Process Monitor.
         DebugUtil.debug("Creating the Process Monitor title label...");
-        JLabel title = SwingUtil.createLabel("Process Monitor",
+        @NotNull JLabel title = SwingUtil.createLabel("Process Monitor",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -596,7 +603,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for Process Monitor.
         DebugUtil.debug("Creating the Process Monitor description label...");
-        JLabel description = SwingUtil.createLabel("Version: 4.01",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 4.01",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -608,7 +615,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a button to launch Process Monitor.
         DebugUtil.debug("Creating the Process Monitor launch button...");
-        JButton appButton = SwingUtil.createActionButton("Launch Process Monitor",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Launch Process Monitor",
                 "Monitors system processes.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
@@ -616,7 +623,7 @@ public class UsefulPrograms1 extends JPanel {
                     RegistryUtil.setRegistryIntValue(WinReg.HKEY_CURRENT_USER, "SOFTWARE\\Sysinternals\\Process Monitor", "EulaAccepted", 1);
 
                     // Unzips and launches Process Monitor.
-                    String path = FileUtil.tempDirectory.getPath();
+                    @NotNull String path = FileUtil.tempDirectory.getPath();
                     SwingUtil.launchApplication("ProcessMonitor.7z", "\\ProcessMonitor.exe", true, path);
                 }
         );
@@ -632,7 +639,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a title label for BlueScreenView.
         DebugUtil.debug("Creating the BlueScreenView title label...");
-        JLabel title = SwingUtil.createLabel("BlueScreenView",
+        @NotNull JLabel title = SwingUtil.createLabel("BlueScreenView",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -640,7 +647,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for BlueScreenView.
         DebugUtil.debug("Creating the BlueScreenView description label...");
-        JLabel description = SwingUtil.createLabel("Version: 1.55",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 1.55",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -652,12 +659,12 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a button to launch BlueScreenView.
         DebugUtil.debug("Creating the BlueScreenView launch button...");
-        JButton appButton = SwingUtil.createActionButton("Launch BlueScreenView",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Launch BlueScreenView",
                 "Displays system crash information.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     // Unzips and launches BlueScreenView.
-                    String path = FileUtil.tempDirectory.getPath();
+                    @NotNull String path = FileUtil.tempDirectory.getPath();
                     SwingUtil.launchApplication("BlueScreenView.7z", "\\BlueScreenView.exe", true, path);
                 }
         );

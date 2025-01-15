@@ -21,6 +21,7 @@ import lombok.Data;
 import net.foulest.repairkit.RepairKit;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,7 +37,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * Utility class for Swing operations.
@@ -56,8 +56,8 @@ public class SwingUtil {
      * @return The created button.
      * @see #createActionButton(String, String, Rectangle, Color, Runnable)
      */
-    public static @NotNull JButton createActionButton(String buttonText, Rectangle bounds,
-                                                      Color backgroundColor, Runnable action) {
+    public static @NotNull JButton createActionButton(String buttonText, @NotNull Rectangle bounds,
+                                                      Color backgroundColor, @NotNull Runnable action) {
         return createActionButton(buttonText, "", bounds, backgroundColor, action);
     }
 
@@ -72,9 +72,9 @@ public class SwingUtil {
      * @return The created button.
      */
     @SuppressWarnings("NestedMethodCall")
-    public static @NotNull JButton createActionButton(String buttonText, @NotNull String toolTipText, Rectangle bounds,
-                                                      Color backgroundColor, Runnable action) {
-        JButton button = new JButton(buttonText);
+    public static @NotNull JButton createActionButton(String buttonText, @NotNull String toolTipText, @NotNull Rectangle bounds,
+                                                      Color backgroundColor, @NotNull Runnable action) {
+        @NotNull JButton button = new JButton(buttonText);
 
         if (!toolTipText.isEmpty()) {
             button.setToolTipText(toolTipText);
@@ -103,7 +103,7 @@ public class SwingUtil {
      * @see #launchApplication(String, String, CharSequence, boolean, String)
      */
     public static void launchApplication(String appResource, String appExecutable,
-                                         boolean isZipped, String extractionPath) {
+                                         boolean isZipped, @NotNull String extractionPath) {
         launchApplication(appResource, appExecutable, "", isZipped, extractionPath);
     }
 
@@ -118,13 +118,20 @@ public class SwingUtil {
      */
     @SuppressWarnings("SameParameterValue")
     private static void launchApplication(String appResource, String appExecutable,
-                                          CharSequence launchArgs, boolean isZipped, String extractionPath) {
-        Path path = Paths.get(extractionPath, appExecutable);
+                                          @NotNull CharSequence launchArgs, boolean isZipped, @NotNull String extractionPath) {
+        @NotNull Path path = Paths.get(extractionPath, appExecutable);
 
         synchronized (RepairKit.class) {
             if (!Files.exists(path)) {
-                try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/" + appResource)) {
-                    FileUtil.saveFile(Objects.requireNonNull(input), FileUtil.tempDirectory + "\\" + appResource, false);
+                try (@Nullable InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/" + appResource)) {
+                    if (input == null) {
+                        JOptionPane.showMessageDialog(null,
+                                "Failed to load application: " + appResource,
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    FileUtil.saveFile(input, FileUtil.tempDirectory + "\\" + appResource, false);
                 } catch (IOException ex) {
                     DebugUtil.warn("Failed to save application: " + appResource, ex);
                 }
@@ -153,7 +160,7 @@ public class SwingUtil {
         Image scaledImage = imageIcon.getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH);
         imageIcon = new ImageIcon(scaledImage);
 
-        JLabel iconLabel = new JLabel(imageIcon);
+        @NotNull JLabel iconLabel = new JLabel(imageIcon);
         iconLabel.setBounds(baseWidth, baseHeight + 7, 35, 35);
         panel.add(iconLabel);
         iconLabel.repaint();
@@ -167,7 +174,7 @@ public class SwingUtil {
      * @return The created mouse adapter.
      */
     @Contract(value = "_, _ -> new", pure = true)
-    public static @NotNull MouseAdapter createHyperlinkLabel(JLabel label, String url) {
+    public static @NotNull MouseAdapter createHyperlinkLabel(@NotNull JLabel label, @NotNull String url) {
         return new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent event) {
@@ -183,7 +190,7 @@ public class SwingUtil {
                 // Underlines the label text when the mouse enters.
                 Font font = label.getFont();
                 Map<TextAttribute, ?> attributes = font.getAttributes();
-                Map<TextAttribute, Object> attributeMap = new HashMap<>(attributes);
+                @NotNull Map<TextAttribute, Object> attributeMap = new HashMap<>(attributes);
                 attributeMap.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
                 Font derivedFont = font.deriveFont(attributeMap);
                 label.setFont(derivedFont);
@@ -194,7 +201,7 @@ public class SwingUtil {
                 // Removes the underline when the mouse exits.
                 Font font = label.getFont();
                 Map<TextAttribute, ?> attributes = font.getAttributes();
-                Map<TextAttribute, Object> attributeMap = new HashMap<>(attributes);
+                @NotNull Map<TextAttribute, Object> attributeMap = new HashMap<>(attributes);
                 attributeMap.put(TextAttribute.UNDERLINE, -1);
                 Font derivedFont = font.deriveFont(attributeMap);
                 label.setFont(derivedFont);
@@ -211,8 +218,8 @@ public class SwingUtil {
      * @return The created button.
      */
     @SuppressWarnings("NestedMethodCall")
-    public static @NotNull JButton createPanelButton(String buttonName, String panelName, Rectangle bounds) {
-        JButton button = new JButton(buttonName);
+    public static @NotNull JButton createPanelButton(String buttonName, String panelName, @NotNull Rectangle bounds) {
+        @NotNull JButton button = new JButton(buttonName);
         button.setBounds(bounds);
         button.setBackground(new Color(0, 120, 215));
         button.setForeground(Color.WHITE);
@@ -249,8 +256,8 @@ public class SwingUtil {
      * @param font   The font of the label.
      * @return The created label.
      */
-    public static @NotNull JLabel createLabel(String text, Rectangle bounds, Font font) {
-        JLabel label = new JLabel(text);
+    public static @NotNull JLabel createLabel(String text, @NotNull Rectangle bounds, Font font) {
+        @NotNull JLabel label = new JLabel(text);
         label.setBounds(bounds);
         label.setFont(font);
         return label;

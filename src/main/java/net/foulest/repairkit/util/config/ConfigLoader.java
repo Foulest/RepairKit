@@ -20,6 +20,7 @@ package net.foulest.repairkit.util.config;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.Data;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileReader;
@@ -43,8 +44,8 @@ public class ConfigLoader {
      *
      * @param file The file to load
      */
-    public ConfigLoader(File file) {
-        try (FileReader reader = new FileReader(file, StandardCharsets.UTF_8)) {
+    public ConfigLoader(@NotNull File file) {
+        try (@NotNull FileReader reader = new FileReader(file, StandardCharsets.UTF_8)) {
             Type type = new TypeToken<Map<String, Map<String, Object>>>() {
             }.getType();
 

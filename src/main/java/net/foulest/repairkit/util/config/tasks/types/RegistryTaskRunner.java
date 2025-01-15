@@ -47,12 +47,12 @@ public class RegistryTaskRunner extends AbstractTaskRunner {
     @Override
     @SuppressWarnings("unchecked")
     protected List<Runnable> createTasks(@NotNull Map<String, Object> entries) {
-        List<Runnable> tasks = new ArrayList<>();
+        @NotNull List<Runnable> tasks = new ArrayList<>();
         Map<String, Object> values = (Map<String, Object>) entries.get("values");
 
         values.forEach((key, value) -> {
             String keyPath;
-            String keyName = "";
+            @NotNull String keyName = "";
             WinReg.HKEY hkey;
             RegistryAction action;
             Object keyValue = value;

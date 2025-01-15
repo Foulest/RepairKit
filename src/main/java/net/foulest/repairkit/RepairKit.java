@@ -70,7 +70,7 @@ public final class RepairKit extends JFrame {
 
             // Checks if RepairKit is running in the temp directory.
             DebugUtil.debug("Checking if RepairKit is running in the temp directory...");
-            String path = FileUtil.tempDirectory.getPath();
+            @NotNull String path = FileUtil.tempDirectory.getPath();
 
             if (System.getProperty("user.dir").equalsIgnoreCase(path)) {
                 SoundUtil.playSound(ConstantUtil.ERROR_SOUND);
@@ -138,13 +138,13 @@ public final class RepairKit extends JFrame {
 
             // Initialize the panels.
             DebugUtil.debug("Initializing the Automatic Repairs panel...");
-            AutomaticRepairs automaticRepairs = new AutomaticRepairs();
+            @NotNull AutomaticRepairs automaticRepairs = new AutomaticRepairs();
             DebugUtil.debug("Initializing the Useful Programs (Page 1) panel...");
-            UsefulPrograms1 usefulPrograms1 = new UsefulPrograms1();
+            @NotNull UsefulPrograms1 usefulPrograms1 = new UsefulPrograms1();
             DebugUtil.debug("Initializing the Useful Programs (Page 2) panel...");
-            UsefulPrograms2 usefulPrograms2 = new UsefulPrograms2();
+            @NotNull UsefulPrograms2 usefulPrograms2 = new UsefulPrograms2();
             DebugUtil.debug("Initializing the System Shortcuts panel...");
-            SystemShortcuts systemShortcuts = new SystemShortcuts();
+            @NotNull SystemShortcuts systemShortcuts = new SystemShortcuts();
 
             // Creates the main panel.
             DebugUtil.debug("Creating the main panel...");
@@ -156,7 +156,7 @@ public final class RepairKit extends JFrame {
 
             // Creates the banner panel.
             DebugUtil.debug("Creating the banner panel...");
-            JPanel bannerPanel = createBannerPanel();
+            @NotNull JPanel bannerPanel = createBannerPanel();
 
             // Adds the panels to the main panel.
             DebugUtil.debug("Adding the panels to the main panel...");
@@ -182,7 +182,7 @@ public final class RepairKit extends JFrame {
     @NotNull
     private JPanel createBannerPanel() {
         // Creates the banner panel.
-        JPanel bannerPanel = new JPanel(new BorderLayout());
+        @NotNull JPanel bannerPanel = new JPanel(new BorderLayout());
         bannerPanel.setLayout(null);
         bannerPanel.setBackground(new Color(0, 120, 215));
         int width = getWidth();
@@ -190,15 +190,15 @@ public final class RepairKit extends JFrame {
 
         // Creates the RepairKit icon image.
         DebugUtil.debug("Creating the RepairKit icon image...");
-        ImageIcon imageIcon = FileUtil.getImageIcon("icons/RepairKit.png");
-        JLabel iconLabel = new JLabel(imageIcon);
+        @NotNull ImageIcon imageIcon = FileUtil.getImageIcon("icons/RepairKit.png");
+        @NotNull JLabel iconLabel = new JLabel(imageIcon);
         iconLabel.setBounds(10, 10, 40, 40);
         bannerPanel.add(iconLabel);
         iconLabel.repaint();
 
         // Creates the primary banner label.
         DebugUtil.debug("Creating the primary banner label...");
-        JLabel bannerLabelPrimary = SwingUtil.createLabel("RepairKit",
+        @NotNull JLabel bannerLabelPrimary = SwingUtil.createLabel("RepairKit",
                 new Rectangle(60, 6, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 22)
         );
@@ -207,7 +207,7 @@ public final class RepairKit extends JFrame {
 
         // Creates the secondary banner label.
         DebugUtil.debug("Creating the secondary banner label...");
-        JLabel bannerLabelSecondary = SwingUtil.createLabel("by Foulest",
+        @NotNull JLabel bannerLabelSecondary = SwingUtil.createLabel("by Foulest",
                 new Rectangle(60, 31, 70, 20),
                 new Font(ConstantUtil.ARIAL, Font.PLAIN, 14)
         );
@@ -218,7 +218,7 @@ public final class RepairKit extends JFrame {
 
         // Creates the version info label.
         DebugUtil.debug("Creating the version info label...");
-        JLabel versionInfo = SwingUtil.createLabel("Version:",
+        @NotNull JLabel versionInfo = SwingUtil.createLabel("Version:",
                 new Rectangle(675, 5, 60, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 14)
         );
@@ -227,7 +227,7 @@ public final class RepairKit extends JFrame {
 
         // Creates the version number label.
         DebugUtil.debug("Creating the version number label...");
-        JLabel versionNumber = SwingUtil.createLabel(UpdateUtil.getVersionFromProperties(),
+        @NotNull JLabel versionNumber = SwingUtil.createLabel(UpdateUtil.getVersionFromProperties(),
                 new Rectangle(700, 25, 35, 30),
                 new Font(ConstantUtil.ARIAL, Font.PLAIN, 14)
         );
@@ -238,17 +238,17 @@ public final class RepairKit extends JFrame {
 
         // Creates the Automatic Repairs button.
         DebugUtil.debug("Creating the Automatic Repairs button...");
-        JButton automaticRepairs = SwingUtil.createPanelButton("Automatic Repairs", "Automatic Repairs", new Rectangle(175, 10, 150, 40));
+        @NotNull JButton automaticRepairs = SwingUtil.createPanelButton("Automatic Repairs", "Automatic Repairs", new Rectangle(175, 10, 150, 40));
         bannerPanel.add(automaticRepairs);
 
         // Creates the Useful Programs button.
         DebugUtil.debug("Creating the Useful Programs button...");
-        JButton usefulPrograms = SwingUtil.createPanelButton("Useful Programs", "Useful Programs (Page 1)", new Rectangle(325, 10, 150, 40));
+        @NotNull JButton usefulPrograms = SwingUtil.createPanelButton("Useful Programs", "Useful Programs (Page 1)", new Rectangle(325, 10, 150, 40));
         bannerPanel.add(usefulPrograms);
 
         // Creates the System Shortcuts button.
         DebugUtil.debug("Creating the System Shortcuts button...");
-        JButton systemShortcuts = SwingUtil.createPanelButton("System Shortcuts", "System Shortcuts", new Rectangle(475, 10, 150, 40));
+        @NotNull JButton systemShortcuts = SwingUtil.createPanelButton("System Shortcuts", "System Shortcuts", new Rectangle(475, 10, 150, 40));
         bannerPanel.add(systemShortcuts);
         return bannerPanel;
     }

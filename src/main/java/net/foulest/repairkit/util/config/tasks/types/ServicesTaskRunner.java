@@ -46,11 +46,11 @@ public class ServicesTaskRunner extends AbstractTaskRunner {
     @Override
     @SuppressWarnings("unchecked")
     protected List<Runnable> createTasks(@NotNull Map<String, Object> entries) {
-        List<Runnable> tasks = new ArrayList<>();
+        @NotNull List<Runnable> tasks = new ArrayList<>();
         Map<String, Object> values = (Map<String, Object>) entries.get("values");
 
         values.forEach((key, value) -> {
-            Runnable task = () -> {
+            @NotNull Runnable task = () -> {
                 ServiceAction action;
 
                 if (value instanceof String) {

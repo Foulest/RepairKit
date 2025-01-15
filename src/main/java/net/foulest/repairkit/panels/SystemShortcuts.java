@@ -19,6 +19,7 @@ package net.foulest.repairkit.panels;
 
 import net.foulest.repairkit.RepairKit;
 import net.foulest.repairkit.util.*;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,7 +43,7 @@ public class SystemShortcuts extends JPanel {
 
         // Creates the title label.
         DebugUtil.debug("Creating the System Shortcuts title label...");
-        JLabel titleLabel = SwingUtil.createLabel("System Shortcuts",
+        @NotNull JLabel titleLabel = SwingUtil.createLabel("System Shortcuts",
                 new Rectangle(20, 15, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 18)
         );
@@ -52,7 +53,7 @@ public class SystemShortcuts extends JPanel {
         DebugUtil.debug("Adding the components to the System Shortcuts panel...");
 
         // Creates tasks for the executor.
-        List<Runnable> tasks = Arrays.asList(
+        @NotNull List<Runnable> tasks = Arrays.asList(
                 this::setupAppsFeatures,
                 this::setupStartupApps,
                 this::setupWindowsUpdate,
@@ -84,7 +85,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a title label for Apps & Features.
         DebugUtil.debug("Creating the Apps & Features title label...");
-        JLabel title = SwingUtil.createLabel("Apps & Features",
+        @NotNull JLabel title = SwingUtil.createLabel("Apps & Features",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -92,7 +93,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a description label for Apps & Features.
         DebugUtil.debug("Creating the Apps & Features description label...");
-        JLabel description = SwingUtil.createLabel("Manage installed programs.",
+        @NotNull JLabel description = SwingUtil.createLabel("Manage installed programs.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -104,7 +105,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a button to launch Apps & Features.
         DebugUtil.debug("Creating the Apps & Features button...");
-        JButton appButton = SwingUtil.createActionButton("Open Apps & Features",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Open Apps & Features",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     if (RepairKit.isOutdatedOperatingSystem()) {
@@ -126,7 +127,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a title label for Startup Apps.
         DebugUtil.debug("Creating the Startup Apps title label...");
-        JLabel title = SwingUtil.createLabel("Startup Apps",
+        @NotNull JLabel title = SwingUtil.createLabel("Startup Apps",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -134,7 +135,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a description label for Startup Apps.
         DebugUtil.debug("Creating the Startup Apps description label...");
-        JLabel description = SwingUtil.createLabel("Manage startup programs.",
+        @NotNull JLabel description = SwingUtil.createLabel("Manage startup programs.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -146,7 +147,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a button to launch Startup Apps.
         DebugUtil.debug("Creating the Startup Apps button...");
-        JButton appButton = SwingUtil.createActionButton("Open Startup Apps",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Open Startup Apps",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     if (RepairKit.isOutdatedOperatingSystem()) {
@@ -168,7 +169,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a title label for Windows Update.
         DebugUtil.debug("Creating the Windows Update title label...");
-        JLabel title = SwingUtil.createLabel("Windows Update",
+        @NotNull JLabel title = SwingUtil.createLabel("Windows Update",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -176,7 +177,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a description label for Windows Update.
         DebugUtil.debug("Creating the Windows Update description label...");
-        JLabel description = SwingUtil.createLabel("Check for updates.",
+        @NotNull JLabel description = SwingUtil.createLabel("Check for updates.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -188,7 +189,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a button to launch Windows Update.
         DebugUtil.debug("Creating the Windows Update button...");
-        JButton appButton = SwingUtil.createActionButton("Open Windows Update",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Open Windows Update",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     if (RepairKit.isOutdatedOperatingSystem()) {
@@ -215,7 +216,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a title label for Windows Security.
         DebugUtil.debug("Creating the Windows Security title label...");
-        JLabel title = SwingUtil.createLabel("Windows Security",
+        @NotNull JLabel title = SwingUtil.createLabel("Windows Security",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -223,7 +224,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a description label for Windows Security.
         DebugUtil.debug("Creating the Windows Security description label...");
-        JLabel description = SwingUtil.createLabel("Manage security settings.",
+        @NotNull JLabel description = SwingUtil.createLabel("Manage security settings.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -235,7 +236,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a button to launch Windows Security.
         DebugUtil.debug("Creating the Windows Security button...");
-        JButton appButton = SwingUtil.createActionButton("Open Windows Security",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Open Windows Security",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     if (RepairKit.isOutdatedOperatingSystem()) {
@@ -263,7 +264,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a title label for Display Settings.
         DebugUtil.debug("Creating the Display Settings title label...");
-        JLabel title = SwingUtil.createLabel("Display Settings",
+        @NotNull JLabel title = SwingUtil.createLabel("Display Settings",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -271,7 +272,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a description label for Display Settings.
         DebugUtil.debug("Creating the Display Settings description label...");
-        JLabel description = SwingUtil.createLabel("Manage display settings.",
+        @NotNull JLabel description = SwingUtil.createLabel("Manage display settings.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -283,7 +284,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a button to launch Display Settings.
         DebugUtil.debug("Creating the Display Settings button...");
-        JButton appButton = SwingUtil.createActionButton("Open Display Settings",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Open Display Settings",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
                 () -> CommandUtil.runCommand("start desk.cpl", true)
@@ -300,7 +301,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a title label for Storage Settings.
         DebugUtil.debug("Creating the Storage Settings title label...");
-        JLabel title = SwingUtil.createLabel("Storage Settings",
+        @NotNull JLabel title = SwingUtil.createLabel("Storage Settings",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -308,7 +309,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a description label for Storage Settings.
         DebugUtil.debug("Creating the Storage Settings description label...");
-        JLabel description = SwingUtil.createLabel("Manage storage settings.",
+        @NotNull JLabel description = SwingUtil.createLabel("Manage storage settings.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -320,7 +321,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a button to launch Storage Settings.
         DebugUtil.debug("Creating the Storage Settings button...");
-        JButton appButton = SwingUtil.createActionButton("Open Storage Settings",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Open Storage Settings",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     if (RepairKit.isOutdatedOperatingSystem()) {
@@ -342,7 +343,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a title label for Sound Settings.
         DebugUtil.debug("Creating the Sound Settings title label...");
-        JLabel title = SwingUtil.createLabel("Sound Settings",
+        @NotNull JLabel title = SwingUtil.createLabel("Sound Settings",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -350,7 +351,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a description label for Sound Settings.
         DebugUtil.debug("Creating the Sound Settings description label...");
-        JLabel description = SwingUtil.createLabel("Manage sound settings.",
+        @NotNull JLabel description = SwingUtil.createLabel("Manage sound settings.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -362,7 +363,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a button to launch Sound Settings.
         DebugUtil.debug("Creating the Sound Settings button...");
-        JButton appButton = SwingUtil.createActionButton("Open Sound Settings",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Open Sound Settings",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     if (RepairKit.isOutdatedOperatingSystem()) {
@@ -384,7 +385,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a title label for Optional Features.
         DebugUtil.debug("Creating the Optional Features title label...");
-        JLabel title = SwingUtil.createLabel("Optional Features",
+        @NotNull JLabel title = SwingUtil.createLabel("Optional Features",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -392,7 +393,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a description label for Optional Features.
         DebugUtil.debug("Creating the Optional Features description label...");
-        JLabel description = SwingUtil.createLabel("Manage optional features.",
+        @NotNull JLabel description = SwingUtil.createLabel("Manage optional features.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -404,7 +405,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a button to launch Sound Settings.
         DebugUtil.debug("Creating the Optional Features button...");
-        JButton appButton = SwingUtil.createActionButton("Open Optional Features",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Open Optional Features",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     if (RepairKit.isOutdatedOperatingSystem()) {
@@ -426,7 +427,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a title label for Task Manager.
         DebugUtil.debug("Creating the Task Manager title label...");
-        JLabel title = SwingUtil.createLabel("Task Manager",
+        @NotNull JLabel title = SwingUtil.createLabel("Task Manager",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -434,7 +435,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a description label for Task Manager.
         DebugUtil.debug("Creating the Task Manager description label...");
-        JLabel description = SwingUtil.createLabel("Manage running processes.",
+        @NotNull JLabel description = SwingUtil.createLabel("Manage running processes.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -446,7 +447,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a button to launch Task Manager.
         DebugUtil.debug("Creating the Task Manager button...");
-        JButton appButton = SwingUtil.createActionButton("Open Task Manager",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Open Task Manager",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
                 () -> CommandUtil.runCommand("taskmgr", true)
@@ -463,7 +464,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a title label for Device Manager.
         DebugUtil.debug("Creating the Device Manager title label...");
-        JLabel title = SwingUtil.createLabel("Device Manager",
+        @NotNull JLabel title = SwingUtil.createLabel("Device Manager",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -471,7 +472,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a description label for Device Manager.
         DebugUtil.debug("Creating the Device Manager description label...");
-        JLabel description = SwingUtil.createLabel("Manage hardware devices.",
+        @NotNull JLabel description = SwingUtil.createLabel("Manage hardware devices.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -483,7 +484,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a button to launch Device Manager.
         DebugUtil.debug("Creating the Device Manager button...");
-        JButton appButton = SwingUtil.createActionButton("Open Device Manager",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Open Device Manager",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
                 () -> CommandUtil.runCommand("devmgmt.msc", true)
@@ -500,7 +501,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a title label for Disk Cleanup.
         DebugUtil.debug("Creating the Disk Cleanup title label...");
-        JLabel title = SwingUtil.createLabel("Disk Cleanup",
+        @NotNull JLabel title = SwingUtil.createLabel("Disk Cleanup",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -508,7 +509,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a description label for Disk Cleanup.
         DebugUtil.debug("Creating the Disk Cleanup description label...");
-        JLabel description = SwingUtil.createLabel("Clean up disk space.",
+        @NotNull JLabel description = SwingUtil.createLabel("Clean up disk space.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -520,7 +521,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a button to launch Disk Cleanup.
         DebugUtil.debug("Creating the Disk Cleanup button...");
-        JButton appButton = SwingUtil.createActionButton("Open Disk Cleanup",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Open Disk Cleanup",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
                 () -> CommandUtil.runCommand("cleanmgr", true)
@@ -537,7 +538,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a title label for MSConfig.
         DebugUtil.debug("Creating the MSConfig title label...");
-        JLabel title = SwingUtil.createLabel("MSConfig",
+        @NotNull JLabel title = SwingUtil.createLabel("MSConfig",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -545,7 +546,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a description label for MSConfig.
         DebugUtil.debug("Creating the MSConfig description label...");
-        JLabel description = SwingUtil.createLabel("System configuration utility.",
+        @NotNull JLabel description = SwingUtil.createLabel("System configuration utility.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -557,7 +558,7 @@ public class SystemShortcuts extends JPanel {
 
         // Adds a button to launch MSConfig.
         DebugUtil.debug("Creating the MSConfig button...");
-        JButton appButton = SwingUtil.createActionButton("Open MSConfig",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Open MSConfig",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
                 () -> CommandUtil.runCommand("msconfig", true)

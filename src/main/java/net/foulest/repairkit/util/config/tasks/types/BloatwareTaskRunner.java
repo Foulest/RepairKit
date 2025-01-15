@@ -45,17 +45,17 @@ public class BloatwareTaskRunner extends AbstractTaskRunner {
     @Override
     @SuppressWarnings({"unchecked", "NestedMethodCall"})
     protected List<Runnable> createTasks(@NotNull Map<String, Object> entries) {
-        List<Runnable> tasks = new ArrayList<>();
+        @NotNull List<Runnable> tasks = new ArrayList<>();
         List<String> values = (List<String>) entries.get("values");
-        List<String> output = CommandUtil.getPowerShellCommandOutput("(Get-AppxPackage).ForEach({ $_.Name })", false, false);
-        Collection<String> installedPackages = new HashSet<>(output);
+        @NotNull List<String> output = CommandUtil.getPowerShellCommandOutput("(Get-AppxPackage).ForEach({ $_.Name })", false, false);
+        @NotNull Collection<String> installedPackages = new HashSet<>(output);
 
-        List<Pattern> patternsToRemove = values.stream()
+        @NotNull List<Pattern> patternsToRemove = values.stream()
                 .map(pkg -> pkg.replace(".", "\\.").replace("*", ".*"))
                 .map(Pattern::compile)
                 .toList();
 
-        List<String> packagesToRemove = installedPackages.stream()
+        @NotNull List<String> packagesToRemove = installedPackages.stream()
                 .filter(installedPackage -> patternsToRemove.stream().anyMatch(pattern -> pattern.matcher(installedPackage).matches()))
                 .toList();
 
@@ -64,7 +64,7 @@ public class BloatwareTaskRunner extends AbstractTaskRunner {
         }
 
         packagesToRemove.forEach(appPackage -> {
-            Runnable task = () -> {
+            @NotNull Runnable task = () -> {
                 DebugUtil.debug("Removing bloatware app: " + appPackage);
                 CommandUtil.runPowerShellCommand("Get-AppxPackage '" + appPackage + "' | Remove-AppxPackage", false);
             };

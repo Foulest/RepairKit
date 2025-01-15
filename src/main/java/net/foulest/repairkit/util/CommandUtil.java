@@ -46,11 +46,11 @@ public class CommandUtil {
      * @param async   Whether to run the command asynchronously.
      */
     public static void runCommand(String command, boolean async) {
-        Runnable commandRunner = () -> {
+        @NotNull Runnable commandRunner = () -> {
             try {
-                ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
+                @NotNull ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
                 processBuilder.redirectErrorStream(true);
-                Process process = processBuilder.start();
+                @NotNull Process process = processBuilder.start();
 
                 process.onExit().thenRun(() -> {
                     try {
@@ -82,16 +82,16 @@ public class CommandUtil {
      * @param lineConsumer Consumer to consume the output of the command.
      */
     private static void runCommand(String command, boolean async,
-                                   LineConsumer lineConsumer) {
-        Runnable commandRunner = () -> {
+                                   @NotNull LineConsumer lineConsumer) {
+        @NotNull Runnable commandRunner = () -> {
             try {
-                ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
+                @NotNull ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
                 processBuilder.redirectErrorStream(true);
-                Process process = processBuilder.start();
+                @NotNull Process process = processBuilder.start();
 
                 @Cleanup InputStream inputStream = process.getInputStream();
 
-                try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+                try (@NotNull BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
                     String line;
 
                     while (true) {
@@ -145,7 +145,7 @@ public class CommandUtil {
      * @param async   Whether to run the command asynchronously.
      */
     private static void runPowerShellCommand(String command, boolean async,
-                                             LineConsumer lineConsumer) {
+                                             @NotNull LineConsumer lineConsumer) {
         runCommand("PowerShell -ExecutionPolicy Unrestricted -Command \"" + command + "\"", async, lineConsumer);
     }
 
@@ -158,7 +158,7 @@ public class CommandUtil {
      * @return The output of the command.
      */
     public static @NotNull List<String> getCommandOutput(String command, boolean display, boolean async) {
-        List<String> output = new ArrayList<>();
+        @NotNull List<String> output = new ArrayList<>();
 
         runCommand(command, async, line -> {
             output.add(line);
@@ -179,7 +179,7 @@ public class CommandUtil {
      * @return The output of the command.
      */
     public static @NotNull List<String> getPowerShellCommandOutput(String command, boolean display, boolean async) {
-        List<String> output = new ArrayList<>();
+        @NotNull List<String> output = new ArrayList<>();
 
         runPowerShellCommand(command, async, line -> {
             output.add(line);

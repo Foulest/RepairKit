@@ -39,7 +39,7 @@ public abstract class AbstractTaskRunner implements TaskRunner {
     /**
      * The JSON config instance.
      */
-    protected final Map<String, Map<String, Object>> config;
+    protected final @NotNull Map<String, Map<String, Object>> config;
 
     /**
      * Gets the tasks to run from the config.
@@ -49,7 +49,7 @@ public abstract class AbstractTaskRunner implements TaskRunner {
     @NotNull
     @Override
     public List<Runnable> getTasks() {
-        List<Runnable> tasks = new ArrayList<>();
+        @NotNull List<Runnable> tasks = new ArrayList<>();
 
         config.forEach((category, entries) -> {
             if (!isEnabled(entries)) {

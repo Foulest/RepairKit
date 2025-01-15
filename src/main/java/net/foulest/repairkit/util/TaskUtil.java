@@ -39,12 +39,12 @@ public class TaskUtil {
      * @param tasks the list of tasks to execute
      */
     public static void executeTasks(@NotNull Collection<Runnable> tasks) {
-        ExecutorService executor = Executors.newWorkStealingPool();
+        @NotNull ExecutorService executor = Executors.newWorkStealingPool();
         int size = tasks.size();
-        CountDownLatch latch = new CountDownLatch(size);
+        @NotNull CountDownLatch latch = new CountDownLatch(size);
 
         // Submit each task to the executor
-        for (Runnable task : tasks) {
+        for (@NotNull Runnable task : tasks) {
             executor.submit(() -> {
                 try {
                     task.run();

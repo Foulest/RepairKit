@@ -54,7 +54,7 @@ public class DebugUtil {
         // Writes the message to the console.
         System.out.println(message);
 
-        String timeStampedMessage = "[" + LocalTime.now() + "] " + message + "\n";
+        @NotNull String timeStampedMessage = "[" + LocalTime.now() + "] " + message + "\n";
 
         // Writes the message to the log file.
         lock.lock();
@@ -116,16 +116,16 @@ public class DebugUtil {
     private static void printSystemInfo(String[] args) {
         debug("Starting RepairKit with arguments: \"" + String.join(" ", args) + "\"");
 
-        List<String> securitySoftware = CommandUtil.getPowerShellCommandOutput("Get-CimInstance -Namespace"
+        @NotNull List<String> securitySoftware = CommandUtil.getPowerShellCommandOutput("Get-CimInstance -Namespace"
                         + " root/SecurityCenter2 -ClassName AntivirusProduct | Select-Object -ExpandProperty displayName",
                 false, false);
 
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ROOT);
-        String formattedDate = LocalDate.now().format(dateFormatter);
+        @NotNull DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ROOT);
+        @NotNull String formattedDate = LocalDate.now().format(dateFormatter);
 
-        List<String> cpuInfo = CommandUtil.getCommandOutput("wmic cpu get name,NumberOfCores,NumberOfLogicalProcessors", false, false);
-        List<String> memoryInfo = CommandUtil.getCommandOutput("wmic memorychip get capacity", false, false);
-        List<String> gpuInfo = CommandUtil.getCommandOutput("wmic path win32_VideoController get name", false, false);
+        @NotNull List<String> cpuInfo = CommandUtil.getCommandOutput("wmic cpu get name,NumberOfCores,NumberOfLogicalProcessors", false, false);
+        @NotNull List<String> memoryInfo = CommandUtil.getCommandOutput("wmic memorychip get capacity", false, false);
+        @NotNull List<String> gpuInfo = CommandUtil.getCommandOutput("wmic path win32_VideoController get name", false, false);
 
         debug("");
         debug("RepairKit Version: " + UpdateUtil.getVersionFromProperties());
@@ -164,12 +164,12 @@ public class DebugUtil {
      * @return The formatted CPU information.
      */
     private static @NotNull String formatCpuInfo(@NotNull Iterable<String> cpuInfo) {
-        for (String line : cpuInfo) {
+        for (@NotNull String line : cpuInfo) {
             if (line.trim().isEmpty() || line.contains("Name")) {
                 continue;
             }
 
-            String[] parts = line.trim().split("\\s{2,}");
+            String @NotNull [] parts = line.trim().split("\\s{2,}");
 
             if (parts.length == 3) {
                 return "- CPU: " + parts[0] + " (" + parts[1] + "c, " + parts[2] + "t)";
@@ -187,8 +187,8 @@ public class DebugUtil {
     private static @NotNull String formatMemoryInfo(@NotNull Iterable<String> memoryInfo) {
         long totalMemory = 0;
 
-        for (String line : memoryInfo) {
-            String trim = line.trim();
+        for (@NotNull String line : memoryInfo) {
+            @NotNull String trim = line.trim();
 
             if (trim.contains("No Instance(s) Available.")) {
                 return "- Memory: Information not available";
@@ -216,7 +216,7 @@ public class DebugUtil {
      * @return The formatted GPU information.
      */
     private static @NotNull String formatGpuInfo(@NotNull Iterable<String> gpuInfo) {
-        for (String line : gpuInfo) {
+        for (@NotNull String line : gpuInfo) {
             if (line.trim().isEmpty() || line.contains("Name")) {
                 continue;
             }

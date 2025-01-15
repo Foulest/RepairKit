@@ -20,6 +20,7 @@ package net.foulest.repairkit.util;
 import lombok.Cleanup;
 import lombok.Data;
 import net.foulest.repairkit.RepairKit;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
@@ -54,29 +55,30 @@ public class UpdateUtil {
      * Checks for updates and logs the result.
      */
     public static void checkForUpdates() {
-        String latestVersion = getLatestReleaseVersion();
+        @Nullable String latestVersion = getLatestReleaseVersion();
         String currentVersion = getVersionFromProperties();
 
-        if (latestVersion != null) {
-            if (!latestVersion.equals(currentVersion)) {
-                SoundUtil.playSound(ConstantUtil.EXCLAMATION_SOUND);
-
-                // When the user clicks "Yes", the program will open the GitHub page in the default browser.
-                int result = JOptionPane.showConfirmDialog(null,
-                        "A new version of RepairKit is available. Would you like to download it?",
-                        "Update Available", JOptionPane.YES_NO_OPTION);
-
-                if (result == JOptionPane.YES_OPTION) {
-                    CommandUtil.runCommand("start \"\" \"" + DOWNLOAD_URL + "\"", true);
-                }
-            }
-        } else {
+        if (latestVersion == null) {
             // If the user has internet access but the update check failed, we'll notify the user.
             if (CONNECTED_TO_INTERNET) {
                 SoundUtil.playSound(ConstantUtil.ERROR_SOUND);
                 JOptionPane.showMessageDialog(null,
                         "Failed to check for updates. Please try again later.",
                         "Update Check Failed", JOptionPane.ERROR_MESSAGE);
+            }
+            return;
+        }
+
+        if (!latestVersion.equals(currentVersion)) {
+            SoundUtil.playSound(ConstantUtil.EXCLAMATION_SOUND);
+
+            // When the user clicks "Yes", the program will open the GitHub page in the default browser.
+            int result = JOptionPane.showConfirmDialog(null,
+                    "A new version of RepairKit is available. Would you like to download it?",
+                    "Update Available", JOptionPane.YES_NO_OPTION);
+
+            if (result == JOptionPane.YES_OPTION) {
+                CommandUtil.runCommand("start \"\" \"" + DOWNLOAD_URL + "\"", true);
             }
         }
     }
@@ -92,7 +94,7 @@ public class UpdateUtil {
         System.setProperty("java.net.preferIPv4Stack", "true");
 
         try {
-            URL url = new URL("https://www.google.com");
+            @NotNull URL url = new URL("https://www.google.com");
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.connect();
@@ -112,15 +114,15 @@ public class UpdateUtil {
     @SuppressWarnings("OverlyBroadCatchBlock")
     private static @Nullable String getLatestReleaseVersion() {
         try {
-            URL url = new URL(REPO_API_URL);
+            @NotNull URL url = new URL(REPO_API_URL);
             @Cleanup("disconnect") HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
             @Cleanup InputStream inputStream = connection.getInputStream();
-            @Cleanup BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            @Cleanup @NotNull BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
             String inputLine;
-            StringBuilder content = new StringBuilder();
+            @NotNull StringBuilder content = new StringBuilder();
 
             while (true) {
                 inputLine = in.readLine();
@@ -132,7 +134,7 @@ public class UpdateUtil {
                 content.append(inputLine);
             }
 
-            String output = content.toString();
+            @NotNull String output = content.toString();
             return extractVersion(output);
         } catch (IOException ex) {
             DebugUtil.warn("Failed to get latest release version", ex);
@@ -146,10 +148,10 @@ public class UpdateUtil {
      * @param jsonResponse The JSON response.
      * @return The version or null if not found.
      */
-    private static @Nullable String extractVersion(CharSequence jsonResponse) {
-        String versionRegex = "\"tag_name\":\"(.*?)\"";
-        Pattern pattern = Pattern.compile(versionRegex);
-        Matcher matcher = pattern.matcher(jsonResponse);
+    private static @Nullable String extractVersion(@NotNull CharSequence jsonResponse) {
+        @NotNull String versionRegex = "\"tag_name\":\"(.*?)\"";
+        @NotNull Pattern pattern = Pattern.compile(versionRegex);
+        @NotNull Matcher matcher = pattern.matcher(jsonResponse);
 
         if (matcher.find()) {
             return matcher.group(1);
@@ -164,14 +166,19 @@ public class UpdateUtil {
      */
     public static String getVersionFromProperties() {
         DebugUtil.debug("Getting version from properties...");
-        Properties properties = new Properties();
+        @NotNull Properties properties = new Properties();
 
-        try (InputStream inputStream = RepairKit.class.getResourceAsStream("/version.properties")) {
-            if (inputStream != null) {
-                DebugUtil.debug("Loading properties...");
-                properties.load(inputStream);
-                return properties.getProperty("version");
+        try (@Nullable InputStream input = RepairKit.class.getResourceAsStream("/version.properties")) {
+            if (input == null) {
+                JOptionPane.showMessageDialog(null,
+                        "Failed to load version properties.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return "Unknown";
             }
+
+            DebugUtil.debug("Loading properties...");
+            properties.load(input);
+            return properties.getProperty("version");
         } catch (IOException ex) {
             DebugUtil.warn("Failed to get version from properties", ex);
         }

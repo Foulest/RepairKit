@@ -41,10 +41,10 @@ import java.util.concurrent.RecursiveTask;
 public class JunkFileUtil {
 
     // File extensions to scan for
-    private static Set<String> JUNK_FILE_EXTENSIONS = Set.of();
+    private static @NotNull Set<String> JUNK_FILE_EXTENSIONS = Set.of();
 
     // Paths to exclude from scanning
-    private static Set<Path> EXCLUDED_PATHS = Set.of();
+    private static @NotNull Set<Path> EXCLUDED_PATHS = Set.of();
 
     // Time constants
     private static final long LAST_24_HOURS = Instant.now().minus(24, ChronoUnit.HOURS).toEpochMilli();
@@ -63,7 +63,7 @@ public class JunkFileUtil {
     @SuppressWarnings({"unchecked", "NestedMethodCall"})
     public static void removeJunkFiles() {
         // Gets the file extensions to scan for from the config file.
-        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("junkfiles.json"));
+        @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("junkfiles.json"));
         Map<String, Object> junkFilesConfig = configLoader.getConfig().get("junkFiles");
 
         // Returns if the config file is missing.
@@ -86,10 +86,10 @@ public class JunkFileUtil {
         // Gets the paths to exclude from scanning from the config file.
         if (junkFilesConfig.get("excludedPaths") != null
                 && !((Collection<String>) junkFilesConfig.get("excludedPaths")).isEmpty()) {
-            Set<Path> excludedPaths = new HashSet<>();
+            @NotNull Set<Path> excludedPaths = new HashSet<>();
 
-            for (String path : (Iterable<String>) junkFilesConfig.get("excludedPaths")) {
-                String fixedPath = path.replace("%temp%", System.getenv("TEMP"));
+            for (@NotNull String path : (Iterable<String>) junkFilesConfig.get("excludedPaths")) {
+                @NotNull String fixedPath = path.replace("%temp%", System.getenv("TEMP"));
                 excludedPaths.add(Paths.get(fixedPath));
             }
 
@@ -101,7 +101,7 @@ public class JunkFileUtil {
         totalCount = 0;
         totalSize = 0;
 
-        List<Runnable> tasks = new ArrayList<>(List.of());
+        @NotNull List<Runnable> tasks = new ArrayList<>(List.of());
 
         // Empties the Recycle Bin.
         if (junkFilesConfig.get("emptyRecycleBin") != null
@@ -139,15 +139,15 @@ public class JunkFileUtil {
 
         @Serial
         private static final long serialVersionUID = 7784391839228931588L;
-        private final Path directory;
+        private final @NotNull Path directory;
 
         @Override
         protected @Nullable Void compute() {
-            try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
+            try (@NotNull DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
                 // Create a list of tasks to execute concurrently
-                List<DirectoryScanTask> tasks = new ArrayList<>();
+                @NotNull List<DirectoryScanTask> tasks = new ArrayList<>();
 
-                for (Path path : stream) {
+                for (@NotNull Path path : stream) {
                     if (Files.isDirectory(path)) {
                         // Ignores excluded paths.
                         if (EXCLUDED_PATHS.contains(directory)) {
@@ -155,7 +155,7 @@ public class JunkFileUtil {
                         }
 
                         // Create a new task for each subdirectory and fork it
-                        DirectoryScanTask task = new DirectoryScanTask(path);
+                        @NotNull DirectoryScanTask task = new DirectoryScanTask(path);
                         task.fork();
                         tasks.add(task);
                     } else {
@@ -180,7 +180,7 @@ public class JunkFileUtil {
                 }
 
                 // Wait for all tasks to complete
-                for (DirectoryScanTask task : tasks) {
+                for (@NotNull DirectoryScanTask task : tasks) {
                     task.join();
                 }
             } catch (IOException ignored) {
@@ -209,7 +209,7 @@ public class JunkFileUtil {
      * @param attrs The file's attributes.
      * @return {@code true} if the file is a junk file, otherwise {@code false}.
      */
-    private static boolean isJunkFile(@NotNull Path file, BasicFileAttributes attrs) {
+    private static boolean isJunkFile(@NotNull Path file, @NotNull BasicFileAttributes attrs) {
         // Ignores directories.
         if (file.toFile().isDirectory()) {
             return false;
@@ -220,9 +220,9 @@ public class JunkFileUtil {
             return false;
         }
 
-        String fileName = file.getFileName().toString().toLowerCase(Locale.ROOT);
+        @NotNull String fileName = file.getFileName().toString().toLowerCase(Locale.ROOT);
 
-        for (String extension : JUNK_FILE_EXTENSIONS) {
+        for (@NotNull String extension : JUNK_FILE_EXTENSIONS) {
             if (fileName.equalsIgnoreCase(extension) || fileName.endsWith(extension)) {
                 return true;
             }

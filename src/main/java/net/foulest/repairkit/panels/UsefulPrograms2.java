@@ -19,6 +19,7 @@ package net.foulest.repairkit.panels;
 
 import net.foulest.repairkit.RepairKit;
 import net.foulest.repairkit.util.*;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -42,7 +43,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Creates the title label.
         DebugUtil.debug("Creating the Useful Programs (Page 2) title label...");
-        JLabel titleLabel = SwingUtil.createLabel("Useful Programs",
+        @NotNull JLabel titleLabel = SwingUtil.createLabel("Useful Programs",
                 new Rectangle(20, 15, 230, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 18)
         );
@@ -50,7 +51,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Creates the page label.
         DebugUtil.debug("Creating the Useful Programs (Page 2) page label...");
-        JLabel pageLabel = SwingUtil.createLabel("(Page 2/2)",
+        @NotNull JLabel pageLabel = SwingUtil.createLabel("(Page 2/2)",
                 new Rectangle(172, 15, 69, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 14)
         );
@@ -60,7 +61,7 @@ public class UsefulPrograms2 extends JPanel {
         DebugUtil.debug("Adding components to the Useful Programs (Page 2) panel...");
 
         // Creates tasks for the executor.
-        List<Runnable> tasks = Arrays.asList(
+        @NotNull List<Runnable> tasks = Arrays.asList(
                 this::setupNVCleanstall,
                 this::setupDDU,
                 this::setup7Zip,
@@ -83,7 +84,7 @@ public class UsefulPrograms2 extends JPanel {
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         // Adds a label for the previous page button.
-        JLabel previousPage = SwingUtil.createLabel("<",
+        @NotNull JLabel previousPage = SwingUtil.createLabel("<",
                 new Rectangle(250, 21, 22, 22),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 25)
         );
@@ -91,7 +92,7 @@ public class UsefulPrograms2 extends JPanel {
         add(previousPage);
 
         // Adds a button under the previous page label.
-        JButton previousPageButton = SwingUtil.createPanelButton("",
+        @NotNull JButton previousPageButton = SwingUtil.createPanelButton("",
                 "Useful Programs (Page 1)",
                 new Rectangle(246, 20, 22, 23)
         );
@@ -100,7 +101,7 @@ public class UsefulPrograms2 extends JPanel {
         add(previousPageButton);
 
         // Adds a label for the next page button.
-        JLabel nextPage = SwingUtil.createLabel(">",
+        @NotNull JLabel nextPage = SwingUtil.createLabel(">",
                 new Rectangle(270, 21, 22, 22),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 25)
         );
@@ -117,7 +118,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a title label for NVCleanstall.
         DebugUtil.debug("Creating the NVCleanstall title label...");
-        JLabel title = SwingUtil.createLabel("NVCleanstall",
+        @NotNull JLabel title = SwingUtil.createLabel("NVCleanstall",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -125,7 +126,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a description label for NVCleanstall.
         DebugUtil.debug("Creating the NVCleanstall description label...");
-        JLabel description = SwingUtil.createLabel("Version: 1.16.0",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 1.17.0",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -137,7 +138,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a button to launch NVCleanstall.
         DebugUtil.debug("Creating the NVCleanstall launch button...");
-        JButton appButton = SwingUtil.createActionButton("Launch NVCleanstall",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Launch NVCleanstall",
                 "A lightweight NVIDIA graphics card driver updater.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
@@ -148,7 +149,7 @@ public class UsefulPrograms2 extends JPanel {
                     }
 
                     // Unzips and launches NVCleanstall.
-                    String path = FileUtil.tempDirectory.getPath();
+                    @NotNull String path = FileUtil.tempDirectory.getPath();
                     SwingUtil.launchApplication("NVCleanstall.7z", "\\NVCleanstall.exe", true, path);
                 }
         );
@@ -164,7 +165,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a title label for DDU.
         DebugUtil.debug("Creating the DDU title label...");
-        JLabel title = SwingUtil.createLabel("DDU",
+        @NotNull JLabel title = SwingUtil.createLabel("DDU",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -172,7 +173,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a description label for DDU.
         DebugUtil.debug("Creating the DDU description label...");
-        JLabel description = SwingUtil.createLabel("Version: 18.0.8.7",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 18.0.8.9",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -184,12 +185,12 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a button to launch DDU.
         DebugUtil.debug("Creating the DDU launch button...");
-        JButton appButton = SwingUtil.createActionButton("Launch DDU",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Launch DDU",
                 "Display Driver Uninstaller for NVIDIA, AMD, and Intel.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200), () -> {
                     // Unzips and launches DDU.
-                    String path = FileUtil.tempDirectory.getPath();
+                    @NotNull String path = FileUtil.tempDirectory.getPath();
                     SwingUtil.launchApplication("DDU.7z", "\\Display Driver Uninstaller.exe", true, path);
                 }
         );
@@ -205,7 +206,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a title label for 7-Zip.
         DebugUtil.debug("Creating the 7-Zip title label...");
-        JLabel title = SwingUtil.createLabel("7-Zip",
+        @NotNull JLabel title = SwingUtil.createLabel("7-Zip",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -213,7 +214,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a description label for 7-Zip.
         DebugUtil.debug("Creating the 7-Zip description label...");
-        JLabel description = SwingUtil.createLabel("Price: Free",
+        @NotNull JLabel description = SwingUtil.createLabel("Price: Free",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -225,7 +226,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a button to launch 7-Zip.
         DebugUtil.debug("Creating the 7-Zip launch button...");
-        JButton appButton = SwingUtil.createActionButton("Visit 7-Zip",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Visit 7-Zip",
                 "Free and open-source file archiver.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
@@ -243,7 +244,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a title label for Notepad++.
         DebugUtil.debug("Creating the Notepad++ title label...");
-        JLabel title = SwingUtil.createLabel("Notepad++",
+        @NotNull JLabel title = SwingUtil.createLabel("Notepad++",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -251,7 +252,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a description label for Notepad++.
         DebugUtil.debug("Creating the Notepad++ description label...");
-        JLabel description = SwingUtil.createLabel("Price: Free",
+        @NotNull JLabel description = SwingUtil.createLabel("Price: Free",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -263,7 +264,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a button to launch Notepad++.
         DebugUtil.debug("Creating the Notepad++ launch button...");
-        JButton appButton = SwingUtil.createActionButton("Visit Notepad++",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Visit Notepad++",
                 "Free and open-source text editor.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
@@ -281,7 +282,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a title label for Bitwarden.
         DebugUtil.debug("Creating the Bitwarden title label...");
-        JLabel title = SwingUtil.createLabel("Bitwarden",
+        @NotNull JLabel title = SwingUtil.createLabel("Bitwarden",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -289,7 +290,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a description label for Bitwarden.
         DebugUtil.debug("Creating the Bitwarden description label...");
-        JLabel description = SwingUtil.createLabel("Price: Free",
+        @NotNull JLabel description = SwingUtil.createLabel("Price: Free",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -301,7 +302,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a button to launch Bitwarden.
         DebugUtil.debug("Creating the Bitwarden launch button...");
-        JButton appButton = SwingUtil.createActionButton("Visit Bitwarden",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Visit Bitwarden",
                 "Free and open-source password manager.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
@@ -319,7 +320,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a title label for Sophos Home.
         DebugUtil.debug("Creating the Sophos Home title label...");
-        JLabel title = SwingUtil.createLabel("Sophos Home",
+        @NotNull JLabel title = SwingUtil.createLabel("Sophos Home",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -327,7 +328,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a description label for Sophos Home.
         DebugUtil.debug("Creating the Sophos Home description label...");
-        JLabel description = SwingUtil.createLabel("Price: $5/month",
+        @NotNull JLabel description = SwingUtil.createLabel("Price: $5/month",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -339,7 +340,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a button to launch Sophos Home.
         DebugUtil.debug("Creating the Sophos Home launch button...");
-        JButton appButton = SwingUtil.createActionButton("Visit Sophos Home",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Visit Sophos Home",
                 "Award-winning system protection software.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
@@ -357,7 +358,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a title label for uBlock Origin.
         DebugUtil.debug("Creating the uBlock Origin title label...");
-        JLabel title = SwingUtil.createLabel("uBlock Origin",
+        @NotNull JLabel title = SwingUtil.createLabel("uBlock Origin",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -365,7 +366,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a description label for uBlock Origin.
         DebugUtil.debug("Creating the uBlock Origin description label...");
-        JLabel description = SwingUtil.createLabel("Price: Free",
+        @NotNull JLabel description = SwingUtil.createLabel("Price: Free",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -377,7 +378,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a button to launch uBlock Origin.
         DebugUtil.debug("Creating the uBlock Origin launch button...");
-        JButton appButton = SwingUtil.createActionButton("Visit uBlock Origin",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Visit uBlock Origin",
                 "Browser extension for content-filtering.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
@@ -395,7 +396,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a title label for Osprey.
         DebugUtil.debug("Creating the Osprey title label...");
-        JLabel title = SwingUtil.createLabel("Osprey",
+        @NotNull JLabel title = SwingUtil.createLabel("Osprey",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -403,7 +404,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a description label for Osprey.
         DebugUtil.debug("Creating the Osprey description label...");
-        JLabel description = SwingUtil.createLabel("Price: Free",
+        @NotNull JLabel description = SwingUtil.createLabel("Price: Free",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -415,7 +416,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a button to launch Osprey.
         DebugUtil.debug("Creating the Osprey launch button...");
-        JButton appButton = SwingUtil.createActionButton("Visit Osprey",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Visit Osprey",
                 "Browser extension for safe browsing.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
@@ -433,7 +434,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a title label for Twinkle Tray.
         DebugUtil.debug("Creating the Twinkle Tray title label...");
-        JLabel title = SwingUtil.createLabel("Twinkle Tray",
+        @NotNull JLabel title = SwingUtil.createLabel("Twinkle Tray",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -441,7 +442,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a description label for Twinkle Tray.
         DebugUtil.debug("Creating the Twinkle Tray description label...");
-        JLabel description = SwingUtil.createLabel("Price: Free",
+        @NotNull JLabel description = SwingUtil.createLabel("Price: Free",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -453,7 +454,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a button to launch Twinkle Tray.
         DebugUtil.debug("Creating the Twinkle Tray launch button...");
-        JButton appButton = SwingUtil.createActionButton("Visit Twinkle Tray",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Visit Twinkle Tray",
                 "Monitor brightness control for Windows.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
@@ -471,7 +472,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a title label for FanControl.
         DebugUtil.debug("Creating the FanControl title label...");
-        JLabel title = SwingUtil.createLabel("FanControl",
+        @NotNull JLabel title = SwingUtil.createLabel("FanControl",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
@@ -479,7 +480,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a description label for FanControl.
         DebugUtil.debug("Creating the FanControl description label...");
-        JLabel description = SwingUtil.createLabel("Price: Free",
+        @NotNull JLabel description = SwingUtil.createLabel("Price: Free",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -491,7 +492,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a button to launch FanControl.
         DebugUtil.debug("Creating the FanControl launch button...");
-        JButton appButton = SwingUtil.createActionButton("Visit FanControl",
+        @NotNull JButton appButton = SwingUtil.createActionButton("Visit FanControl",
                 "Control your computer's fan speeds.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),

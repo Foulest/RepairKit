@@ -25,7 +25,7 @@ public class WinGetUtil {
      */
     @SuppressWarnings("unchecked")
     public static void updateAllPrograms() {
-        List<String> outdatedPrograms = getOutdatedPrograms();
+        @NotNull List<String> outdatedPrograms = getOutdatedPrograms();
 
         if (outdatedPrograms.isEmpty()) {
             Toast.toast(ToastType.INFO, "RepairKit", "No outdated programs found.");
@@ -33,7 +33,7 @@ public class WinGetUtil {
             return;
         }
 
-        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("programs.json"));
+        @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("programs.json"));
         Map<String, Object> config = configLoader.getConfig().get("excludedPrograms");
 
         List<String> excludedPrograms;
@@ -46,10 +46,10 @@ public class WinGetUtil {
         }
 
         excludedPrograms = new ArrayList<>((Collection<String>) values);
-        List<String> updatedPrograms = new ArrayList<>();
+        @NotNull List<String> updatedPrograms = new ArrayList<>();
         int excludedCount = 0;
 
-        for (String id : outdatedPrograms) {
+        for (@NotNull String id : outdatedPrograms) {
             excludedPrograms.stream().filter(excluded -> excluded.contains(id)).forEach(excluded -> {
                 DebugUtil.debug("Skipping excluded program: " + id);
                 updatedPrograms.add(id);
@@ -117,15 +117,15 @@ public class WinGetUtil {
         installDependencies();
 
         // Gets the list of outdated programs.
-        List<String> output = CommandUtil.getPowerShellCommandOutput("Get-WinGetPackage -Source winget"
+        @NotNull List<String> output = CommandUtil.getPowerShellCommandOutput("Get-WinGetPackage -Source winget"
                 + " | Where-Object IsUpdateAvailable | Select-Object -ExpandProperty Id", false, false);
 
-        List<String> programs = new ArrayList<>();
+        @NotNull List<String> programs = new ArrayList<>();
 
         // Ignores empty lines.
-        for (String line : output) {
+        for (@NotNull String line : output) {
             DebugUtil.debug("Found program: " + line);
-            String trim = line.trim();
+            @NotNull String trim = line.trim();
 
             if (trim.isEmpty()) {
                 DebugUtil.debug("Skipping blank program...");

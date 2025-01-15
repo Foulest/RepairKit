@@ -46,11 +46,11 @@ public class CapabilitiesTaskRunner extends AbstractTaskRunner {
     @Override
     @SuppressWarnings("unchecked")
     protected List<Runnable> createTasks(@NotNull Map<String, Object> entries) {
-        List<Runnable> tasks = new ArrayList<>();
+        @NotNull List<Runnable> tasks = new ArrayList<>();
         List<String> values = (List<String>) entries.get("values");
 
         values.forEach(value -> {
-            Runnable task = () -> {
+            @NotNull Runnable task = () -> {
                 DebugUtil.debug("Removing capability: " + value);
 
                 CommandUtil.runPowerShellCommand("$name = (Get-WindowsCapability -Name '" + value + "' -Online"

@@ -23,6 +23,7 @@ import net.foulest.repairkit.util.*;
 import net.foulest.repairkit.util.config.ConfigLoader;
 import net.foulest.repairkit.util.config.tasks.types.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,7 +32,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * The Automatic Repairs panel.
@@ -43,12 +43,12 @@ public class AutomaticRepairs extends JPanel {
     /**
      * The progress checkboxes that display the status of the automatic repairs.
      */
-    private final JCheckBox[] progressCheckboxes;
+    private final JCheckBox @NotNull [] progressCheckboxes;
 
     /**
      * The run button for the automatic repairs.
      */
-    private final JButton runButton;
+    private final @NotNull JButton runButton;
 
     /**
      * Creates the Automatic Repairs panel.
@@ -61,7 +61,7 @@ public class AutomaticRepairs extends JPanel {
 
         // Creates the title label.
         DebugUtil.debug("Creating the Automatic Repairs title label...");
-        JLabel titleLabel = SwingUtil.createLabel("Automatic Repairs",
+        @NotNull JLabel titleLabel = SwingUtil.createLabel("Automatic Repairs",
                 new Rectangle(20, 15, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 18)
         );
@@ -69,7 +69,7 @@ public class AutomaticRepairs extends JPanel {
 
         // Creates the description label.
         DebugUtil.debug("Creating the Automatic Repairs description label...");
-        JLabel descriptionLabel = SwingUtil.createLabel("<html>RepairKit will automatically apply registry settings,"
+        @NotNull JLabel descriptionLabel = SwingUtil.createLabel("<html>RepairKit will automatically apply registry settings,"
                         + " disable telemetry settings, optimize Windows services, remove bloatware, repair disk"
                         + " issues, and more.<br><br>Automatic repairs are recommended to be run once per month.</html>",
                 new Rectangle(20, 40, 500, 100),
@@ -90,13 +90,13 @@ public class AutomaticRepairs extends JPanel {
 
         // Creates the progress label.
         DebugUtil.debug("Creating the Automatic Repairs progress label...");
-        JLabel progressLabel = SwingUtil.createLabel("Progress:",
+        @NotNull JLabel progressLabel = SwingUtil.createLabel("Progress:",
                 new Rectangle(20, 205, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 14)
         );
         add(progressLabel);
 
-        String[] progressItems = {
+        String @NotNull [] progressItems = {
                 "Delete System Policies",
                 "Run Registry Tweaks",
                 "Run System Tweaks",
@@ -158,7 +158,7 @@ public class AutomaticRepairs extends JPanel {
         runButton.setBackground(Color.LIGHT_GRAY);
 
         // Creates a new thread to run the automatic repairs.
-        Thread repairThread = new Thread(() -> {
+        @NotNull Thread repairThread = new Thread(() -> {
             try {
                 // Sets the state of all checkboxes to variables.
                 boolean deleteSystemPolicies = progressCheckboxes[0].isSelected();
@@ -174,7 +174,7 @@ public class AutomaticRepairs extends JPanel {
                 boolean updateOutdatedPrograms = progressCheckboxes[10].isSelected();
 
                 // Disables all checkboxes.
-                for (JCheckBox checkbox : progressCheckboxes) {
+                for (@NotNull JCheckBox checkbox : progressCheckboxes) {
                     checkbox.setEnabled(false);
                     checkbox.setSelected(false);
                 }
@@ -201,7 +201,7 @@ public class AutomaticRepairs extends JPanel {
 
                     // Resets the checkboxes.
                     DebugUtil.debug("Resetting the Automatic Repairs progress checkboxes...");
-                    for (JCheckBox checkbox : progressCheckboxes) {
+                    for (@NotNull JCheckBox checkbox : progressCheckboxes) {
                         checkbox.setEnabled(true);
                         checkbox.setSelected(false);
                     }
@@ -228,7 +228,7 @@ public class AutomaticRepairs extends JPanel {
                 }
 
                 // Creates tasks for the executor.
-                List<Runnable> tasks = List.of(
+                @NotNull List<Runnable> tasks = List.of(
                         () -> {
                             if (runRegistryTweaks) {
                                 // Runs registry tweaks.
@@ -327,7 +327,7 @@ public class AutomaticRepairs extends JPanel {
 
                 // Resets the checkboxes.
                 DebugUtil.debug("Resetting the Automatic Repairs progress checkboxes...");
-                for (JCheckBox checkbox : progressCheckboxes) {
+                for (@NotNull JCheckBox checkbox : progressCheckboxes) {
                     checkbox.setEnabled(true);
                     checkbox.setSelected(false);
                 }
@@ -354,10 +354,10 @@ public class AutomaticRepairs extends JPanel {
      */
     private static void deleteSystemPolicies() {
         DebugUtil.debug("Deleting system policies...");
-        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("policies.json"));
+        @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("policies.json"));
         Map<String, Map<String, Object>> config = configLoader.getConfig();
-        RegistryTaskRunner taskRunner = new RegistryTaskRunner(config);
-        List<Runnable> tasks = taskRunner.getTasks();
+        @NotNull RegistryTaskRunner taskRunner = new RegistryTaskRunner(config);
+        @NotNull List<Runnable> tasks = taskRunner.getTasks();
 
         // Execute tasks using TaskUtil.
         TaskUtil.executeTasks(tasks);
@@ -369,10 +369,10 @@ public class AutomaticRepairs extends JPanel {
      */
     private static void removeBloatware() {
         DebugUtil.debug("Removing installed bloatware apps...");
-        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("bloatware.json"));
+        @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("bloatware.json"));
         Map<String, Map<String, Object>> config = configLoader.getConfig();
-        BloatwareTaskRunner taskRunner = new BloatwareTaskRunner(config);
-        List<Runnable> tasks = taskRunner.getTasks();
+        @NotNull BloatwareTaskRunner taskRunner = new BloatwareTaskRunner(config);
+        @NotNull List<Runnable> tasks = taskRunner.getTasks();
 
         // Execute tasks using TaskUtil.
         TaskUtil.executeTasks(tasks);
@@ -383,7 +383,7 @@ public class AutomaticRepairs extends JPanel {
      * Repairs various disk issues.
      */
     private static void repairDiskIssues() {
-        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("diskissues.json"));
+        @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("diskissues.json"));
         Map<String, Object> config = configLoader.getConfig().get("diskIssues");
 
         // Checks if the config is null.
@@ -431,10 +431,10 @@ public class AutomaticRepairs extends JPanel {
      */
     private static void runRegistryTweaks() {
         DebugUtil.debug("Running registry tweaks...");
-        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("registry.json"));
+        @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("registry.json"));
         Map<String, Map<String, Object>> config = configLoader.getConfig();
-        RegistryTaskRunner taskRunner = new RegistryTaskRunner(config);
-        List<Runnable> tasks = taskRunner.getTasks();
+        @NotNull RegistryTaskRunner taskRunner = new RegistryTaskRunner(config);
+        @NotNull List<Runnable> tasks = taskRunner.getTasks();
         Map<String, Object> spectreMeltdown = configLoader.getConfig().get("spectreMeltdown");
 
         // Checks if the config is null.
@@ -470,8 +470,8 @@ public class AutomaticRepairs extends JPanel {
      */
     private static void runSystemTweaks() {
         DebugUtil.debug("Running system tweaks...");
-        List<Runnable> tasks = new ArrayList<>();
-        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("tweaks.json"));
+        @NotNull List<Runnable> tasks = new ArrayList<>();
+        @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("tweaks.json"));
         Map<String, Object> config = configLoader.getConfig().get("tweaks");
 
         // Checks if the config is null.
@@ -545,11 +545,11 @@ public class AutomaticRepairs extends JPanel {
         // Disables NetBios for all interfaces.
         if (config.get("netBios") != null
                 && config.get("netBios").equals(Boolean.TRUE)) {
-            String baseKeyPath = "SYSTEM\\CurrentControlSet\\services\\NetBT\\Parameters\\Interfaces";
-            java.util.List<String> subKeys = RegistryUtil.listSubKeys(WinReg.HKEY_LOCAL_MACHINE, baseKeyPath);
+            @NotNull String baseKeyPath = "SYSTEM\\CurrentControlSet\\services\\NetBT\\Parameters\\Interfaces";
+            java.util.@NotNull List<String> subKeys = RegistryUtil.listSubKeys(WinReg.HKEY_LOCAL_MACHINE, baseKeyPath);
 
             for (String subKey : subKeys) {
-                String fullPath = baseKeyPath + "\\" + subKey;
+                @NotNull String fullPath = baseKeyPath + "\\" + subKey;
                 RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, fullPath, "NetbiosOptions", 2);
             }
         }
@@ -574,10 +574,10 @@ public class AutomaticRepairs extends JPanel {
     private static void runFeaturesTweaks() {
         if (!RepairKit.isWindowsUpdateInProgress()) {
             DebugUtil.debug("Running Windows features tweaks...");
-            ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("features.json"));
+            @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("features.json"));
             Map<String, Map<String, Object>> config = configLoader.getConfig();
-            FeaturesTaskRunner taskRunner = new FeaturesTaskRunner(config);
-            List<Runnable> tasks = taskRunner.getTasks();
+            @NotNull FeaturesTaskRunner taskRunner = new FeaturesTaskRunner(config);
+            @NotNull List<Runnable> tasks = taskRunner.getTasks();
 
             // Execute tasks using TaskUtil.
             TaskUtil.executeTasks(tasks);
@@ -590,10 +590,10 @@ public class AutomaticRepairs extends JPanel {
      */
     private static void runCapabilitiesTweaks() {
         DebugUtil.debug("Running Windows capabilities tweaks...");
-        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("capabilities.json"));
+        @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("capabilities.json"));
         Map<String, Map<String, Object>> config = configLoader.getConfig();
-        CapabilitiesTaskRunner taskRunner = new CapabilitiesTaskRunner(config);
-        List<Runnable> tasks = taskRunner.getTasks();
+        @NotNull CapabilitiesTaskRunner taskRunner = new CapabilitiesTaskRunner(config);
+        @NotNull List<Runnable> tasks = taskRunner.getTasks();
 
         // Execute tasks using TaskUtil.
         TaskUtil.executeTasks(tasks);
@@ -605,10 +605,10 @@ public class AutomaticRepairs extends JPanel {
      */
     private static void runServicesTweaks() {
         DebugUtil.debug("Running services tweaks...");
-        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("services.json"));
+        @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("services.json"));
         Map<String, Map<String, Object>> config = configLoader.getConfig();
-        ServicesTaskRunner taskRunner = new ServicesTaskRunner(config);
-        List<Runnable> tasks = taskRunner.getTasks();
+        @NotNull ServicesTaskRunner taskRunner = new ServicesTaskRunner(config);
+        @NotNull List<Runnable> tasks = taskRunner.getTasks();
 
         // Execute tasks using TaskUtil.
         TaskUtil.executeTasks(tasks);
@@ -619,7 +619,7 @@ public class AutomaticRepairs extends JPanel {
      * Scans for malware with supported security software.
      */
     private static void scanForMalware() {
-        ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("scanner.json"));
+        @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("scanner.json"));
         Map<String, Object> defenderConfig = configLoader.getConfig().get("defender");
         Map<String, Object> sophosConfig = configLoader.getConfig().get("sophos");
         boolean defenderRunning = ProcessUtil.isProcessRunning("MsMpEng.exe");
@@ -649,7 +649,7 @@ public class AutomaticRepairs extends JPanel {
      */
     private static void scanWithWindowsDefender(@NotNull Map<String, Object> defenderConfig) {
         DebugUtil.debug("Running Windows Defender tweaks...");
-        List<Runnable> tasks = new ArrayList<>();
+        @NotNull List<Runnable> tasks = new ArrayList<>();
 
         // Enables Windows Firewall for all profiles.
         if (defenderConfig.get("fixFirewall") != null
@@ -879,8 +879,15 @@ public class AutomaticRepairs extends JPanel {
         RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\SophosScanAndClean", "EULA37", 1);
 
         // Unzips and launches Sophos Scan.
-        try (InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/Sophos.7z")) {
-            FileUtil.saveFile(Objects.requireNonNull(input), FileUtil.tempDirectory + "\\Sophos.7z", true);
+        try (@Nullable InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/Sophos.7z")) {
+            if (input == null) {
+                JOptionPane.showMessageDialog(null,
+                        "Failed to load Sophos file.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            FileUtil.saveFile(input, FileUtil.tempDirectory + "\\Sophos.7z", true);
             FileUtil.unzipFile(FileUtil.tempDirectory + "\\Sophos.7z", FileUtil.tempDirectory + "\\Sophos Scan");
             CommandUtil.runCommand("start \"\" \"" + FileUtil.tempDirectory + "\\Sophos Scan\\Sophos.exe\" /scan /quiet", false);
         } catch (IOException ex) {

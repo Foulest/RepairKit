@@ -18,6 +18,7 @@
 package net.foulest.repairkit.util;
 
 import lombok.Data;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Utility class for process operations.
@@ -44,7 +45,7 @@ public class ProcessUtil {
      * @param processName Name of the process to check.
      * @return Whether the process is running.
      */
-    public static boolean isProcessRunning(CharSequence processName) {
+    public static boolean isProcessRunning(@NotNull CharSequence processName) {
         return CommandUtil.getCommandOutput("tasklist /FI \"IMAGENAME eq " + processName + "\"",
                 false, false).toString().contains(processName);
     }
