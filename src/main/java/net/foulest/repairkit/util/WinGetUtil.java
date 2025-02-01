@@ -6,6 +6,7 @@ import lombok.Data;
 import net.foulest.repairkit.util.config.ConfigLoader;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -20,23 +21,15 @@ import java.util.Map;
 @SuppressWarnings("resource")
 public class WinGetUtil {
 
+    public static List<String> excludedPrograms = new ArrayList<>();
+
     /**
      * Updates all outdated programs.
      */
     @SuppressWarnings("unchecked")
     public static void updateAllPrograms() {
-        @NotNull List<String> outdatedPrograms = getOutdatedPrograms();
-
-        if (outdatedPrograms.isEmpty()) {
-            Toast.toast(ToastType.INFO, "RepairKit", "No outdated programs found.");
-            DebugUtil.debug("No outdated programs found.");
-            return;
-        }
-
         @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("programs.json"));
         Map<String, Object> config = configLoader.getConfig().get("excludedPrograms");
-
-        List<String> excludedPrograms;
         Object values = config.get("values");
 
         if (values == null || ((Collection<String>) values).isEmpty()) {
@@ -46,6 +39,14 @@ public class WinGetUtil {
         }
 
         excludedPrograms = new ArrayList<>((Collection<String>) values);
+        @NotNull List<String> outdatedPrograms = getOutdatedPrograms();
+
+        if (outdatedPrograms.isEmpty()) {
+            Toast.toast(ToastType.INFO, "RepairKit", "No outdated programs found.");
+            DebugUtil.debug("No outdated programs found.");
+            return;
+        }
+
         @NotNull List<String> updatedPrograms = new ArrayList<>();
         int excludedCount = 0;
 
@@ -138,6 +139,28 @@ public class WinGetUtil {
 
         DebugUtil.debug("Found " + programs.size() + " outdated programs.");
         DebugUtil.debug("Programs: " + programs);
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("Make sure to close the following programs before proceeding:\n");
+
+        // Adds the programs to the builder.
+        for (String program : programs) {
+            if (excludedPrograms.contains(program)) {
+                DebugUtil.debug("Skipping excluded program: " + program);
+                continue;
+            }
+
+            builder.append("\n- ").append(program);
+        }
+
+        // Check if the builder is empty, aside from the initial message.
+        if (builder.toString().equals("Make sure to close the following programs before proceeding:\n")) {
+            return programs;
+        }
+
+        SoundUtil.playSound(ConstantUtil.WARNING_SOUND);
+        JOptionPane.showMessageDialog(null, builder.toString(),
+                "Update Outdated Programs", JOptionPane.WARNING_MESSAGE);
         return programs;
     }
 
@@ -145,6 +168,7 @@ public class WinGetUtil {
         String output = CommandUtil.getPowerShellCommandOutput("winget upgrade --id " + id
                         + " --disable-interactivity --silent --accept-package-agreements --accept-source-agreements",
                 false, false).toString();
+        DebugUtil.debug("Output: " + output);
 
         return !output.contains("The package cannot be upgraded")
                 && !output.contains("This package's version number cannot be determined")

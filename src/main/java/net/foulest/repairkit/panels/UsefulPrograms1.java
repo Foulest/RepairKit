@@ -380,7 +380,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for Everything.
         DebugUtil.debug("Creating the Everything description label...");
-        @NotNull JLabel description = SwingUtil.createLabel("Version: 1.5.0.1383a",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 1.5.0.1390a",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
