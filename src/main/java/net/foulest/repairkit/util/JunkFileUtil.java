@@ -123,7 +123,7 @@ public class JunkFileUtil {
 
         // Scans each drive for junk files.
         Iterable<Path> rootDirectories = FileSystems.getDefault().getRootDirectories();
-        for (Path root : rootDirectories) {
+        for (@NotNull Path root : rootDirectories) {
             tasks.add(() -> pool.invoke(new DirectoryScanTask(root)));
         }
 

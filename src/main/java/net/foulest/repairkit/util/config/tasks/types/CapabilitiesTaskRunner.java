@@ -38,7 +38,7 @@ public class CapabilitiesTaskRunner extends AbstractTaskRunner {
      *
      * @param config The JSON config instance
      */
-    public CapabilitiesTaskRunner(Map<String, Map<String, Object>> config) {
+    public CapabilitiesTaskRunner(@NotNull Map<String, Map<String, Object>> config) {
         super(config);
     }
 

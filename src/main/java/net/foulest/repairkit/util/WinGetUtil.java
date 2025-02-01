@@ -21,7 +21,7 @@ import java.util.Map;
 @SuppressWarnings("resource")
 public class WinGetUtil {
 
-    public static List<String> excludedPrograms = new ArrayList<>();
+    public static @NotNull List<String> excludedPrograms = new ArrayList<>();
 
     /**
      * Updates all outdated programs.
@@ -140,7 +140,7 @@ public class WinGetUtil {
         DebugUtil.debug("Found " + programs.size() + " outdated programs.");
         DebugUtil.debug("Programs: " + programs);
 
-        StringBuilder builder = new StringBuilder();
+        @NotNull StringBuilder builder = new StringBuilder();
         builder.append("Make sure to close the following programs before proceeding:\n");
 
         // Adds the programs to the builder.

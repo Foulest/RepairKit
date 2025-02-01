@@ -39,7 +39,7 @@ public class RegistryTaskRunner extends AbstractTaskRunner {
      *
      * @param config The JSON config instance
      */
-    public RegistryTaskRunner(Map<String, Map<String, Object>> config) {
+    public RegistryTaskRunner(@NotNull Map<String, Map<String, Object>> config) {
         super(config);
     }
 

@@ -37,7 +37,7 @@ public class BloatwareTaskRunner extends AbstractTaskRunner {
      *
      * @param config The JSON config instance
      */
-    public BloatwareTaskRunner(Map<String, Map<String, Object>> config) {
+    public BloatwareTaskRunner(@NotNull Map<String, Map<String, Object>> config) {
         super(config);
     }
 
