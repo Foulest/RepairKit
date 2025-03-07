@@ -19,6 +19,7 @@ package net.foulest.repairkit.util.config.tasks.types;
 
 import net.foulest.repairkit.util.CommandUtil;
 import net.foulest.repairkit.util.DebugUtil;
+import net.foulest.repairkit.util.ProcessUtil;
 import net.foulest.repairkit.util.config.tasks.AbstractTaskRunner;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,18 +50,18 @@ public class FeaturesTaskRunner extends AbstractTaskRunner {
         @NotNull List<Runnable> tasks = new ArrayList<>();
         List<String> values = (List<String>) entries.get("values");
 
-        values.forEach(value -> {
-            @NotNull Runnable task = () -> {
+        @NotNull Runnable task = () -> values.forEach(value -> {
+            if (!ProcessUtil.isProcessRunning("wuauclt.exe")) {
                 DebugUtil.debug("Removing feature: " + value);
 
                 if (CommandUtil.getPowerShellCommandOutput("Get-WindowsOptionalFeature -FeatureName '" + value
                         + "' -Online | Select-Object -Property State", false, false).toString().contains("Enabled")) {
                     CommandUtil.runCommand("DISM /Online /Disable-Feature /FeatureName:\"" + value + "\" /NoRestart", false);
                 }
-            };
-
-            tasks.add(task);
+            }
         });
+
+        tasks.add(task);
         return tasks;
     }
 }

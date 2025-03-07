@@ -44,8 +44,6 @@ public final class RepairKit extends JFrame {
     private static boolean safeMode;
     @Getter
     private static boolean outdatedOperatingSystem;
-    @Getter
-    private static boolean windowsUpdateInProgress;
 
     /**
      * The main method of the program.
@@ -83,10 +81,9 @@ public final class RepairKit extends JFrame {
             DebugUtil.debug("Checking for incompatibility issues...");
             checkOperatingSystemCompatibility();
 
-            // Checks for Windows Update and Medal.
+            // Checks for Medal.
             if (!safeMode) {
-                DebugUtil.debug("Checking for Windows Update and Medal...");
-                checkForWindowsUpdate();
+                DebugUtil.debug("Checking for Medal...");
                 checkForMedal();
             }
 
@@ -312,23 +309,6 @@ public final class RepairKit extends JFrame {
                             + "\nFeatures of this program may not work correctly or at all.",
                     ConstantUtil.SAFE_MODE_TITLE, JOptionPane.ERROR_MESSAGE);
             safeMode = true;
-        }
-    }
-
-    /**
-     * Checks if Windows Update is running.
-     * Windows Update causes problems with DISM.
-     */
-    private static void checkForWindowsUpdate() {
-        if (ProcessUtil.isProcessRunning("WmiPrvSE.exe")
-                && ProcessUtil.isProcessRunning("TiWorker.exe")
-                && ProcessUtil.isProcessRunning("TrustedInstaller.exe")
-                && ProcessUtil.isProcessRunning("wuauclt.exe")) {
-            windowsUpdateInProgress = true;
-            SoundUtil.playSound(ConstantUtil.WARNING_SOUND);
-            JOptionPane.showMessageDialog(null, "Windows Update is running on your system."
-                            + "\nCertain tweaks will not be applied until the Windows Update is finished."
-                    , "Software Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
 

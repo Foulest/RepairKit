@@ -572,17 +572,15 @@ public class AutomaticRepairs extends JPanel {
      * Runs tweaks to Windows features.
      */
     private static void runFeaturesTweaks() {
-        if (!RepairKit.isWindowsUpdateInProgress()) {
-            DebugUtil.debug("Running Windows features tweaks...");
-            @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("features.json"));
-            Map<String, Map<String, Object>> config = configLoader.getConfig();
-            @NotNull FeaturesTaskRunner taskRunner = new FeaturesTaskRunner(config);
-            @NotNull List<Runnable> tasks = taskRunner.getTasks();
+        DebugUtil.debug("Running Windows features tweaks...");
+        @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("features.json"));
+        Map<String, Map<String, Object>> config = configLoader.getConfig();
+        @NotNull FeaturesTaskRunner taskRunner = new FeaturesTaskRunner(config);
+        @NotNull List<Runnable> tasks = taskRunner.getTasks();
 
-            // Execute tasks using TaskUtil.
-            TaskUtil.executeTasks(tasks);
-            DebugUtil.debug("Completed Windows features tweaks.");
-        }
+        // Execute tasks using TaskUtil.
+        TaskUtil.executeTasks(tasks);
+        DebugUtil.debug("Completed Windows features tweaks.");
     }
 
     /**

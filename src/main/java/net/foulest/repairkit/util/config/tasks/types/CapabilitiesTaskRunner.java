@@ -19,6 +19,7 @@ package net.foulest.repairkit.util.config.tasks.types;
 
 import net.foulest.repairkit.util.CommandUtil;
 import net.foulest.repairkit.util.DebugUtil;
+import net.foulest.repairkit.util.ProcessUtil;
 import net.foulest.repairkit.util.config.tasks.AbstractTaskRunner;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,17 +50,17 @@ public class CapabilitiesTaskRunner extends AbstractTaskRunner {
         @NotNull List<Runnable> tasks = new ArrayList<>();
         List<String> values = (List<String>) entries.get("values");
 
-        values.forEach(value -> {
-            @NotNull Runnable task = () -> {
+        @NotNull Runnable task = () -> values.forEach(value -> {
+            if (!ProcessUtil.isProcessRunning("wuauclt.exe")) {
                 DebugUtil.debug("Removing capability: " + value);
 
                 CommandUtil.runPowerShellCommand("$name = (Get-WindowsCapability -Name '" + value + "' -Online"
                         + " | Where-Object State -eq 'Installed').Name;DISM /Online /Remove-Capability"
                         + " /CapabilityName:\"$name\" /NoRestart", false);
-            };
-
-            tasks.add(task);
+            }
         });
+
+        tasks.add(task);
         return tasks;
     }
 }

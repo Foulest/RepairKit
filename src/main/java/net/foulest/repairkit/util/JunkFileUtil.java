@@ -148,12 +148,12 @@ public class JunkFileUtil {
                 @NotNull List<DirectoryScanTask> tasks = new ArrayList<>();
 
                 for (@NotNull Path path : stream) {
-                    if (Files.isDirectory(path)) {
-                        // Ignores excluded paths.
-                        if (EXCLUDED_PATHS.contains(directory)) {
-                            continue;
-                        }
+                    // Ignores excluded paths.
+                    if (EXCLUDED_PATHS.contains(directory)) {
+                        continue;
+                    }
 
+                    if (Files.isDirectory(path)) {
                         // Create a new task for each subdirectory and fork it
                         @NotNull DirectoryScanTask task = new DirectoryScanTask(path);
                         task.fork();
