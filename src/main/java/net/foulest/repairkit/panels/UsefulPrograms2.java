@@ -64,6 +64,8 @@ public class UsefulPrograms2 extends JPanel {
         @NotNull List<Runnable> tasks = Arrays.asList(
                 this::setupNVCleanstall,
                 this::setupDDU,
+                this::setupRecuva,
+
                 this::setup7Zip,
                 this::setupNotepadPlusPlus,
 
@@ -198,10 +200,51 @@ public class UsefulPrograms2 extends JPanel {
     }
 
     /**
+     * Sets up the Recuva section.
+     */
+    private void setupRecuva() {
+        int baseHeight = 245;
+        int baseWidth = 20;
+
+        // Adds a title label for Recuva.
+        DebugUtil.debug("Creating the Recuva title label...");
+        @NotNull JLabel title = SwingUtil.createLabel("Recuva",
+                new Rectangle(baseWidth + 43, baseHeight, 200, 30),
+                new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
+        );
+        add(title);
+
+        // Adds a description label for Recuva.
+        DebugUtil.debug("Creating the Recuva description label...");
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 1.54.120",
+                new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
+                new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
+        );
+        add(description);
+
+        // Adds an icon for Recuva.
+        DebugUtil.debug("Setting up the Recuva icon...");
+        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/Recuva.png"), this);
+
+        // Adds a button to launch Recuva.
+        DebugUtil.debug("Creating the Recuva launch button...");
+        @NotNull JButton appButton = SwingUtil.createActionButton("Launch Recuva",
+                "Data recovery software for deleted files.",
+                new Rectangle(baseWidth, baseHeight + 50, 200, 30),
+                new Color(200, 200, 200), () -> {
+                    // Unzips and launches Recuva.
+                    @NotNull String path = FileUtil.tempDirectory.getPath();
+                    SwingUtil.launchApplication("Recuva.7z", "\\recuva.exe", true, path);
+                }
+        );
+        add(appButton);
+    }
+
+    /**
      * Sets up the 7-Zip section.
      */
     private void setup7Zip() {
-        int baseHeight = 245;
+        int baseHeight = 340;
         int baseWidth = 20;
 
         // Adds a title label for 7-Zip.
@@ -239,8 +282,8 @@ public class UsefulPrograms2 extends JPanel {
      * Sets up the Notepad++ section.
      */
     private void setupNotepadPlusPlus() {
-        int baseHeight = 340;
-        int baseWidth = 20;
+        int baseHeight = 55;
+        int baseWidth = 250;
 
         // Adds a title label for Notepad++.
         DebugUtil.debug("Creating the Notepad++ title label...");
@@ -277,7 +320,7 @@ public class UsefulPrograms2 extends JPanel {
      * Sets up the Bitwarden section.
      */
     private void setupBitwarden() {
-        int baseHeight = 55;
+        int baseHeight = 150;
         int baseWidth = 250;
 
         // Adds a title label for Bitwarden.
@@ -315,7 +358,7 @@ public class UsefulPrograms2 extends JPanel {
      * Sets up the Sophos Home section.
      */
     private void setupSophosHome() {
-        int baseHeight = 150;
+        int baseHeight = 245;
         int baseWidth = 250;
 
         // Adds a title label for Sophos Home.
@@ -353,7 +396,7 @@ public class UsefulPrograms2 extends JPanel {
      * Sets up the uBlock Origin section.
      */
     private void setupUBlockOrigin() {
-        int baseHeight = 245;
+        int baseHeight = 340;
         int baseWidth = 250;
 
         // Adds a title label for uBlock Origin.
@@ -391,8 +434,8 @@ public class UsefulPrograms2 extends JPanel {
      * Sets up the Osprey: Browser Protection section.
      */
     private void setupOsprey() {
-        int baseHeight = 340;
-        int baseWidth = 250;
+        int baseHeight = 55;
+        int baseWidth = 480;
 
         // Adds a title label for Osprey.
         DebugUtil.debug("Creating the Osprey title label...");
@@ -429,7 +472,7 @@ public class UsefulPrograms2 extends JPanel {
      * Sets up the Twinkle Tray section.
      */
     private void setupTwinkleTray() {
-        int baseHeight = 55;
+        int baseHeight = 150;
         int baseWidth = 480;
 
         // Adds a title label for Twinkle Tray.
@@ -467,7 +510,7 @@ public class UsefulPrograms2 extends JPanel {
      * Sets up the FanControl section.
      */
     private void setupFanControl() {
-        int baseHeight = 150;
+        int baseHeight = 245;
         int baseWidth = 480;
 
         // Adds a title label for FanControl.

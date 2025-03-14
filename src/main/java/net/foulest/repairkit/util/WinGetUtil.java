@@ -7,10 +7,7 @@ import net.foulest.repairkit.util.config.ConfigLoader;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Utility class for WinGet operations.
@@ -41,6 +38,13 @@ public class WinGetUtil {
         excludedPrograms = new ArrayList<>((Collection<String>) values);
         @NotNull List<String> outdatedPrograms = getOutdatedPrograms();
 
+        // Checks if the user clicked no.
+        if (outdatedPrograms.equals(List.of("None"))) {
+            DebugUtil.debug("User chose not to update outdated programs.");
+            return;
+        }
+
+        // Checks if there are no outdated programs.
         if (outdatedPrograms.isEmpty()) {
             Toast.toast(ToastType.INFO, "RepairKit", "No outdated programs found.");
             DebugUtil.debug("No outdated programs found.");
@@ -51,7 +55,8 @@ public class WinGetUtil {
         int excludedCount = 0;
 
         for (@NotNull String id : outdatedPrograms) {
-            excludedPrograms.stream().filter(excluded -> excluded.contains(id)).forEach(excluded -> {
+            excludedPrograms.stream().filter(excluded -> excluded.toLowerCase(Locale.ROOT)
+                    .contains(id.toLowerCase(Locale.ROOT))).forEach(excluded -> {
                 DebugUtil.debug("Skipping excluded program: " + id);
                 updatedPrograms.add(id);
             });
@@ -128,6 +133,13 @@ public class WinGetUtil {
             DebugUtil.debug("Found program: " + line);
             @NotNull String trim = line.trim();
 
+            // Skips excluded programs (checks via lowercase).
+            if (excludedPrograms.stream().anyMatch(excluded -> excluded.toLowerCase(Locale.ROOT)
+                    .contains(trim.toLowerCase(Locale.ROOT)))) {
+                DebugUtil.debug("Skipping excluded program: " + trim);
+                continue;
+            }
+
             if (trim.isEmpty()) {
                 DebugUtil.debug("Skipping blank program...");
                 continue;
@@ -140,27 +152,34 @@ public class WinGetUtil {
         DebugUtil.debug("Found " + programs.size() + " outdated programs.");
         DebugUtil.debug("Programs: " + programs);
 
+        // Create a new message builder.
         @NotNull StringBuilder builder = new StringBuilder();
-        builder.append("Make sure to close the following programs before proceeding:\n");
+        builder.append("The following programs are outdated:\n");
 
         // Adds the programs to the builder.
         for (String program : programs) {
-            if (excludedPrograms.contains(program)) {
-                DebugUtil.debug("Skipping excluded program: " + program);
-                continue;
-            }
-
             builder.append("\n- ").append(program);
         }
 
         // Check if the builder is empty, aside from the initial message.
-        if (builder.toString().equals("Make sure to close the following programs before proceeding:\n")) {
+        if (builder.toString().equals("The following programs are outdated:\n")) {
             return programs;
         }
 
+        // Adds a warning message to the builder.
+        builder.append("\n\nWould you like to update these programs now?");
+        builder.append("\n\nMake sure to close any programs that may be affected.");
+        builder.append("\nYou can exclude programs in the programs.json file.");
+
+        // Show the yes/no dialog.
         SoundUtil.playSound(ConstantUtil.WARNING_SOUND);
-        JOptionPane.showMessageDialog(null, builder.toString(),
-                "Update Outdated Programs", JOptionPane.WARNING_MESSAGE);
+        int result = JOptionPane.showConfirmDialog(null, builder.toString(),
+                "Update Outdated Programs", JOptionPane.YES_NO_OPTION);
+
+        // If the user selects no, return an empty list.
+        if (result != JOptionPane.YES_OPTION) {
+            return List.of("None");
+        }
         return programs;
     }
 

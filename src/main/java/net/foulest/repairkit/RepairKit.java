@@ -40,8 +40,10 @@ public final class RepairKit extends JFrame {
     @Getter
     @Setter
     private static JPanel mainPanel;
+
     @Getter
     private static boolean safeMode;
+
     @Getter
     private static boolean outdatedOperatingSystem;
 

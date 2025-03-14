@@ -421,7 +421,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for CrystalDiskInfo.
         DebugUtil.debug("Creating the CrystalDiskInfo description label...");
-        @NotNull JLabel description = SwingUtil.createLabel("Version: 9.6.2",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 9.6.3",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );

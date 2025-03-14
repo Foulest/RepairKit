@@ -33,7 +33,7 @@ files if you know what you are doing.**
 > **Note:** The malware scan automatically runs a quick scan with Windows Defender. In the event that Windows Defender
 > is disabled or unavailable, a quick scan is performed with Sophos Scan & Clean instead.
 
-![Automatic Repairs](https://i.imgur.com/xLZoNXh.png)
+![Automatic Repairs](https://i.imgur.com/GjLlotR.png)
 
 ### **Useful Programs**
 
@@ -43,13 +43,11 @@ Access essential software tools for system maintenance, including:
 - **[HWMonitor](https://cpuid.com/softwares/hwmonitor.html)**: Monitor hardware temperatures and specs.
 - **[Emsisoft Scan](https://emsisoft.com/en/home/emergency-kit)**: Scan for malware using Emsisoft Emergency Kit.
 - **[Sophos Scan](https://sophos.com/en-us/free-tools/virus-removal-tool)**: Scan for malware using Sophos Scan & Clean.
-
 - **[TreeSize](https://jam-software.com/treesize_free)**: Analyze and manage disk contents.
 - **[Everything](https://voidtools.com)**: An ultra-fast file search engine.
 - **[CrystalDiskInfo](https://sourceforge.net/projects/crystaldiskinfo)**: Monitor your disk drive's health and status.
 - **[CrystalDiskMark](https://crystalmark.info/en/software/crystaldiskmark)**: Benchmark your disk drive's read/write
   speeds.
-
 - **[Autoruns](https://learn.microsoft.com/en-us/sysinternals/downloads/autoruns)**: An alternative to Windows Startup
   Manager.
 - **[Process Explorer](https://learn.microsoft.com/en-us/sysinternals/downloads/process-explorer)**: An alternative to
@@ -57,28 +55,26 @@ Access essential software tools for system maintenance, including:
 - **[Process Monitor](https://learn.microsoft.com/en-us/sysinternals/downloads/procmon)**: Monitor system activity and
   processes.
 - **[BlueScreenView](https://nirsoft.net/utils/blue_screen_view.html)**: View and analyze Windows BSOD crash dumps.
-
 - **[NVCleanstall](https://techpowerup.com/download/techpowerup-nvcleanstall)**: A lightweight NVIDIA graphics card
   driver updater.
 - **[DisplayDriverUninstaller](https://guru3d.com/files-details/display-driver-uninstaller-download.html)**: Remove
   display drivers and packages.
+- **[Recuva](https://ccleaner.com/recuva)**: A data recovery tool for deleted files.
 
-![Useful Programs (Page 1/2)](https://i.imgur.com/xZxomZf.png)
+![Useful Programs (Page 1/2)](https://i.imgur.com/ARbJneg.png)
 
 Additionally, RepairKit provides links to useful software tools, including:
 
 - **[7-Zip](https://7-zip.org)**: Link to the open-source file archiver.
-
 - **[Bitwarden](https://bitwarden.com/download/#downloads-web-browser)**: Link to the open-source password manager.
 - **[Sophos Home](https://home.sophos.com)**: Link to the Sophos Home antivirus software.
 - **[uBlock Origin](https://ublockorigin.com)**: Link to the powerful ad-blocker browser extension.
 - **[Osprey](https://github.com/Foulest/Osprey)**: Link to the browser protection extension.
-
 - **[Notepad++](https://notepad-plus-plus.org)**: Link to the open-source text editor.
 - **[Twinkle Tray](https://twinkletray.com)**: Link to the monitor brightness control software.
 - **[FanControl](https://getfancontrol.com)**: Link to the fan speed control software.
 
-![Useful Programs (Page 2/2)](https://i.imgur.com/MMaiGzM.png)
+![Useful Programs (Page 2/2)](https://i.imgur.com/yTuZ97n.png)
 
 ### **System Shortcuts**
 
@@ -90,7 +86,7 @@ Quickly access important Windows utilities like:
 - Windows Security
 - Task Manager
 
-![System Shortcuts](https://i.imgur.com/OTog97t.png)
+![System Shortcuts](https://i.imgur.com/10uVtES.png)
 
 ## Download and Run
 
