@@ -1,5 +1,3 @@
-# RepairKit
-
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 [![CodeQL](https://github.com/Foulest/RepairKit/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/Foulest/RepairKit/actions/workflows/github-code-scanning/codeql)
 [![Downloads](https://img.shields.io/github/downloads/Foulest/RepairKit/total.svg)](https://github.com/Foulest/RepairKit/releases)
@@ -11,6 +9,9 @@
 • [Uptodown](https://repairkit.en.uptodown.com/windows)
 • [AlternativeTo](https://alternativeto.net/software/repairkit/about)
 • [SoftDownload](https://softdownload.com.br/repare-pc-automaticamente-repairkit.html)
+
+## Introduction
+[![Watch on YouTube](https://i.imgur.com/e6ckE0D.png)](https://youtu.be/EMVeKIvVPcg)
 
 ## Features
 
