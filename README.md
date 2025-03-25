@@ -11,7 +11,7 @@
 • [SoftDownload](https://softdownload.com.br/repare-pc-automaticamente-repairkit.html)
 
 ## Introduction
-[![Watch on YouTube](https://i.imgur.com/e6ckE0D.png)](https://youtu.be/EMVeKIvVPcg)
+[![Watch on YouTube](https://i.imgur.com/OOyZmUe.png)](https://youtu.be/EMVeKIvVPcg)
 
 ## Features
 
