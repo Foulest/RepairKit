@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'net.foulest'
-version = '1.3.0'
+version = '1.3.1'
 description = 'RepairKit'
 
 // Set the language level to Java 17

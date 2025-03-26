@@ -175,7 +175,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a description label for DDU.
         DebugUtil.debug("Creating the DDU description label...");
-        @NotNull JLabel description = SwingUtil.createLabel("Version: 18.0.9.3",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 18.1.0.0",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
