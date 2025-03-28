@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.locks.Lock;
@@ -123,10 +124,6 @@ public class DebugUtil {
         @NotNull DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy", Locale.ROOT);
         @NotNull String formattedDate = LocalDate.now().format(dateFormatter);
 
-        @NotNull List<String> cpuInfo = CommandUtil.getCommandOutput("wmic cpu get name,NumberOfCores,NumberOfLogicalProcessors", false, false);
-        @NotNull List<String> memoryInfo = CommandUtil.getCommandOutput("wmic memorychip get capacity", false, false);
-        @NotNull List<String> gpuInfo = CommandUtil.getCommandOutput("wmic path win32_VideoController get name", false, false);
-
         debug("");
         debug("RepairKit Version: " + UpdateUtil.getVersionFromProperties());
         debug("System Date: " + formattedDate);
@@ -149,9 +146,18 @@ public class DebugUtil {
         debug("");
         debug("Hardware Information");
 
-        debug(formatCpuInfo(cpuInfo));
-        debug(formatMemoryInfo(memoryInfo));
-        debug(formatGpuInfo(gpuInfo));
+        debug("- CPU: " + formatCpuInfo(CommandUtil.getPowerShellCommandOutput("Get-CimInstance -ClassName Win32_Processor"
+                + " | ForEach-Object {$_.Name; $_.NumberOfCores; $_.NumberOfLogicalProcessors}", false, false)));
+
+        String memoryInfo = CommandUtil.getPowerShellCommandOutput("(Get-CimInstance Win32_PhysicalMemory"
+                + " | Measure-Object -Property capacity -Sum).sum /1gb", false, false).toString();
+        memoryInfo = memoryInfo.replace("[", "").replace("]", "");
+        debug("- Memory: " + memoryInfo + " GB");
+
+        String gpuInfo = CommandUtil.getPowerShellCommandOutput("Get-CimInstance -ClassName Win32_VideoController"
+                + " | Select-Object -ExpandProperty Name", false, false).toString();
+        gpuInfo = gpuInfo.replace("[", "").replace("]", "");
+        debug("- GPU: " + gpuInfo);
 
         debug("- Network Connection: " + UpdateUtil.CONNECTED_TO_INTERNET);
         debug("");
@@ -160,68 +166,37 @@ public class DebugUtil {
     /**
      * Formats the CPU information.
      *
-     * @param cpuInfo The CPU information.
+     * @param cpuInfo The CPU information (Name, Cores, Threads on separate lines).
      * @return The formatted CPU information.
      */
     private static @NotNull String formatCpuInfo(@NotNull Iterable<String> cpuInfo) {
-        for (@NotNull String line : cpuInfo) {
-            if (line.trim().isEmpty() || line.contains("Name")) {
-                continue;
-            }
+        String cpuName = null;
+        String numberOfCores = null;
+        String numberOfThreads = null;
 
-            String @NotNull [] parts = line.trim().split("\\s{2,}");
+        Iterator<String> iterator = cpuInfo.iterator();
+        int lineCount = 0;
 
-            if (parts.length == 3) {
-                return "- CPU: " + parts[0] + " (" + parts[1] + "c, " + parts[2] + "t)";
-            }
-        }
-        return "- CPU: Information not available";
-    }
+        while (iterator.hasNext()) {
+            String line = iterator.next().trim();
 
-    /**
-     * Formats the memory information.
-     *
-     * @param memoryInfo The memory information.
-     * @return The formatted memory information.
-     */
-    private static @NotNull String formatMemoryInfo(@NotNull Iterable<String> memoryInfo) {
-        long totalMemory = 0;
+            if (!line.isEmpty()) {
+                lineCount++;
 
-        for (@NotNull String line : memoryInfo) {
-            @NotNull String trim = line.trim();
-
-            if (trim.contains("No Instance(s) Available.")) {
-                return "- Memory: Information not available";
-            }
-
-            if (trim.isEmpty() || line.contains("Capacity")) {
-                continue;
-            }
-
-            try {
-                totalMemory += Long.parseLong(trim);
-            } catch (NumberFormatException ex) {
-                warn("Failed to parse memory info", ex);
+                if (lineCount == 1) {
+                    cpuName = line;
+                } else if (lineCount == 2) {
+                    numberOfCores = line;
+                } else if (lineCount == 3) {
+                    numberOfThreads = line;
+                }
             }
         }
 
-        long totalMemoryGB = totalMemory / (1024 * 1024 * 1024);
-        return "- Memory: " + totalMemoryGB / 2 + " GB available (" + totalMemoryGB + " GB total)";
-    }
-
-    /**
-     * Formats the GPU information.
-     *
-     * @param gpuInfo The GPU information.
-     * @return The formatted GPU information.
-     */
-    private static @NotNull String formatGpuInfo(@NotNull Iterable<String> gpuInfo) {
-        for (@NotNull String line : gpuInfo) {
-            if (line.trim().isEmpty() || line.contains("Name")) {
-                continue;
-            }
-            return "- GPU: " + line.trim();
+        if (cpuName != null && numberOfCores != null && numberOfThreads != null) {
+            return cpuName + " (" + numberOfCores + "c, " + numberOfThreads + "t)";
+        } else {
+            return "Information not available";
         }
-        return "- GPU: Information not available";
     }
 }

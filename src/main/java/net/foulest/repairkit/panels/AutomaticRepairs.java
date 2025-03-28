@@ -345,8 +345,7 @@ public class AutomaticRepairs extends JPanel {
      */
     private static void createRestorePoint() {
         DebugUtil.debug("Creating a restore point...");
-        CommandUtil.runCommand("wmic.exe /Namespace:\\\\root\\default Path SystemRestore Call CreateRestorePoint"
-                + " \"RepairKit Automatic Repairs\", 100, 7", false);
+        CommandUtil.runPowerShellCommand("Checkpoint-Computer -Description \"RepairKit Automatic Repairs\"", false);
     }
 
     /**
@@ -446,7 +445,7 @@ public class AutomaticRepairs extends JPanel {
         if (spectreMeltdown.get("enabled") != null
                 && spectreMeltdown.get("enabled").equals(Boolean.TRUE)) {
             tasks.add(() -> {
-                String cpuName = CommandUtil.getCommandOutput("wmic cpu get name", false, false).toString();
+                String cpuName = CommandUtil.getPowerShellCommandOutput("Get-CimInstance -ClassName Win32_Processor | Select-Object -ExpandProperty Name", false, false).toString();
                 RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverrideMask", 3);
                 RegistryUtil.setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Virtualization", "MinVmVersionForCpuBasedMitigations", "1.0");
 
@@ -911,8 +910,6 @@ public class AutomaticRepairs extends JPanel {
         DebugUtil.debug("Updating outdated programs...");
 
         // Updates outdated programs using Winget.
-//        CommandUtil.getCommandOutput("winget upgrade --all --disable-interactivity --silent"
-//                + " --accept-package-agreements --accept-source-agreements", true, false);
         WinGetUtil.updateAllPrograms();
 
         DebugUtil.debug("Completed updating outdated programs.");

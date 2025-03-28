@@ -18,6 +18,9 @@ import java.util.*;
 @SuppressWarnings("resource")
 public class WinGetUtil {
 
+    /**
+     * The list of excluded programs.
+     */
     public static @NotNull List<String> excludedPrograms = new ArrayList<>();
 
     /**
