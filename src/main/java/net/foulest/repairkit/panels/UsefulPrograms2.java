@@ -128,7 +128,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a description label for NVCleanstall.
         DebugUtil.debug("Creating the NVCleanstall description label...");
-        @NotNull JLabel description = SwingUtil.createLabel("Version: 1.18.0",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 1.19.0",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -175,7 +175,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a description label for DDU.
         DebugUtil.debug("Creating the DDU description label...");
-        @NotNull JLabel description = SwingUtil.createLabel("Version: 18.1.0.0",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 18.1.1.1",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
