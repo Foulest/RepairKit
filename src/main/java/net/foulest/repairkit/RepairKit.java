@@ -275,12 +275,12 @@ public final class RepairKit extends JFrame {
         // Checks if the operating system is outdated (older than Windows 10).
         DebugUtil.debug("Checking if the operating system is outdated...");
         if (!osName.equalsIgnoreCase("Windows 10")
-                && !osName.equalsIgnoreCase("Windows 11")) {
-            if (osName.equalsIgnoreCase("Windows 8.1")
-                    || osName.equalsIgnoreCase("Windows 8")
-                    || osName.equalsIgnoreCase("Windows 7")
-                    || osName.equalsIgnoreCase("Windows Vista")
-                    || osName.equalsIgnoreCase("Windows XP")) {
+                && !osName.equalsIgnoreCase("Windows 11")
+                && !osName.equalsIgnoreCase("Windows Server 2025")
+                && !osName.equalsIgnoreCase("Windows Server 2022")
+                && !osName.equalsIgnoreCase("Windows Server 2019")
+                && !osName.equalsIgnoreCase("Windows Server 2016")) {
+            if (osName.contains("Windows")) {
                 SoundUtil.playSound(ConstantUtil.ERROR_SOUND);
                 JOptionPane.showMessageDialog(null,
                         "Your operating system, " + osName + ", "

@@ -175,7 +175,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a description label for DDU.
         DebugUtil.debug("Creating the DDU description label...");
-        @NotNull JLabel description = SwingUtil.createLabel("Version: 18.1.1.1",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 18.1.2.1",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -463,7 +463,7 @@ public class UsefulPrograms2 extends JPanel {
                 "Browser extension for safe browsing.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
-                () -> CommandUtil.runCommand("start https://chromewebstore.google.com/detail/jmnpibhfpmpfjhhkmpadlbgjnbhpjgnd", true)
+                () -> CommandUtil.runCommand("start https://github.com/Foulest/Osprey", true)
         );
         add(appButton);
     }

@@ -101,7 +101,6 @@ public class AutomaticRepairs extends JPanel {
                 "Run Registry Tweaks",
                 "Run System Tweaks",
                 "Run Features Tweaks",
-                "Run Capabilities Tweaks",
                 "Run Services Tweaks",
                 "Remove Junk Files",
                 "Remove Bloatware",
@@ -165,13 +164,12 @@ public class AutomaticRepairs extends JPanel {
                 boolean runRegistryTweaks = progressCheckboxes[1].isSelected();
                 boolean runSystemTweaks = progressCheckboxes[2].isSelected();
                 boolean runFeaturesTweaks = progressCheckboxes[3].isSelected();
-                boolean runCapabilitiesTweaks = progressCheckboxes[4].isSelected();
-                boolean runServicesTweaks = progressCheckboxes[5].isSelected();
-                boolean removeJunkFiles = progressCheckboxes[6].isSelected();
-                boolean removeBloatware = progressCheckboxes[7].isSelected();
-                boolean repairDiskIssues = progressCheckboxes[8].isSelected();
-                boolean scanForMalware = progressCheckboxes[9].isSelected();
-                boolean updateOutdatedPrograms = progressCheckboxes[10].isSelected();
+                boolean runServicesTweaks = progressCheckboxes[4].isSelected();
+                boolean removeJunkFiles = progressCheckboxes[5].isSelected();
+                boolean removeBloatware = progressCheckboxes[6].isSelected();
+                boolean repairDiskIssues = progressCheckboxes[7].isSelected();
+                boolean scanForMalware = progressCheckboxes[8].isSelected();
+                boolean updateOutdatedPrograms = progressCheckboxes[9].isSelected();
 
                 // Disables all checkboxes.
                 for (@NotNull JCheckBox checkbox : progressCheckboxes) {
@@ -184,7 +182,6 @@ public class AutomaticRepairs extends JPanel {
                         && !runRegistryTweaks
                         && !runSystemTweaks
                         && !runFeaturesTweaks
-                        && !runCapabilitiesTweaks
                         && !runServicesTweaks
                         && !removeJunkFiles
                         && !removeBloatware
@@ -252,24 +249,18 @@ public class AutomaticRepairs extends JPanel {
                                 SwingUtilities.invokeLater(() -> progressCheckboxes[3].setSelected(true));
                             }
 
-                            if (runCapabilitiesTweaks) {
-                                // Runs capabilities tweaks.
-                                runCapabilitiesTweaks();
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[4].setSelected(true));
-                            }
-
                             if (repairDiskIssues) {
                                 // Repairs disk issues.
                                 // This has to be done after the DISM commands in the above tweaks.
                                 repairDiskIssues();
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[8].setSelected(true));
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[7].setSelected(true));
                             }
                         },
 
                         () -> {
                             if (runServicesTweaks) {
                                 runServicesTweaks();
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[5].setSelected(true));
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[4].setSelected(true));
                             }
                         },
 
@@ -277,7 +268,7 @@ public class AutomaticRepairs extends JPanel {
                             if (removeJunkFiles) {
                                 // Removes junk files.
                                 JunkFileUtil.removeJunkFiles();
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[6].setSelected(true));
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[5].setSelected(true));
                             }
                         },
 
@@ -287,7 +278,7 @@ public class AutomaticRepairs extends JPanel {
                                 if (!RepairKit.isSafeMode()) {
                                     removeBloatware();
                                 }
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[7].setSelected(true));
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[6].setSelected(true));
                             }
                         },
 
@@ -295,7 +286,7 @@ public class AutomaticRepairs extends JPanel {
                             if (scanForMalware) {
                                 // Scans the system for malware.
                                 scanForMalware();
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[9].setSelected(true));
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[8].setSelected(true));
                             }
                         },
 
@@ -303,7 +294,7 @@ public class AutomaticRepairs extends JPanel {
                             if (updateOutdatedPrograms) {
                                 // Updates outdated programs.
                                 updateOutdatedPrograms();
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[10].setSelected(true));
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[9].setSelected(true));
                             }
                         }
                 );
@@ -580,21 +571,6 @@ public class AutomaticRepairs extends JPanel {
         // Execute tasks using TaskUtil.
         TaskUtil.executeTasks(tasks);
         DebugUtil.debug("Completed Windows features tweaks.");
-    }
-
-    /**
-     * Runs tweaks to Windows capabilities.
-     */
-    private static void runCapabilitiesTweaks() {
-        DebugUtil.debug("Running Windows capabilities tweaks...");
-        @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("capabilities.json"));
-        Map<String, Map<String, Object>> config = configLoader.getConfig();
-        @NotNull CapabilitiesTaskRunner taskRunner = new CapabilitiesTaskRunner(config);
-        @NotNull List<Runnable> tasks = taskRunner.getTasks();
-
-        // Execute tasks using TaskUtil.
-        TaskUtil.executeTasks(tasks);
-        DebugUtil.debug("Completed Windows capabilities tweaks.");
     }
 
     /**
