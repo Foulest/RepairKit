@@ -31,7 +31,7 @@ repositories {
 dependencies {
     // JNA platform - for registry access
     // https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform
-    implementation group: 'net.java.dev.jna', name: 'jna-platform', version: '5.18.0'
+    implementation group: 'net.java.dev.jna', name: 'jna-platform', version: '5.18.1'
 
     // Google Gson - for JSON serialization and deserialization
     // https://mvnrepository.com/artifact/com.google.code.gson/gson
