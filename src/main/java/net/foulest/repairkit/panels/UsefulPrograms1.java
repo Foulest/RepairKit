@@ -132,7 +132,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for CPU-Z.
         DebugUtil.debug("Creating the CPU-Z description label...");
-        @NotNull JLabel description = SwingUtil.createLabel("Version: 2.16.0",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 2.17.0",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -173,7 +173,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for HWMonitor.
         DebugUtil.debug("Creating the HWMonitor description label...");
-        @NotNull JLabel description = SwingUtil.createLabel("Version: 1.58.0",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 1.60.0",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -380,7 +380,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for Everything.
         DebugUtil.debug("Creating the Everything description label...");
-        @NotNull JLabel description = SwingUtil.createLabel("Version: 1.5.0.1391a",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 1.5.0.1396a",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );

@@ -1,17 +1,21 @@
 {
   "excludedPrograms": {
     "values": [
-      "Discord.Discord",
-      "Roblox.Roblox",
-      "PokeMMO.PokeMMO",
-      "Ubisoft.Connect",
+      "Anaconda.Anaconda3",
+      "AnyDesk.AnyDesk",
       "Corsair.iCUE.5",
-      "JetBrains.IntelliJIdea.Ultimate",
-      "Logitech.GHUB",
+      "Discord.Discord",
       "ElectronicArts.EADesktop",
-      "Python.Launcher",
       "GOG.Galaxy",
-      "Anaconda.Anaconda3"
+      "JetBrains.IntelliJIdea.Ultimate",
+      "JetBrains.WebStorm",
+      "Logitech.GHUB",
+      "OBSProject.OBSStudio",
+      "PokeMMO.PokeMMO",
+      "Python.Launcher",
+      "Roblox.Roblox",
+      "Streamlabs.Streamlabs",
+      "Ubisoft.Connect"
     ]
   }
 }
