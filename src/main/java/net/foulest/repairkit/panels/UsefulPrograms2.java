@@ -1,6 +1,6 @@
 /*
  * RepairKit - an all-in-one Java-based Windows repair and maintenance toolkit.
- * Copyright (C) 2024 Foulest (https://github.com/Foulest)
+ * Copyright (C) 2026 Foulest (https://github.com/Foulest)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
