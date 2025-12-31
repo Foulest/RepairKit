@@ -303,9 +303,8 @@ public final class RepairKit extends JFrame {
 
         // Checks if the system is booting in Safe Mode.
         DebugUtil.debug("Checking if the system is booting in Safe Mode...");
-        if (!CommandUtil.getPowerShellCommandOutput("Get-CimInstance -ClassName Win32_ComputerSystem"
-                        + " | Select-Object -ExpandProperty BootupState",
-                false, false).toString().contains("Normal")) {
+        if (!CommandUtil.getCommandOutput("echo %SAFEBOOT_OPTION%",
+                false, false).toString().contains("%SAFEBOOT_OPTION%")) {
             SoundUtil.playSound(ConstantUtil.ERROR_SOUND);
             JOptionPane.showMessageDialog(null,
                     "Your system is booting in Safe Mode."

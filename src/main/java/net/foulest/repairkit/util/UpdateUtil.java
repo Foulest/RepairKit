@@ -17,7 +17,6 @@
  */
 package net.foulest.repairkit.util;
 
-import lombok.Cleanup;
 import lombok.Data;
 import net.foulest.repairkit.RepairKit;
 import org.jetbrains.annotations.NotNull;
@@ -32,6 +31,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,65 +45,38 @@ public class UpdateUtil {
 
     private static final String REPO_API_URL = "https://api.github.com/repos/Foulest/RepairKit/releases/latest";
     private static final String DOWNLOAD_URL = "https://github.com/Foulest/RepairKit/releases/latest";
-    static final boolean CONNECTED_TO_INTERNET;
-
-    static {
-        CONNECTED_TO_INTERNET = connectedToInternet();
-    }
 
     /**
      * Checks for updates and logs the result.
      */
     public static void checkForUpdates() {
-        @Nullable String latestVersion = getLatestReleaseVersion();
         String currentVersion = getVersionFromProperties();
 
-        if (latestVersion == null) {
-            // If the user has internet access but the update check failed, we'll notify the user.
-            if (CONNECTED_TO_INTERNET) {
-                SoundUtil.playSound(ConstantUtil.ERROR_SOUND);
-                JOptionPane.showMessageDialog(null,
-                        "Failed to check for updates. Please try again later.",
-                        "Update Check Failed", JOptionPane.ERROR_MESSAGE);
-            }
-            return;
-        }
+        CompletableFuture
+                .supplyAsync(UpdateUtil::getLatestReleaseVersion)
+                .thenAccept(latestVersion -> {
+                    if (latestVersion == null || latestVersion.equals(currentVersion)) {
+                        return;
+                    }
 
-        if (!latestVersion.equals(currentVersion)) {
-            SoundUtil.playSound(ConstantUtil.EXCLAMATION_SOUND);
+                    SwingUtilities.invokeLater(() -> {
+                        SoundUtil.playSound(ConstantUtil.EXCLAMATION_SOUND);
 
-            // When the user clicks "Yes", the program will open the GitHub page in the default browser.
-            int result = JOptionPane.showConfirmDialog(null,
-                    "A new version of RepairKit is available. Would you like to download it?",
-                    "Update Available", JOptionPane.YES_NO_OPTION);
+                        int result = JOptionPane.showConfirmDialog(
+                                null,
+                                "A new version of RepairKit is available. Would you like to download it?",
+                                "Update Available",
+                                JOptionPane.YES_NO_OPTION
+                        );
 
-            if (result == JOptionPane.YES_OPTION) {
-                CommandUtil.runCommand("start \"\" \"" + DOWNLOAD_URL + "\"", true);
-            }
-        }
-    }
-
-    /**
-     * Checks if the system has internet access.
-     *
-     * @return True if the system has internet access, otherwise false.
-     */
-    @SuppressWarnings("OverlyBroadCatchBlock")
-    private static boolean connectedToInternet() {
-        // Prefer IPv4 over IPv6
-        System.setProperty("java.net.preferIPv4Stack", "true");
-
-        try {
-            @NotNull URL url = new URL("https://www.google.com");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.connect();
-            connection.disconnect();
-            return true;
-        } catch (IOException ex) {
-            DebugUtil.warn("Failed to get internet connection", ex);
-            return false;
-        }
+                        if (result == JOptionPane.YES_OPTION) {
+                            CommandUtil.runCommand("start \"\" \"" + DOWNLOAD_URL + "\"", true);
+                        }
+                    });
+                }).exceptionally(ex -> {
+                    DebugUtil.warn("Async update check failed", (Exception) ex);
+                    return null;
+                });
     }
 
     /**
@@ -114,29 +87,27 @@ public class UpdateUtil {
     @SuppressWarnings("OverlyBroadCatchBlock")
     private static @Nullable String getLatestReleaseVersion() {
         try {
-            @NotNull URL url = new URL(REPO_API_URL);
-            @Cleanup("disconnect") HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            URL url = new URL(REPO_API_URL);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
 
-            @Cleanup InputStream inputStream = connection.getInputStream();
-            @Cleanup @NotNull BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+            try (InputStream inputStream = connection.getInputStream();
+                 BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+                StringBuilder content = new StringBuilder();
+                String line;
 
-            String inputLine;
-            @NotNull StringBuilder content = new StringBuilder();
-
-            while (true) {
-                inputLine = in.readLine();
-
-                if (inputLine == null) {
-                    break;
+                while ((line = in.readLine()) != null) {
+                    content.append(line);
                 }
 
-                content.append(inputLine);
+                String response = content.toString();
+                return extractVersion(response);
+            } finally {
+                connection.disconnect();
             }
-
-            @NotNull String output = content.toString();
-            return extractVersion(output);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             DebugUtil.warn("Failed to get latest release version", ex);
             return null;
         }

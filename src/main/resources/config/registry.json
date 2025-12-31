@@ -30,6 +30,7 @@
       "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Diagnostics\\DiagTrack\\ShowedToastAtLevel": 1,
       "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\PenWorkspace\\PenWorkspaceAppSuggestionsEnabled": 0,
       "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Privacy\\TailoredExperiencesWithDiagnosticDataEnabled": 0,
+      "HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\SystemSettings\\AccountNotifications\\EnableAccountNotifications": 0,
       "HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\UserProfileEngagement\\ScoobeSystemSettingEnabled": 0,
       "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Bluetooth\\AllowAdvertising": 0,
       "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\System\\AllowExperimentation": 0,
