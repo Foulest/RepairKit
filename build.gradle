@@ -78,7 +78,6 @@ launch4j {
 
 tasks {
     shadowJar {
-        mainClassName = 'net.foulest.repairkit.RepairKit'
         archiveFileName.set("${project.name}-${project.version}.jar")
     }
 
