@@ -65,15 +65,15 @@ public class UsefulPrograms2 extends JPanel {
                 this::setupNVCleanstall,
                 this::setupDDU,
                 this::setupRecuva,
+                this::setupDiskGenius,
 
                 this::setup7Zip,
                 this::setupNotepadPlusPlus,
-
                 this::setupBitwarden,
                 this::setupSophosHome,
+
                 this::setupUBlockOrigin,
                 this::setupOsprey,
-
                 this::setupTwinkleTray,
                 this::setupFanControl
         );
@@ -175,7 +175,7 @@ public class UsefulPrograms2 extends JPanel {
 
         // Adds a description label for DDU.
         DebugUtil.debug("Creating the DDU description label...");
-        @NotNull JLabel description = SwingUtil.createLabel("Version: 18.1.3.9",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 18.1.4.1",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
@@ -241,11 +241,52 @@ public class UsefulPrograms2 extends JPanel {
     }
 
     /**
+     * Sets up the DiskGenius section.
+     */
+    private void setupDiskGenius() {
+        int baseHeight = 340;
+        int baseWidth = 20;
+
+        // Adds a title label for DiskGenius.
+        DebugUtil.debug("Creating the DiskGenius title label...");
+        @NotNull JLabel title = SwingUtil.createLabel("DiskGenius",
+                new Rectangle(baseWidth + 43, baseHeight, 200, 30),
+                new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
+        );
+        add(title);
+
+        // Adds a description label for DiskGenius.
+        DebugUtil.debug("Creating the DiskGenius description label...");
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 6.1.1.1742",
+                new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
+                new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
+        );
+        add(description);
+
+        // Adds an icon for DiskGenius.
+        DebugUtil.debug("Setting up the DiskGenius icon...");
+        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/DiskGenius.png"), this);
+
+        // Adds a button to launch DiskGenius.
+        DebugUtil.debug("Creating the DiskGenius launch button...");
+        @NotNull JButton appButton = SwingUtil.createActionButton("Launch DiskGenius",
+                "Disk partition management and migration tool.",
+                new Rectangle(baseWidth, baseHeight + 50, 200, 30),
+                new Color(200, 200, 200), () -> {
+                    // Unzips and launches Recuva.
+                    @NotNull String path = FileUtil.tempDirectory.getPath();
+                    SwingUtil.launchApplication("DiskGenius.7z", "\\DiskGenius.exe", true, path);
+                }
+        );
+        add(appButton);
+    }
+
+    /**
      * Sets up the 7-Zip section.
      */
     private void setup7Zip() {
-        int baseHeight = 340;
-        int baseWidth = 20;
+        int baseHeight = 55;
+        int baseWidth = 250;
 
         // Adds a title label for 7-Zip.
         DebugUtil.debug("Creating the 7-Zip title label...");
@@ -282,7 +323,7 @@ public class UsefulPrograms2 extends JPanel {
      * Sets up the Notepad++ section.
      */
     private void setupNotepadPlusPlus() {
-        int baseHeight = 55;
+        int baseHeight = 150;
         int baseWidth = 250;
 
         // Adds a title label for Notepad++.
@@ -320,7 +361,7 @@ public class UsefulPrograms2 extends JPanel {
      * Sets up the Bitwarden section.
      */
     private void setupBitwarden() {
-        int baseHeight = 150;
+        int baseHeight = 245;
         int baseWidth = 250;
 
         // Adds a title label for Bitwarden.
@@ -358,7 +399,7 @@ public class UsefulPrograms2 extends JPanel {
      * Sets up the Sophos Home section.
      */
     private void setupSophosHome() {
-        int baseHeight = 245;
+        int baseHeight = 340;
         int baseWidth = 250;
 
         // Adds a title label for Sophos Home.
@@ -396,8 +437,8 @@ public class UsefulPrograms2 extends JPanel {
      * Sets up the uBlock Origin section.
      */
     private void setupUBlockOrigin() {
-        int baseHeight = 340;
-        int baseWidth = 250;
+        int baseHeight = 55;
+        int baseWidth = 480;
 
         // Adds a title label for uBlock Origin.
         DebugUtil.debug("Creating the uBlock Origin title label...");
@@ -434,7 +475,7 @@ public class UsefulPrograms2 extends JPanel {
      * Sets up the Osprey: Browser Protection section.
      */
     private void setupOsprey() {
-        int baseHeight = 55;
+        int baseHeight = 150;
         int baseWidth = 480;
 
         // Adds a title label for Osprey.
@@ -463,7 +504,7 @@ public class UsefulPrograms2 extends JPanel {
                 "Browser extension for safe browsing.",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
                 new Color(200, 200, 200),
-                () -> CommandUtil.runCommand("start https://github.com/Foulest/Osprey", true)
+                () -> CommandUtil.runCommand("start https://osprey.ac", true)
         );
         add(appButton);
     }
@@ -472,7 +513,7 @@ public class UsefulPrograms2 extends JPanel {
      * Sets up the Twinkle Tray section.
      */
     private void setupTwinkleTray() {
-        int baseHeight = 150;
+        int baseHeight = 245;
         int baseWidth = 480;
 
         // Adds a title label for Twinkle Tray.
@@ -510,7 +551,7 @@ public class UsefulPrograms2 extends JPanel {
      * Sets up the FanControl section.
      */
     private void setupFanControl() {
-        int baseHeight = 245;
+        int baseHeight = 340;
         int baseWidth = 480;
 
         // Adds a title label for FanControl.

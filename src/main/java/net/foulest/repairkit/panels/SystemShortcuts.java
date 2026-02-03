@@ -61,7 +61,7 @@ public class SystemShortcuts extends JPanel {
                 this::setupDisplaySettings,
                 this::setupStorageSettings,
                 this::setupSoundSettings,
-                this::setupOptionalFeatures,
+                this::setupSystemInformation,
                 this::setupTaskManager,
                 this::setupDeviceManager,
                 this::setupDiskCleanup,
@@ -377,43 +377,37 @@ public class SystemShortcuts extends JPanel {
     }
 
     /**
-     * Sets up the Optional Features section.
+     * Sets up the System Information section.
      */
-    private void setupOptionalFeatures() {
+    private void setupSystemInformation() {
         int baseHeight = 340;
         int baseWidth = 250;
 
-        // Adds a title label for Optional Features.
-        DebugUtil.debug("Creating the Optional Features title label...");
-        @NotNull JLabel title = SwingUtil.createLabel("Optional Features",
+        // Adds a title label for System Information.
+        DebugUtil.debug("Creating the System Information title label...");
+        @NotNull JLabel title = SwingUtil.createLabel("System Information",
                 new Rectangle(baseWidth + 43, baseHeight, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 16)
         );
         add(title);
 
-        // Adds a description label for Optional Features.
-        DebugUtil.debug("Creating the Optional Features description label...");
-        @NotNull JLabel description = SwingUtil.createLabel("Manage optional features.",
+        // Adds a description label for System Information.
+        DebugUtil.debug("Creating the System Information description label...");
+        @NotNull JLabel description = SwingUtil.createLabel("View system information.",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
         add(description);
 
-        // Adds an icon for Sound Settings.
-        DebugUtil.debug("Setting up the Optional Features icon...");
-        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/AppsFeatures.png"), this);
+        // Adds an icon for System Information.
+        DebugUtil.debug("Setting up the System Information icon...");
+        SwingUtil.setupAppIcon(baseHeight, baseWidth, FileUtil.getImageIcon("icons/SystemInformation.png"), this);
 
-        // Adds a button to launch Sound Settings.
-        DebugUtil.debug("Creating the Optional Features button...");
-        @NotNull JButton appButton = SwingUtil.createActionButton("Open Optional Features",
+        // Adds a button to launch System Information.
+        DebugUtil.debug("Creating the System Information button...");
+        @NotNull JButton appButton = SwingUtil.createActionButton("Open System Information",
                 new Rectangle(baseWidth, baseHeight + 50, 200, 30),
-                new Color(200, 200, 200), () -> {
-                    if (RepairKit.isOutdatedOperatingSystem()) {
-                        CommandUtil.runCommand("start OptionalFeatures", true);
-                    } else {
-                        CommandUtil.runCommand("start ms-settings:optionalfeatures", true);
-                    }
-                }
+                new Color(200, 200, 200), () -> CommandUtil.runCommand("start msinfo32", true)
         );
         add(appButton);
     }
