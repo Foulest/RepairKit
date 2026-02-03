@@ -36,7 +36,7 @@ files if you know what you are doing.**
 > **Note:** The malware scan automatically runs a quick scan with Windows Defender. In the event that Windows Defender
 > is disabled or unavailable, a quick scan is performed with Sophos Scan & Clean instead.
 
-![Automatic Repairs](https://i.imgur.com/GjLlotR.png)
+![Automatic Repairs](https://i.imgur.com/QaRiiSz.png)
 
 ### **Useful Programs**
 
@@ -63,8 +63,9 @@ Access essential software tools for system maintenance, including:
 - **[DisplayDriverUninstaller](https://guru3d.com/files-details/display-driver-uninstaller-download.html)**: Remove
   display drivers and packages.
 - **[Recuva](https://ccleaner.com/recuva)**: A data recovery tool for deleted files.
+- **[DiskGenius](https://diskgenius.com)**: A disk partition manager and data recovery tool.
 
-![Useful Programs (Page 1/2)](https://i.imgur.com/ARbJneg.png)
+![Useful Programs (Page 1/2)](https://i.imgur.com/e1bhWs6.png)
 
 Additionally, RepairKit provides links to useful software tools, including:
 
@@ -77,7 +78,7 @@ Additionally, RepairKit provides links to useful software tools, including:
 - **[Twinkle Tray](https://twinkletray.com)**: Link to the monitor brightness control software.
 - **[FanControl](https://getfancontrol.com)**: Link to the fan speed control software.
 
-![Useful Programs (Page 2/2)](https://i.imgur.com/yTuZ97n.png)
+![Useful Programs (Page 2/2)](https://i.imgur.com/xuQoJqH.png)
 
 ### **System Shortcuts**
 
@@ -88,8 +89,9 @@ Quickly access important Windows utilities like:
 - Windows Update
 - Windows Security
 - Task Manager
+- and more...
 
-![System Shortcuts](https://i.imgur.com/10uVtES.png)
+![System Shortcuts](https://i.imgur.com/t5pOrr8.png)
 
 ## Download and Run
 
