@@ -12,8 +12,17 @@
 • [AlternativeTo](https://alternativeto.net/software/repairkit/about)
 • [SoftDownload](https://softdownload.com.br/repare-pc-automaticamente-repairkit.html)
 
-## Introduction
-[![Watch on YouTube](https://i.imgur.com/OOyZmUe.png)](https://youtu.be/EMVeKIvVPcg)
+###
+
+![RepairKit Banner](https://i.imgur.com/EfAmXt4.png)
+
+###
+
+## Install & Setup Guide
+
+<p align="center">
+  <a href="https://youtu.be/EMVeKIvVPcg" title="Watch on YouTube"><img src="https://i.imgur.com/OOyZmUe.png" alt="Watch on YouTube"></a>
+</p>
 
 ## Features
 
