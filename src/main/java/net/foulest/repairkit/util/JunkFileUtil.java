@@ -17,20 +17,23 @@
  */
 package net.foulest.repairkit.util;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import net.foulest.repairkit.RepairKit;
 import net.foulest.repairkit.util.config.ConfigLoader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
-import java.nio.file.*;
+import javax.swing.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.RecursiveTask;
 
 /**
  * Utility class for removing junk files from the system.
@@ -41,21 +44,24 @@ import java.util.concurrent.RecursiveTask;
 public class JunkFileUtil {
 
     // File extensions to scan for
-    private static @NotNull Set<String> JUNK_FILE_EXTENSIONS = Set.of();
+    // Note: These are protected and can't be modified in the config files
+    private static @NotNull Set<String> JUNK_FILE_EXTENSIONS = Set.of(
+            "\\.tmp$",
+            "\\.temp$",
+            "\\.old$",
+            "\\.old\\.log$",
+            "\\.old\\.txt$",
+            "\\.old\\.ver$",
+            "\\.dmp$",
+            "\\.ds\\_store$",
+            "\\.hprof$"
+    );
 
     // Paths to exclude from scanning
-    private static @NotNull Set<Path> EXCLUDED_PATHS = Set.of();
-
-    // Time constants
-    private static final long LAST_24_HOURS = Instant.now().minus(24, ChronoUnit.HOURS).toEpochMilli();
-
-    // Analytics
-    private static long totalCount;
-    private static long totalSize;
-
-    // File System Pool
-    // Uses between 2 and 25% of the available threads
-    private static final ForkJoinPool pool = new ForkJoinPool(Math.max(2, Runtime.getRuntime().availableProcessors() / 4));
+    // Note: These are protected and can't be modified in the config files
+    private static @NotNull Set<Path> EXCLUDED_PATHS = Set.of(
+            Path.of("C:\\Windows\\System32")
+    );
 
     /**
      * Checks for junk files on the system.
@@ -88,145 +94,98 @@ public class JunkFileUtil {
                 && !((Collection<String>) junkFilesConfig.get("excludedPaths")).isEmpty()) {
             @NotNull Set<Path> excludedPaths = new HashSet<>();
 
+            // Replaces environment variables in the paths and adds them to the set.
             for (@NotNull String path : (Iterable<String>) junkFilesConfig.get("excludedPaths")) {
-                @NotNull String fixedPath = path.replace("%temp%", System.getenv("TEMP"));
-                excludedPaths.add(Paths.get(fixedPath));
+                @NotNull String fixedPath = path.replace("%temp%", System.getenv("TEMP"))
+                        .replace("%USERPROFILE%", System.getenv("USERPROFILE"));
+                try {
+                    excludedPaths.add(Paths.get(fixedPath).toAbsolutePath().normalize());
+                } catch (InvalidPathException ipe) {
+                    DebugUtil.warn("Invalid excluded path in config: " + fixedPath, ipe);
+                }
             }
 
-            EXCLUDED_PATHS = Set.copyOf(excludedPaths);
+            // Adds the excluded paths to the set without overwriting the default excluded paths.
+            EXCLUDED_PATHS.addAll(excludedPaths);
         }
-
-        // Collects data for analytics.
-        long now = System.currentTimeMillis();
-        totalCount = 0;
-        totalSize = 0;
-
-        @NotNull List<Runnable> tasks = new ArrayList<>(List.of());
 
         // Empties the Recycle Bin.
         if (junkFilesConfig.get("emptyRecycleBin") != null
                 && junkFilesConfig.get("emptyRecycleBin").equals(Boolean.TRUE)) {
-            tasks.add(() -> CommandUtil.runPowerShellCommand("Clear-RecycleBin -Force", false));
+            CommandUtil.runPowerShellCommand("Clear-RecycleBin -Force -ErrorAction SilentlyContinue", false);
         }
 
         // Deletes files in the Temp directory older than one day.
         if (junkFilesConfig.get("cleanUserTempFiles") != null
                 && junkFilesConfig.get("cleanUserTempFiles").equals(Boolean.TRUE)) {
-            tasks.add(() -> CommandUtil.runPowerShellCommand("Get-ChildItem -Path $env:TEMP -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-1) } | Remove-Item -Recurse -Force", false));
+            CommandUtil.runPowerShellCommand("Get-ChildItem -Path $env:TEMP -Recurse | Where-Object { $_.LastWriteTime -lt (Get-Date).AddDays(-1) } | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue", false);
         }
 
         // Deletes files in the Windows temp directory.
         if (junkFilesConfig.get("cleanSystemTempFiles") != null
                 && junkFilesConfig.get("cleanSystemTempFiles").equals(Boolean.TRUE)) {
-            tasks.add(() -> CommandUtil.runPowerShellCommand("Get-ChildItem -Path $env:windir\\Temp -Recurse | Remove-Item -Recurse -Force", false));
+            CommandUtil.runPowerShellCommand("Get-ChildItem -Path $env:windir\\Temp -Recurse | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue", false);
         }
 
-        // Scans each drive for junk files.
-        Iterable<Path> rootDirectories = FileSystems.getDefault().getRootDirectories();
-        for (@NotNull Path root : rootDirectories) {
-            tasks.add(() -> pool.invoke(new DirectoryScanTask(root)));
-        }
+        // Quietly extracts and launches Everything.
+        @NotNull String path = FileUtil.tempDirectory.getPath();
+        SwingUtil.launchApplication("Everything.7z", "\\Everything.exe", "-startup", true, path);
 
-        // Executes tasks using TaskUtil.
-        TaskUtil.executeTasks(tasks);
-        DebugUtil.debug("Junk files found: " + totalCount);
-        DebugUtil.debug("Total size: " + totalSize);
-        DebugUtil.debug("Time taken: " + (System.currentTimeMillis() - now) + "ms");
-    }
+        // Extracts the Everything Command Line tool and runs it to delete junk files.
+        try (@Nullable InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/es.exe")) {
+            if (input == null) {
+                JOptionPane.showMessageDialog(null,
+                        "Failed to load Everything Command Line file.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
 
-    @AllArgsConstructor
-    private static class DirectoryScanTask extends RecursiveTask<Void> {
+            // Saves the Everything Command Line tool to the temp directory.
+            FileUtil.saveFile(input, FileUtil.tempDirectory + "\\es.exe", true);
 
-        @Serial
-        private static final long serialVersionUID = 7784391839228931588L;
-        private final @NotNull Path directory;
+            long last24Hours = Instant.now().minus(24, ChronoUnit.HOURS).toEpochMilli();
 
-        @Override
-        protected @Nullable Void compute() {
-            try (@NotNull DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
-                // Create a list of tasks to execute concurrently
-                @NotNull List<DirectoryScanTask> tasks = new ArrayList<>();
+            for (String extension : JUNK_FILE_EXTENSIONS) {
+                // Gets the list of files to delete for each extension.
+                List<String> files = CommandUtil.getCommandOutput("\"" + FileUtil.tempDirectory + "\\es.exe\" -r " + extension, false, false);
 
-                for (@NotNull Path path : stream) {
-                    // Ignores excluded paths.
-                    if (EXCLUDED_PATHS.contains(directory)) {
+                for (String file : files) {
+                    if (!file.contains(":\\")) {
                         continue;
                     }
 
-                    if (Files.isDirectory(path)) {
-                        // Create a new task for each subdirectory and fork it
-                        @NotNull DirectoryScanTask task = new DirectoryScanTask(path);
-                        task.fork();
-                        tasks.add(task);
-                    } else {
-                        if (isJunkFile(path, Files.readAttributes(path, BasicFileAttributes.class))) {
-                            // Gets the file's size
-                            long size = Files.size(path);
+                    @NotNull Path filePath = Paths.get(file);
 
-                            // Aggregates the data for analytics
-                            totalCount++;
-                            totalSize += size;
+                    // Check if the path is in the excluded paths set
+                    if (EXCLUDED_PATHS.stream().anyMatch(excludedPath -> filePath.toAbsolutePath().normalize().startsWith(excludedPath))) {
+                        continue;
+                    }
 
-                            // Prints the file path before deleting it
-                            DebugUtil.debug("Cleaning junk file: " + path + " (" + size + " bytes)");
+                    // Checks if the file is a regular file before attempting to delete it
+                    try {
+                        BasicFileAttributes attrs = Files.readAttributes(filePath, BasicFileAttributes.class);
 
-                            // Deletes the file
+                        // Ignores files accessed in the last 24 hours.
+                        if (attrs.lastAccessTime().toMillis() > last24Hours) {
+                            continue;
+                        }
+
+                        // Only attempts to delete regular files, not directories or symbolic links.
+                        if (attrs.isRegularFile()) {
                             try {
-                                Files.delete(path);
-                            } catch (IOException ignored) {
+                                Files.delete(filePath);
+                                DebugUtil.debug("Deleted junk file: " + filePath);
+                            } catch (IOException ex) {
+                                DebugUtil.warn("Failed to delete file: " + file, ex);
                             }
                         }
+                    } catch (IOException ex) {
+                        DebugUtil.warn("Failed to read attributes for file: " + file, ex);
                     }
                 }
-
-                // Wait for all tasks to complete
-                for (@NotNull DirectoryScanTask task : tasks) {
-                    task.join();
-                }
-            } catch (IOException ignored) {
             }
-            return null;
+        } catch (IOException ex) {
+            DebugUtil.warn("Failed to extract Everything Command Line file.", ex);
         }
-
-        @Serial
-        private void readObject(ObjectInputStream ignored) throws IOException, ClassNotFoundException {
-            throw new NotSerializableException("JunkFileUtil.DirectoryScanTask");
-        }
-
-        @Serial
-        private void writeObject(ObjectOutputStream ignored) throws IOException {
-            throw new NotSerializableException("JunkFileUtil.DirectoryScanTask");
-        }
-    }
-
-    /**
-     * Checks if the file is a junk file.
-     * <p>
-     * This is classified as a file that ends with one of the junk file
-     * extensions, and was not accessed in the last 24 hours.
-     *
-     * @param file  The file to check.
-     * @param attrs The file's attributes.
-     * @return {@code true} if the file is a junk file, otherwise {@code false}.
-     */
-    private static boolean isJunkFile(@NotNull Path file, @NotNull BasicFileAttributes attrs) {
-        // Ignores directories.
-        if (file.toFile().isDirectory()) {
-            return false;
-        }
-
-        // Ignores files accessed in the last 24 hours.
-        if (attrs.lastAccessTime().toMillis() > LAST_24_HOURS) {
-            return false;
-        }
-
-        @NotNull String fileName = file.getFileName().toString().toLowerCase(Locale.ROOT);
-
-        for (@NotNull String extension : JUNK_FILE_EXTENSIONS) {
-            if (fileName.equalsIgnoreCase(extension) || fileName.endsWith(extension)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

@@ -66,7 +66,7 @@ public class BloatwareTaskRunner extends AbstractTaskRunner {
         packagesToRemove.forEach(appPackage -> {
             @NotNull Runnable task = () -> {
                 DebugUtil.debug("Removing bloatware app: " + appPackage);
-                CommandUtil.runPowerShellCommand("Get-AppxPackage '" + appPackage + "' | Remove-AppxPackage", false);
+                CommandUtil.runPowerShellCommand("Get-AppxPackage '" + appPackage + "' | Remove-AppxPackage -ErrorAction SilentlyContinue", false);
             };
 
             tasks.add(task);

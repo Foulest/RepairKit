@@ -19,6 +19,7 @@ package net.foulest.repairkit.util;
 
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -72,10 +73,10 @@ public class DebugUtil {
      * @param message The message to print.
      * @param ex      The exception to print.
      */
-    public static void warn(@NotNull String message, @NotNull Exception ex) {
-        Throwable cause = ex.getCause();
+    public static void warn(@NotNull String message, @NotNull Throwable ex) {
+        @Nullable Throwable cause = ex.getCause();
         String exMessage = ex.getMessage();
-        String causeMessage = cause.getMessage();
+        String causeMessage = cause == null ? "" : cause.getMessage();
         StackTraceElement[] stackTrace = ex.getStackTrace();
 
         debug("[WARNING] " + message
