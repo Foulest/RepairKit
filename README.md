@@ -10,11 +10,10 @@
 • [MajorGeeks](https://m.majorgeeks.com/files/details/repairkit.html)
 • [Uptodown](https://repairkit.en.uptodown.com/windows)
 • [AlternativeTo](https://alternativeto.net/software/repairkit/about)
-• [SoftDownload](https://softdownload.com.br/repare-pc-automaticamente-repairkit.html)
 
 ###
 
-![RepairKit Banner](https://i.imgur.com/EfAmXt4.png)
+[![RepairKit Banner](https://i.imgur.com/EfAmXt4.png)](https://github.com/Foulest/RepairKit/releases)
 
 ###
 
