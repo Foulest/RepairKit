@@ -336,7 +336,7 @@ public class AutomaticRepairs extends JPanel {
      */
     private static void createRestorePoint() {
         DebugUtil.debug("Creating a restore point...");
-        CommandUtil.runPowerShellCommand("Checkpoint-Computer -Description \"RepairKit Automatic Repairs\"", false);
+        CommandUtil.runPowerShellCommand("Checkpoint-Computer -Description 'RepairKit Automatic Repairs'", false);
     }
 
     /**
