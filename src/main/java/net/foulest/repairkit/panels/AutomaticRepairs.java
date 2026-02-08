@@ -97,6 +97,7 @@ public class AutomaticRepairs extends JPanel {
         add(progressLabel);
 
         String @NotNull [] progressItems = {
+                "Create Restore Point",
                 "Delete System Policies",
                 "Run Registry Tweaks",
                 "Run System Tweaks",
@@ -132,6 +133,9 @@ public class AutomaticRepairs extends JPanel {
             }
         }
 
+        // Sets the 'Create Restore Point' checkbox to selected by default.
+        progressCheckboxes[0].setSelected(true);
+
         // Adds the progress checkboxes to the panel.
         DebugUtil.debug("Adding the Automatic Repairs progress checkboxes to the panel...");
         for (JCheckBox checkbox : progressCheckboxes) {
@@ -159,15 +163,16 @@ public class AutomaticRepairs extends JPanel {
         @NotNull Thread repairThread = new Thread(() -> {
             try {
                 // Sets the state of all checkboxes to variables.
-                boolean deleteSystemPolicies = progressCheckboxes[0].isSelected();
-                boolean runRegistryTweaks = progressCheckboxes[1].isSelected();
-                boolean runSystemTweaks = progressCheckboxes[2].isSelected();
-                boolean runFeaturesTweaks = progressCheckboxes[3].isSelected();
-                boolean runServicesTweaks = progressCheckboxes[4].isSelected();
-                boolean removeJunkFiles = progressCheckboxes[5].isSelected();
-                boolean removeBloatware = progressCheckboxes[6].isSelected();
-                boolean repairDiskIssues = progressCheckboxes[7].isSelected();
-                boolean updateOutdatedPrograms = progressCheckboxes[8].isSelected();
+                boolean createRestorePoint = progressCheckboxes[0].isSelected();
+                boolean deleteSystemPolicies = progressCheckboxes[1].isSelected();
+                boolean runRegistryTweaks = progressCheckboxes[2].isSelected();
+                boolean runSystemTweaks = progressCheckboxes[3].isSelected();
+                boolean runFeaturesTweaks = progressCheckboxes[4].isSelected();
+                boolean runServicesTweaks = progressCheckboxes[5].isSelected();
+                boolean removeJunkFiles = progressCheckboxes[6].isSelected();
+                boolean removeBloatware = progressCheckboxes[7].isSelected();
+                boolean repairDiskIssues = progressCheckboxes[8].isSelected();
+                boolean updateOutdatedPrograms = progressCheckboxes[9].isSelected();
 
                 // Disables all checkboxes.
                 for (@NotNull JCheckBox checkbox : progressCheckboxes) {
@@ -211,14 +216,15 @@ public class AutomaticRepairs extends JPanel {
                 }
 
                 // Creates a restore point.
-                runButton.setText("Creating Restore Point");
-                createRestorePoint();
-                runButton.setText("Running Repairs...");
+                if (createRestorePoint) {
+                    runButton.setText("Creating Restore Point...");
+                    createRestorePoint();
+                    SwingUtilities.invokeLater(() -> progressCheckboxes[0].setSelected(true));
 
                 // Deletes system policies.
                 if (deleteSystemPolicies) {
                     deleteSystemPolicies();
-                    SwingUtilities.invokeLater(() -> progressCheckboxes[0].setSelected(true));
+                    SwingUtilities.invokeLater(() -> progressCheckboxes[1].setSelected(true));
                 }
 
                 // Creates tasks for the executor.
@@ -227,7 +233,7 @@ public class AutomaticRepairs extends JPanel {
                             if (runRegistryTweaks) {
                                 // Runs registry tweaks.
                                 runRegistryTweaks();
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[1].setSelected(true));
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[2].setSelected(true));
                             }
                         },
 
@@ -235,7 +241,7 @@ public class AutomaticRepairs extends JPanel {
                             if (runSystemTweaks) {
                                 // Runs system tweaks.
                                 runSystemTweaks();
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[2].setSelected(true));
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[3].setSelected(true));
                             }
                         },
 
@@ -243,21 +249,21 @@ public class AutomaticRepairs extends JPanel {
                             if (runFeaturesTweaks) {
                                 // Runs features tweaks.
                                 runFeaturesTweaks();
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[3].setSelected(true));
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[4].setSelected(true));
                             }
 
                             if (repairDiskIssues) {
                                 // Repairs disk issues.
                                 // This has to be done after the DISM commands in the above tweaks.
                                 repairDiskIssues();
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[7].setSelected(true));
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[8].setSelected(true));
                             }
                         },
 
                         () -> {
                             if (runServicesTweaks) {
                                 runServicesTweaks();
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[4].setSelected(true));
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[5].setSelected(true));
                             }
                         },
 
@@ -265,7 +271,7 @@ public class AutomaticRepairs extends JPanel {
                             if (removeJunkFiles) {
                                 // Removes junk files.
                                 JunkFileUtil.removeJunkFiles();
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[5].setSelected(true));
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[6].setSelected(true));
                             }
                         },
 
@@ -275,7 +281,8 @@ public class AutomaticRepairs extends JPanel {
                                 if (!RepairKit.isSafeMode()) {
                                     removeBloatware();
                                 }
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[6].setSelected(true));
+
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[7].setSelected(true));
                             }
                         },
 
@@ -283,7 +290,7 @@ public class AutomaticRepairs extends JPanel {
                             if (updateOutdatedPrograms) {
                                 // Updates outdated programs.
                                 updateOutdatedPrograms();
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[8].setSelected(true));
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[9].setSelected(true));
                             }
                         }
                 );
@@ -311,6 +318,9 @@ public class AutomaticRepairs extends JPanel {
                     checkbox.setEnabled(true);
                     checkbox.setSelected(false);
                 }
+
+                // Sets the 'Create Restore Point' checkbox to selected by default.
+                progressCheckboxes[0].setSelected(true);
             } catch (HeadlessException ex) {
                 DebugUtil.warn("Failed to run Automatic Repairs", ex);
             }
