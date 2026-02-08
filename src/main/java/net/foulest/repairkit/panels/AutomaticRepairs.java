@@ -447,6 +447,7 @@ public class AutomaticRepairs extends JPanel {
     /**
      * Runs tweaks to the system.
      */
+    @SuppressWarnings("unchecked")
     private static void runSystemTweaks() {
         DebugUtil.debug("Running system tweaks...");
         @NotNull List<Runnable> tasks = new ArrayList<>();
@@ -542,7 +543,7 @@ public class AutomaticRepairs extends JPanel {
             });
         }
 
-        Map<String, Object> defender = (Map<String, Object>) config.get("defender");
+        Map<String, Object> defender = (Map<String, Object>) config.get("windowsDefender");
 
         if (defender != null) {
             // Enables Windows Firewall for all profiles.
