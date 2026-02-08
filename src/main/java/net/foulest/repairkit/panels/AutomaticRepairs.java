@@ -550,44 +550,31 @@ public class AutomaticRepairs extends JPanel {
             // Path in JSON: defender\fixFirewall
             if (defender.get("fixFirewall") != null
                     && defender.get("fixFirewall").equals(Boolean.TRUE)) {
-                tasks.add(() -> CommandUtil.runPowerShellCommand("Set-NetFirewallProfile"
-                        + " -Profile Domain,Private,Public"
-                        + " -Enabled True", false));
+                tasks.add(() -> CommandUtil.runPowerShellCommand("Set-NetFirewallProfile -ErrorAction SilentlyContinue -Profile Domain,Private,Public -Enabled True", false));
             }
 
             // Removes all Windows Defender exclusions.
             if (defender.get("removeExclusions") != null
                     && defender.get("removeExclusions").equals(Boolean.TRUE)) {
                 tasks.add(() -> {
-                    CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
-                            + " ExclusionPath | ForEach-Object { Remove-MpPreference -ExclusionPath $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
-                            + " ExclusionExtension | ForEach-Object { Remove-MpPreference -ExclusionExtension $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
-                            + " ExclusionProcess | ForEach-Object { Remove-MpPreference -ExclusionProcess $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
-                            + " ExclusionIpAddress | ForEach-Object { Remove-MpPreference -ExclusionIpAddress $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
-                            + " ThreatIDDefaultAction_Ids | ForEach-Object { Remove-MpPreference -ThreatIDDefaultAction_Ids $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
-                            + " ThreatIDDefaultAction_Actions | ForEach-Object { Remove-MpPreference -ThreatIDDefaultAction_Actions $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
-                            + " AttackSurfaceReductionOnlyExclusions | ForEach-Object { Remove-MpPreference -AttackSurfaceReductionOnlyExclusions $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
-                            + " ControlledFolderAccessAllowedApplications | ForEach-Object { Remove-MpPreference -ControlledFolderAccessAllowedApplications $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
-                            + " ControlledFolderAccessProtectedFolders | ForEach-Object { Remove-MpPreference -ControlledFolderAccessProtectedFolders $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
-                            + " AttackSurfaceReductionRules_Ids | ForEach-Object { Remove-MpPreference -AttackSurfaceReductionRules_Ids $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference | Select-Object -ExpandProperty"
-                            + " AttackSurfaceReductionRules_Actions | ForEach-Object { Remove-MpPreference -AttackSurfaceReductionRules_Actions $_ }", false);
+                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ExclusionPath | ForEach-Object { Remove-MpPreference -ExclusionPath $_ }", false);
+                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ExclusionExtension | ForEach-Object { Remove-MpPreference -ExclusionExtension $_ }", false);
+                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ExclusionProcess | ForEach-Object { Remove-MpPreference -ExclusionProcess $_ }", false);
+                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ExclusionIpAddress | ForEach-Object { Remove-MpPreference -ExclusionIpAddress $_ }", false);
+                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ThreatIDDefaultAction_Ids | ForEach-Object { Remove-MpPreference -ThreatIDDefaultAction_Ids $_ }", false);
+                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ThreatIDDefaultAction_Actions | ForEach-Object { Remove-MpPreference -ThreatIDDefaultAction_Actions $_ }", false);
+                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty AttackSurfaceReductionOnlyExclusions | ForEach-Object { Remove-MpPreference -AttackSurfaceReductionOnlyExclusions $_ }", false);
+                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ControlledFolderAccessAllowedApplications | ForEach-Object { Remove-MpPreference -ControlledFolderAccessAllowedApplications $_ }", false);
+                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ControlledFolderAccessProtectedFolders | ForEach-Object { Remove-MpPreference -ControlledFolderAccessProtectedFolders $_ }", false);
+                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty AttackSurfaceReductionRules_Ids | ForEach-Object { Remove-MpPreference -AttackSurfaceReductionRules_Ids $_ }", false);
+                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty AttackSurfaceReductionRules_Actions | ForEach-Object { Remove-MpPreference -AttackSurfaceReductionRules_Actions $_ }", false);
                 });
             }
 
             // Removes all previous Windows Defender settings.
             if (defender.get("removePreviousSettings") != null
                     && defender.get("removePreviousSettings").equals(Boolean.TRUE)) {
-                tasks.add(() -> CommandUtil.runPowerShellCommand("Remove-MpPreference"
+                tasks.add(() -> CommandUtil.runPowerShellCommand("Remove-MpPreference -ErrorAction SilentlyContinue"
                         + " -RealTimeScanDirection"
                         + " -QuarantinePurgeItemsAfterDelay"
                         + " -RemediationScheduleDay"
@@ -664,7 +651,6 @@ public class AutomaticRepairs extends JPanel {
                         + " -DisableSshParsing"
                         + " -PlatformUpdatesChannel"
                         + " -EngineUpdatesChannel"
-                        + " -SignaturesUpdatesChannel"
                         + " -DisableGradualRelease"
                         + " -AllowNetworkProtectionDownLevel"
                         + " -AllowDatagramProcessingOnWinServer"
@@ -677,7 +663,7 @@ public class AutomaticRepairs extends JPanel {
             // Sets Windows Defender to recommended settings.
             if (defender.get("setRecommendedSettings") != null
                     && defender.get("setRecommendedSettings").equals(Boolean.TRUE)) {
-                tasks.add(() -> CommandUtil.runPowerShellCommand("Set-MpPreference"
+                tasks.add(() -> CommandUtil.runPowerShellCommand("Set-MpPreference -ErrorAction SilentlyContinue"
                         + " -CloudBlockLevel 4"
                         + " -CloudExtendedTimeout 10"
                         + " -DisableArchiveScanning 0"
@@ -785,7 +771,6 @@ public class AutomaticRepairs extends JPanel {
 
         // Updates outdated programs using Winget.
         WinGetUtil.updateAllPrograms();
-
         DebugUtil.debug("Completed updating outdated programs.");
     }
 }
