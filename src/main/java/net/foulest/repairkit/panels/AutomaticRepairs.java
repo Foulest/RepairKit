@@ -244,8 +244,8 @@ public class AutomaticRepairs extends JPanel {
                 // Creates tasks for the executor.
                 @NotNull List<Runnable> tasks = List.of(
                         () -> {
+                            // Runs registry tweaks.
                             if (runRegistryTweaks) {
-                                // Runs registry tweaks.
                                 runRegistryTweaks();
                                 SwingUtilities.invokeLater(() -> progressCheckboxes[2].setSelected(true));
                                 totalCompleted.incrementAndGet();
@@ -254,8 +254,8 @@ public class AutomaticRepairs extends JPanel {
                         },
 
                         () -> {
+                            // Runs system tweaks.
                             if (runSystemTweaks) {
-                                // Runs system tweaks.
                                 runSystemTweaks();
                                 SwingUtilities.invokeLater(() -> progressCheckboxes[3].setSelected(true));
                                 totalCompleted.incrementAndGet();
@@ -264,17 +264,17 @@ public class AutomaticRepairs extends JPanel {
                         },
 
                         () -> {
+                            // Runs features tweaks.
                             if (runFeaturesTweaks) {
-                                // Runs features tweaks.
                                 runFeaturesTweaks();
                                 SwingUtilities.invokeLater(() -> progressCheckboxes[4].setSelected(true));
                                 totalCompleted.incrementAndGet();
                                 runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")");
                             }
 
+                            // Repairs disk issues.
+                            // This has to be done after the DISM commands in the above tweaks.
                             if (repairDiskIssues) {
-                                // Repairs disk issues.
-                                // This has to be done after the DISM commands in the above tweaks.
                                 repairDiskIssues();
                                 SwingUtilities.invokeLater(() -> progressCheckboxes[8].setSelected(true));
                                 totalCompleted.incrementAndGet();
@@ -283,6 +283,7 @@ public class AutomaticRepairs extends JPanel {
                         },
 
                         () -> {
+                            // Runs services tweaks.
                             if (runServicesTweaks) {
                                 runServicesTweaks();
                                 SwingUtilities.invokeLater(() -> progressCheckboxes[5].setSelected(true));
@@ -292,8 +293,8 @@ public class AutomaticRepairs extends JPanel {
                         },
 
                         () -> {
+                            // Removes junk files.
                             if (removeJunkFiles) {
-                                // Removes junk files.
                                 JunkFileUtil.removeJunkFiles();
                                 SwingUtilities.invokeLater(() -> progressCheckboxes[6].setSelected(true));
                                 totalCompleted.incrementAndGet();
@@ -302,8 +303,8 @@ public class AutomaticRepairs extends JPanel {
                         },
 
                         () -> {
+                            // Removes bloatware if the system is not in safe mode.
                             if (removeBloatware) {
-                                // Removes bloatware if the system is not in safe mode.
                                 if (!RepairKit.isSafeMode()) {
                                     removeBloatware();
                                 }
@@ -315,8 +316,8 @@ public class AutomaticRepairs extends JPanel {
                         },
 
                         () -> {
+                            // Updates outdated programs.
                             if (updateOutdatedPrograms) {
-                                // Updates outdated programs.
                                 updateOutdatedPrograms();
                                 SwingUtilities.invokeLater(() -> progressCheckboxes[9].setSelected(true));
                                 totalCompleted.incrementAndGet();
