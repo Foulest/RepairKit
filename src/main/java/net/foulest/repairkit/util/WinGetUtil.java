@@ -28,7 +28,7 @@ public class WinGetUtil {
      */
     @SuppressWarnings("unchecked")
     public static void updateAllPrograms() {
-        @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("programs.json"));
+        @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("update_programs.json"));
         Map<String, Object> config = configLoader.getConfig().get("excludedPrograms");
         Object values = config.get("values");
 
@@ -172,7 +172,7 @@ public class WinGetUtil {
         // Adds a warning message to the builder.
         builder.append("\n\nWould you like to update these programs now?");
         builder.append("\n\nMake sure to close any programs that may be affected.");
-        builder.append("\nYou can exclude programs in the programs.json file.");
+        builder.append("\nYou can exclude programs in the update_programs.json file.");
 
         // Show the yes/no dialog.
         SoundUtil.playSound(ConstantUtil.WARNING_SOUND);

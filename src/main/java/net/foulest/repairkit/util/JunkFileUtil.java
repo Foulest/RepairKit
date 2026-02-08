@@ -69,7 +69,7 @@ public class JunkFileUtil {
     @SuppressWarnings({"unchecked", "NestedMethodCall"})
     public static void removeJunkFiles() {
         // Gets the file extensions to scan for from the config file.
-        @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("junkfiles.json"));
+        @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("junk_files.json"));
         Map<String, Object> junkFilesConfig = configLoader.getConfig().get("junkFiles");
 
         // Returns if the config file is missing.
