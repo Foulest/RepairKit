@@ -81,8 +81,8 @@ public class CommandUtil {
      * @param async        Whether to run the command asynchronously.
      * @param lineConsumer Consumer to consume the output of the command.
      */
-    private static void runCommand(String command, boolean async,
-                                   @NotNull LineConsumer lineConsumer) {
+    static void runCommand(String command, boolean async,
+                           @NotNull LineConsumer lineConsumer) {
         @NotNull Runnable commandRunner = () -> {
             try {
                 @NotNull ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);

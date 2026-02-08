@@ -117,8 +117,8 @@ public class SwingUtil {
      * @param launchArgs     The arguments to launch the application with.
      */
     @SuppressWarnings("SameParameterValue")
-    private static void launchApplication(String appResource, String appExecutable,
-                                          @NotNull CharSequence launchArgs, boolean isZipped, @NotNull String extractionPath) {
+    static void launchApplication(String appResource, String appExecutable,
+                                  @NotNull CharSequence launchArgs, boolean isZipped, @NotNull String extractionPath) {
         @NotNull Path path = Paths.get(extractionPath, appExecutable);
 
         synchronized (RepairKit.class) {
