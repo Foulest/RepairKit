@@ -132,7 +132,7 @@ public class UsefulPrograms1 extends JPanel {
 
         // Adds a description label for CPU-Z.
         DebugUtil.debug("Creating the CPU-Z description label...");
-        @NotNull JLabel description = SwingUtil.createLabel("Version: 2.17.0",
+        @NotNull JLabel description = SwingUtil.createLabel("Version: 2.18.0",
                 new Rectangle(baseWidth + 43, baseHeight + 20, 200, 30),
                 new Font(ConstantUtil.ARIAL, Font.BOLD, 12)
         );
