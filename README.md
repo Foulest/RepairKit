@@ -34,18 +34,18 @@ Automatically perform a comprehensive system cleanup and repair, including:
 - Removing vulnerable Windows features
 - Removing pre-installed bloatware
 - Cleaning unnecessary junk files
-- Repairing various disk issues
+- Repairing disk issues and corrupt Windows files
 - Updating outdated installed programs
 
 Every function in the repair is fully customizable, allowing you to enable or disable specific repairs as needed using
 either the checkboxes on the panel, or the configuration files located in the **config** folder. **Only modify these
 files if you know what you are doing.**
 
-> **Note:** The previously available **Scan for Malware** option is now removed. Run System Tweaks now applies optimal
-> Windows Defender settings instead. Manual scanning options are available using the Emsisoft or Sophos Scan options in
-> the Useful Programs panel.
+> **Note:** The previously available **Scan for Malware** option is now removed. **Run System Tweaks** now applies
+> optimal Windows Defender settings instead. Manual scanning options are available using the Emsisoft or Sophos Scan
+> options in the Useful Programs panel.
 
-![Automatic Repairs](https://i.imgur.com/QaRiiSz.png)
+![Automatic Repairs](https://i.imgur.com/2zrwWvk.png)
 
 ### **Useful Programs**
 
@@ -74,7 +74,7 @@ Access essential software tools for system maintenance, including:
 - **[Recuva](https://ccleaner.com/recuva)**: A data recovery tool for deleted files.
 - **[DiskGenius](https://diskgenius.com)**: A disk partition manager and data recovery tool.
 
-![Useful Programs (Page 1/2)](https://i.imgur.com/e1bhWs6.png)
+![Useful Programs (Page 1/2)](https://i.imgur.com/NAb78GU.png)
 
 Additionally, RepairKit provides links to useful software tools, including:
 
