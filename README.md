@@ -31,18 +31,19 @@ Automatically perform a comprehensive system cleanup and repair, including:
 
 - Deleting restrictive system policies
 - Running registry and system tweaks
+- Removing vulnerable Windows features
 - Removing pre-installed bloatware
 - Cleaning unnecessary junk files
 - Repairing various disk issues
 - Updating outdated installed programs
-- Scanning for malware with security software
 
 Every function in the repair is fully customizable, allowing you to enable or disable specific repairs as needed using
 either the checkboxes on the panel, or the configuration files located in the **config** folder. **Only modify these
 files if you know what you are doing.**
 
-> **Note:** The malware scan automatically runs a quick scan with Windows Defender. In the event that Windows Defender
-> is disabled or unavailable, a quick scan is performed with Sophos Scan & Clean instead.
+> **Note:** The previously available **Scan for Malware** option is now removed. Run System Tweaks now applies optimal
+> Windows Defender settings instead. Manual scanning options are available using the Emsisoft or Sophos Scan options in
+> the Useful Programs panel.
 
 ![Automatic Repairs](https://i.imgur.com/QaRiiSz.png)
 
