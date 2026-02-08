@@ -127,9 +127,12 @@ public class JunkFileUtil {
             CommandUtil.runPowerShellCommand("Get-ChildItem -Path $env:windir\\Temp -Recurse | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue", false);
         }
 
+        // Checks if Everything was already running.
+        boolean everythingRunningBefore = ProcessUtil.isProcessRunning("Everything-RepairKit.exe");
+
         // Quietly extracts and launches Everything.
         @NotNull String path = FileUtil.tempDirectory.getPath();
-        SwingUtil.launchApplication("Everything.7z", "\\Everything.exe", "-startup", true, path);
+        SwingUtil.launchApplication("Everything.7z", "\\Everything-RepairKit.exe", "-startup", true, path);
 
         // Extracts the Everything Command Line tool and runs it to delete junk files.
         try (@Nullable InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/es.exe")) {
@@ -186,6 +189,11 @@ public class JunkFileUtil {
             }
         } catch (IOException ex) {
             DebugUtil.warn("Failed to extract Everything Command Line file.", ex);
+        }
+
+        // Kills the Everything process if it wasn't running before, otherwise leaves it running.
+        if (!everythingRunningBefore) {
+            ProcessUtil.killProcess("Everything-RepairKit.exe");
         }
     }
 }

@@ -398,7 +398,7 @@ public class UsefulPrograms1 extends JPanel {
                 new Color(200, 200, 200), () -> {
                     // Unzips and launches Everything.
                     @NotNull String path = FileUtil.tempDirectory.getPath();
-                    SwingUtil.launchApplication("Everything.7z", "\\Everything.exe", true, path);
+                    SwingUtil.launchApplication("Everything.7z", "\\Everything-RepairKit.exe", true, path);
                 }
         );
         add(appButton);

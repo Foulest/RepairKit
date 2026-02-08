@@ -31,8 +31,8 @@ public class ProcessUtil {
     /**
      * Checks if a service is running.
      *
-     * @param serviceName Name of the service to check.
-     * @return Whether the service is running.
+     * @param serviceName - Name of the service to check.
+     * @return - Whether the service is running.
      */
     public static boolean isServiceRunning(String serviceName) {
         return CommandUtil.getCommandOutput("sc query \"" + serviceName + "\"",
@@ -42,11 +42,20 @@ public class ProcessUtil {
     /**
      * Checks if a process is running.
      *
-     * @param processName Name of the process to check.
-     * @return Whether the process is running.
+     * @param processName - Name of the process to check.
+     * @return - Whether the process is running.
      */
     public static boolean isProcessRunning(@NotNull CharSequence processName) {
         return CommandUtil.getCommandOutput("tasklist /FI \"IMAGENAME eq " + processName + "\"",
                 false, false).toString().contains(processName);
+    }
+
+    /**
+     * Kills a process by name.
+     *
+     * @param processName - Name of the process to kill.
+     */
+    static void killProcess(@NotNull CharSequence processName) {
+        CommandUtil.runCommand("taskkill /F /IM \"" + processName + "\"", false);
     }
 }
