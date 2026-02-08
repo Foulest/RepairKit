@@ -3,6 +3,7 @@
     "emptyRecycleBin": true,
     "cleanUserTempFiles": true,
     "cleanSystemTempFiles": true,
+    "cleanWithEverything": true,
     "excludedPaths": [
     ]
   }

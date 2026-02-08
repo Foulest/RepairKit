@@ -127,73 +127,77 @@ public class JunkFileUtil {
             CommandUtil.runPowerShellCommand("Get-ChildItem -Path $env:windir\\Temp -Recurse | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue", false);
         }
 
-        // Checks if Everything was already running.
-        boolean everythingRunningBefore = ProcessUtil.isProcessRunning("Everything-RepairKit.exe");
+        // Deletes files using the Everything Command Line tool.
+        if (junkFilesConfig.get("cleanWithEverything") != null
+                && junkFilesConfig.get("cleanWithEverything").equals(Boolean.TRUE)) {
+            // Checks if Everything was already running.
+            boolean everythingRunningBefore = ProcessUtil.isProcessRunning("Everything-RepairKit.exe");
 
-        // Quietly extracts and launches Everything.
-        @NotNull String path = FileUtil.tempDirectory.getPath();
-        SwingUtil.launchApplication("Everything.7z", "\\Everything-RepairKit.exe", "-startup", true, path);
+            // Quietly extracts and launches Everything.
+            @NotNull String path = FileUtil.tempDirectory.getPath();
+            SwingUtil.launchApplication("Everything.7z", "\\Everything-RepairKit.exe", "-startup", true, path);
 
-        // Extracts the Everything Command Line tool and runs it to delete junk files.
-        try (@Nullable InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/es.exe")) {
-            if (input == null) {
-                JOptionPane.showMessageDialog(null,
-                        "Failed to load Everything Command Line file.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+            // Extracts the Everything Command Line tool and runs it to delete junk files.
+            try (@Nullable InputStream input = RepairKit.class.getClassLoader().getResourceAsStream("bin/es.exe")) {
+                if (input == null) {
+                    JOptionPane.showMessageDialog(null,
+                            "Failed to load Everything Command Line file.",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
 
-            // Saves the Everything Command Line tool to the temp directory.
-            FileUtil.saveFile(input, FileUtil.tempDirectory + "\\es.exe", true);
+                // Saves the Everything Command Line tool to the temp directory.
+                FileUtil.saveFile(input, FileUtil.tempDirectory + "\\es.exe", true);
 
-            long last24Hours = Instant.now().minus(24, ChronoUnit.HOURS).toEpochMilli();
+                long last24Hours = Instant.now().minus(24, ChronoUnit.HOURS).toEpochMilli();
 
-            for (String extension : JUNK_FILE_EXTENSIONS) {
-                // Gets the list of files to delete for each extension.
-                List<String> files = CommandUtil.getCommandOutput("\"" + FileUtil.tempDirectory + "\\es.exe\" -r " + extension, false, false);
+                for (String extension : JUNK_FILE_EXTENSIONS) {
+                    // Gets the list of files to delete for each extension.
+                    List<String> files = CommandUtil.getCommandOutput("\"" + FileUtil.tempDirectory + "\\es.exe\" -r " + extension, false, false);
 
-                for (String file : files) {
-                    if (!file.contains(":\\")) {
-                        continue;
-                    }
-
-                    @NotNull Path filePath = Paths.get(file);
-
-                    // Check if the path is in the excluded paths set
-                    if (EXCLUDED_PATHS.stream().anyMatch(excludedPath -> filePath.toAbsolutePath().normalize().startsWith(excludedPath))) {
-                        continue;
-                    }
-
-                    // Checks if the file is a regular file before attempting to delete it
-                    try {
-                        BasicFileAttributes attrs = Files.readAttributes(filePath, BasicFileAttributes.class);
-
-                        // Ignores files accessed in the last 24 hours.
-                        if (attrs.lastAccessTime().toMillis() > last24Hours) {
+                    for (String file : files) {
+                        if (!file.contains(":\\")) {
                             continue;
                         }
 
-                        // Only attempts to delete regular files, not directories or symbolic links.
-                        if (attrs.isRegularFile()) {
-                            try {
-                                Files.delete(filePath);
-                                DebugUtil.debug("Deleted junk file: " + filePath);
-                            } catch (IOException ex) {
-                                DebugUtil.warn("Failed to delete file: " + file, ex);
-                            }
+                        @NotNull Path filePath = Paths.get(file);
+
+                        // Check if the path is in the excluded paths set
+                        if (EXCLUDED_PATHS.stream().anyMatch(excludedPath -> filePath.toAbsolutePath().normalize().startsWith(excludedPath))) {
+                            continue;
                         }
-                    } catch (IOException ex) {
-                        DebugUtil.warn("Failed to read attributes for file: " + file, ex);
+
+                        // Checks if the file is a regular file before attempting to delete it
+                        try {
+                            BasicFileAttributes attrs = Files.readAttributes(filePath, BasicFileAttributes.class);
+
+                            // Ignores files accessed in the last 24 hours.
+                            if (attrs.lastAccessTime().toMillis() > last24Hours) {
+                                continue;
+                            }
+
+                            // Only attempts to delete regular files, not directories or symbolic links.
+                            if (attrs.isRegularFile()) {
+                                try {
+                                    Files.delete(filePath);
+                                    DebugUtil.debug("Deleted junk file: " + filePath);
+                                } catch (IOException ex) {
+                                    DebugUtil.warn("Failed to delete file: " + file, ex);
+                                }
+                            }
+                        } catch (IOException ex) {
+                            DebugUtil.warn("Failed to read attributes for file: " + file, ex);
+                        }
                     }
                 }
+            } catch (IOException ex) {
+                DebugUtil.warn("Failed to extract Everything Command Line file.", ex);
             }
-        } catch (IOException ex) {
-            DebugUtil.warn("Failed to extract Everything Command Line file.", ex);
-        }
 
-        // Kills the Everything process if it wasn't running before, otherwise leaves it running.
-        if (!everythingRunningBefore) {
-            ProcessUtil.killProcess("Everything-RepairKit.exe");
+            // Kills the Everything process if it wasn't running before, otherwise leaves it running.
+            if (!everythingRunningBefore) {
+                ProcessUtil.killProcess("Everything-RepairKit.exe");
+            }
         }
     }
 }
