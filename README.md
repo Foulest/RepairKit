@@ -41,9 +41,9 @@ Every function in the repair is fully customizable, allowing you to enable or di
 either the checkboxes on the panel, or the configuration files located in the **config** folder. **Only modify these
 files if you know what you are doing.**
 
-> **Note:** The previously available **Remove Malware** option is now removed. **Run System Tweaks** now applies
-> optimal Windows Defender settings instead. Manual scanning options are available using the Emsisoft or Sophos Scan
-> options in the Useful Programs panel.
+> **Note:** The previously available **Remove Malware** option is now removed. **Run Windows Defender Tweaks** now
+> applies optimal Windows Defender settings instead. Manual scanning options are available using the Emsisoft or Sophos
+> Scan options in the Useful Programs panel.
 
 ![Automatic Repairs](https://i.imgur.com/2zrwWvk.png)
 
