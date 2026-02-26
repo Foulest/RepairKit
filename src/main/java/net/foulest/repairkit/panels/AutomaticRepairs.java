@@ -462,30 +462,6 @@ public class AutomaticRepairs extends JPanel {
         Map<String, Map<String, Object>> config = configLoader.getConfig();
         @NotNull RegistryTaskRunner taskRunner = new RegistryTaskRunner(config);
         @NotNull List<Runnable> tasks = taskRunner.getTasks();
-        Map<String, Object> spectreMeltdown = configLoader.getConfig().get("spectreMeltdown");
-
-        // Checks if the config is null.
-        if (spectreMeltdown == null) {
-            return;
-        }
-
-        // Patches Spectre & Meltdown security vulnerabilities.
-        if (spectreMeltdown.get("enabled") != null
-                && spectreMeltdown.get("enabled").equals(Boolean.TRUE)) {
-            tasks.add(() -> {
-                String cpuName = CommandUtil.getPowerShellCommandOutput("Get-CimInstance -ClassName Win32_Processor | Select-Object -ExpandProperty Name", false, false).toString();
-                RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverrideMask", 3);
-                RegistryUtil.setRegistryStringValue(WinReg.HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Virtualization", "MinVmVersionForCpuBasedMitigations", "1.0");
-
-                if (cpuName.contains("Intel")) {
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverride", 8);
-                } else if (cpuName.contains("AMD")) {
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverride", 72);
-                } else if (cpuName.contains("ARM")) {
-                    RegistryUtil.setRegistryIntValue(WinReg.HKEY_LOCAL_MACHINE, "SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Memory Management", "FeatureSettingsOverride", 64);
-                }
-            });
-        }
 
         // Execute tasks using TaskUtil.
         TaskUtil.executeTasks(tasks);

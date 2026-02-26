@@ -58,7 +58,7 @@ public abstract class AbstractTaskRunner implements TaskRunner {
             }
 
             if (!hasValues(entries)) {
-                DebugUtil.debug("No values found for category: " + category);
+                DebugUtil.debug("Category has no values: " + category);
                 return;
             }
 
@@ -83,16 +83,25 @@ public abstract class AbstractTaskRunner implements TaskRunner {
 
     /**
      * Checks if the category has values.
+     * Categories without values may be handled by custom code elsewhere.
      *
      * @param entries The entries to check
      * @return {@code true} if the category has values, otherwise {@code false}
      */
     private static boolean hasValues(@NotNull Map<String, Object> entries) {
-        if (!entries.containsKey("values")) {
+        return entries.containsKey("values") && hasNonEmptyValues(entries.get("values"));
+    }
+
+    /**
+     * Checks if the values object is non-empty.
+     *
+     * @param values The values object to check
+     * @return {@code true} if values is non-empty, otherwise {@code false}
+     */
+    private static boolean hasNonEmptyValues(Object values) {
+        if (values == null) {
             return false;
         }
-
-        Object values = entries.get("values");
 
         if (values instanceof Map) {
             return !((Map<?, ?>) values).isEmpty();

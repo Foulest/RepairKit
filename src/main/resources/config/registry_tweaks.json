@@ -153,9 +153,6 @@
       "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FolderDescriptions\\{31C0DD25-9439-4F12-BF41-7FF4EDA38722}\\PropertyBag\\ThisPCPolicy": "Hide"
     }
   },
-  "spectreMeltdown": {
-    "enabled": true
-  },
   "gameDVR": {
     "enabled": true,
     "values": {
