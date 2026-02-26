@@ -29,11 +29,13 @@
 
 Automatically perform a comprehensive system cleanup and repair, including:
 
-- Deleting restrictive system policies
+- Creating a system Restore Point
+- Deleting malicious system policies
 - Running registry and system tweaks
 - Removing vulnerable Windows features
+- Applying optimal Windows Defender settings
+- Cleaning hard-to-find junk files
 - Removing pre-installed bloatware
-- Cleaning unnecessary junk files
 - Repairing disk issues and corrupt Windows files
 - Updating outdated installed programs
 
@@ -45,7 +47,7 @@ files if you know what you are doing.**
 > applies optimal Windows Defender settings instead. Manual scanning options are available using the Emsisoft or Sophos
 > Scan options in the Useful Programs panel.
 
-![Automatic Repairs](https://i.imgur.com/2zrwWvk.png)
+![Automatic Repairs](https://i.imgur.com/mnkUQV1.png)
 
 ### **Useful Programs**
 
