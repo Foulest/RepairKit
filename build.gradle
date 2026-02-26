@@ -39,7 +39,7 @@ dependencies {
 
     // two-slices - for sending toasts
     // https://github.com/sshtools/two-slices
-    implementation group: 'com.sshtools', name: 'two-slices', version: '0.9.5'
+    implementation group: 'com.sshtools', name: 'two-slices', version: '0.9.6'
 
     // JetBrains Annotations - for code inspection and documentation
     // https://mvnrepository.com/artifact/org.jetbrains/annotations
