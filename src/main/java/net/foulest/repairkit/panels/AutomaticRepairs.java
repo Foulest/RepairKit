@@ -691,6 +691,8 @@ public class AutomaticRepairs extends JPanel {
                         + " -ProxyPacUrl"
                         + " -ProxyServer"
                         + " -QuarantinePurgeItemsAfterDelay"
+                        + " -RandomizeScheduleTaskTimes"
+                        + " -RealTimeScanDirection"
                         + " -RemediationScheduleDay"
                         + " -RemediationScheduleTime"
                         + " -ReportingAdditionalActionTimeOut"
