@@ -105,6 +105,7 @@ public class AutomaticRepairs extends JPanel {
                 "Run System Tweaks",
                 "Run Features Tweaks",
                 "Run Services Tweaks",
+                "Run Windows Defender Tweaks",
                 "Remove Junk Files",
                 "Remove Bloatware",
                 "Repair Disk Issues",
@@ -120,7 +121,7 @@ public class AutomaticRepairs extends JPanel {
         int y = 235;
         int maxWidth = 450;
         int checkboxHeight = 28;
-        int checkboxWidth = 220; // Adjust width as needed
+        int checkboxWidth = 240;
 
         for (int i = 0; i < numberOfItems; i++) {
             progressCheckboxes[i] = new JCheckBox(progressItems[i]);
@@ -171,10 +172,11 @@ public class AutomaticRepairs extends JPanel {
                 boolean runSystemTweaks = progressCheckboxes[3].isSelected();
                 boolean runFeaturesTweaks = progressCheckboxes[4].isSelected();
                 boolean runServicesTweaks = progressCheckboxes[5].isSelected();
-                boolean removeJunkFiles = progressCheckboxes[6].isSelected();
-                boolean removeBloatware = progressCheckboxes[7].isSelected();
-                boolean repairDiskIssues = progressCheckboxes[8].isSelected();
-                boolean updateOutdatedPrograms = progressCheckboxes[9].isSelected();
+                boolean runWindowsDefenderTweaks = progressCheckboxes[6].isSelected();
+                boolean removeJunkFiles = progressCheckboxes[7].isSelected();
+                boolean removeBloatware = progressCheckboxes[8].isSelected();
+                boolean repairDiskIssues = progressCheckboxes[9].isSelected();
+                boolean updateOutdatedPrograms = progressCheckboxes[10].isSelected();
 
                 // Gets the total number of selected repair options.
                 AtomicInteger totalCompleted = new AtomicInteger();
@@ -192,6 +194,7 @@ public class AutomaticRepairs extends JPanel {
                         && !runSystemTweaks
                         && !runFeaturesTweaks
                         && !runServicesTweaks
+                        && !runWindowsDefenderTweaks
                         && !removeJunkFiles
                         && !removeBloatware
                         && !repairDiskIssues
@@ -276,7 +279,7 @@ public class AutomaticRepairs extends JPanel {
                             // This has to be done after the DISM commands in the above tweaks.
                             if (repairDiskIssues) {
                                 repairDiskIssues();
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[8].setSelected(true));
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[9].setSelected(true));
                                 totalCompleted.incrementAndGet();
                                 runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")");
                             }
@@ -293,10 +296,20 @@ public class AutomaticRepairs extends JPanel {
                         },
 
                         () -> {
+                            // Runs Windows Defender tweaks.
+                            if (runWindowsDefenderTweaks) {
+                                runWindowsDefenderTweaks();
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[6].setSelected(true));
+                                totalCompleted.incrementAndGet();
+                                runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")");
+                            }
+                        },
+
+                        () -> {
                             // Removes junk files.
                             if (removeJunkFiles) {
                                 JunkFileUtil.removeJunkFiles();
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[6].setSelected(true));
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[7].setSelected(true));
                                 totalCompleted.incrementAndGet();
                                 runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")");
                             }
@@ -309,7 +322,7 @@ public class AutomaticRepairs extends JPanel {
                                     removeBloatware();
                                 }
 
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[7].setSelected(true));
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[8].setSelected(true));
                                 totalCompleted.incrementAndGet();
                                 runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")");
                             }
@@ -319,7 +332,7 @@ public class AutomaticRepairs extends JPanel {
                             // Updates outdated programs.
                             if (updateOutdatedPrograms) {
                                 updateOutdatedPrograms();
-                                SwingUtilities.invokeLater(() -> progressCheckboxes[9].setSelected(true));
+                                SwingUtilities.invokeLater(() -> progressCheckboxes[10].setSelected(true));
                                 totalCompleted.incrementAndGet();
                                 runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")");
                             }
@@ -488,7 +501,6 @@ public class AutomaticRepairs extends JPanel {
     /**
      * Runs tweaks to the system.
      */
-    @SuppressWarnings("unchecked")
     private static void runSystemTweaks() {
         DebugUtil.debug("Running system tweaks...");
         @NotNull List<Runnable> tasks = new ArrayList<>();
@@ -500,9 +512,9 @@ public class AutomaticRepairs extends JPanel {
             return;
         }
 
-        // Fixes micro-stuttering in games.
-        if (config.get("platformTickClock") != null
-                && config.get("platformTickClock").equals(Boolean.TRUE)) {
+        // Fixes micro-stuttering in games by enabling the platform tick clock.
+        if (config.get("enablePlatformTickClock") != null
+                && config.get("enablePlatformTickClock").equals(Boolean.TRUE)) {
             tasks.add(() -> {
                 CommandUtil.runCommand("bcdedit /set useplatformtick yes", true);
                 CommandUtil.runCommand("bcdedit /deletevalue useplatformclock", true);
@@ -510,14 +522,14 @@ public class AutomaticRepairs extends JPanel {
         }
 
         // Enables scheduled defrag.
-        if (config.get("scheduledDefrag") != null
-                && config.get("scheduledDefrag").equals(Boolean.TRUE)) {
+        if (config.get("enableScheduledDefrag") != null
+                && config.get("enableScheduledDefrag").equals(Boolean.TRUE)) {
             tasks.add(() -> CommandUtil.runCommand("schtasks /Change /ENABLE /TN \"\\Microsoft\\Windows\\Defrag\\ScheduledDefrag\"", true));
         }
 
         // Disables various telemetry tasks.
-        if (config.get("telemetry") != null
-                && config.get("telemetry").equals(Boolean.TRUE)) {
+        if (config.get("disableTelemetry") != null
+                && config.get("disableTelemetry").equals(Boolean.TRUE)) {
             tasks.add(() -> {
                 CommandUtil.runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\Microsoft Compatibility Appraiser\" /disable", true);
                 CommandUtil.runCommand("schtasks /change /TN \"Microsoft\\Windows\\Application Experience\\ProgramDataUpdater\" /disable", true);
@@ -532,20 +544,20 @@ public class AutomaticRepairs extends JPanel {
         }
 
         // Deletes the controversial 'defaultuser0' user.
-        if (config.get("defaultuser0") != null
-                && config.get("defaultuser0").equals(Boolean.TRUE)) {
+        if (config.get("removeDefaultUser0") != null
+                && config.get("removeDefaultUser0").equals(Boolean.TRUE)) {
             tasks.add(() -> CommandUtil.runCommand("net user defaultuser0 /delete", true));
         }
 
         // Clears the Windows product key from registry.
-        if (config.get("productKey") != null
-                && config.get("productKey").equals(Boolean.TRUE)) {
+        if (config.get("clearProductKey") != null
+                && config.get("clearProductKey").equals(Boolean.TRUE)) {
             tasks.add(() -> CommandUtil.runCommand("cscript.exe //nologo \"%SystemRoot%\\system32\\slmgr.vbs\" /cpky", true));
         }
 
-        // Resets network settings.
-        if (config.get("networkReset") != null
-                && config.get("networkReset").equals(Boolean.TRUE)) {
+        // Fixes network settings.
+        if (config.get("fixNetworkIssues") != null
+                && config.get("fixNetworkIssues").equals(Boolean.TRUE)) {
             tasks.add(() -> {
                 CommandUtil.runCommand("netsh winsock reset", true);
                 CommandUtil.runCommand("netsh int ip reset", true);
@@ -558,14 +570,14 @@ public class AutomaticRepairs extends JPanel {
         }
 
         // Re-registers ExplorerFrame.dll.
-        if (config.get("explorerFrame") != null
-                && config.get("explorerFrame").equals(Boolean.TRUE)) {
+        if (config.get("fixExplorerFrame") != null
+                && config.get("fixExplorerFrame").equals(Boolean.TRUE)) {
             tasks.add(() -> CommandUtil.runCommand("regsvr32 /s ExplorerFrame.dll", true));
         }
 
         // Disables NetBios for all interfaces.
-        if (config.get("netBios") != null
-                && config.get("netBios").equals(Boolean.TRUE)) {
+        if (config.get("disableNetBios") != null
+                && config.get("disableNetBios").equals(Boolean.TRUE)) {
             @NotNull String baseKeyPath = "SYSTEM\\CurrentControlSet\\services\\NetBT\\Parameters\\Interfaces";
             java.util.@NotNull List<String> subKeys = RegistryUtil.listSubKeys(WinReg.HKEY_LOCAL_MACHINE, baseKeyPath);
 
@@ -576,47 +588,108 @@ public class AutomaticRepairs extends JPanel {
         }
 
         // Resets Windows Media Player.
-        if (config.get("mediaPlayer") != null
-                && config.get("mediaPlayer").equals(Boolean.TRUE)) {
+        if (config.get("fixWindowsMediaPlayer") != null
+                && config.get("fixWindowsMediaPlayer").equals(Boolean.TRUE)) {
             tasks.add(() -> {
                 CommandUtil.runCommand("regsvr32 /s jscript.dll", false);
                 CommandUtil.runCommand("regsvr32 /s vbscript.dll", true);
             });
         }
 
-        Map<String, Object> defender = (Map<String, Object>) config.get("windowsDefender");
+        // Execute system tasks using TaskUtil.
+        TaskUtil.executeTasks(tasks);
+        DebugUtil.debug("Completed system tweaks.");
+    }
 
-        if (defender != null) {
+    /**
+     * Runs tweaks to Windows Defender.
+     */
+    private static void runWindowsDefenderTweaks() {
+        DebugUtil.debug("Running Windows Defender tweaks...");
+        @NotNull List<Runnable> tasks = new ArrayList<>();
+        @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("windows_defender.json"));
+        Map<String, Object> defender = configLoader.getConfig().get("windowsDefender");
+        boolean defenderRunning = ProcessUtil.isProcessRunning("MsMpEng.exe");
+
+        if (defender != null && defenderRunning) {
             // Enables Windows Firewall for all profiles.
-            // Path in JSON: defender\fixFirewall
-            if (defender.get("fixFirewall") != null
-                    && defender.get("fixFirewall").equals(Boolean.TRUE)) {
-                tasks.add(() -> CommandUtil.runPowerShellCommand("Set-NetFirewallProfile -ErrorAction SilentlyContinue -Profile Domain,Private,Public -Enabled True", false));
+            if (defender.get("enableFirewall") != null
+                    && defender.get("enableFirewall").equals(Boolean.TRUE)) {
+                tasks.add(() -> CommandUtil.getPowerShellCommandOutput("Set-NetFirewallProfile -ErrorAction SilentlyContinue -Profile Domain,Private,Public -Enabled True", true, false));
             }
 
             // Removes all Windows Defender exclusions.
             if (defender.get("removeExclusions") != null
                     && defender.get("removeExclusions").equals(Boolean.TRUE)) {
                 tasks.add(() -> {
-                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ExclusionPath | ForEach-Object { Remove-MpPreference -ExclusionPath $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ExclusionExtension | ForEach-Object { Remove-MpPreference -ExclusionExtension $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ExclusionProcess | ForEach-Object { Remove-MpPreference -ExclusionProcess $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ExclusionIpAddress | ForEach-Object { Remove-MpPreference -ExclusionIpAddress $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ThreatIDDefaultAction_Ids | ForEach-Object { Remove-MpPreference -ThreatIDDefaultAction_Ids $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ThreatIDDefaultAction_Actions | ForEach-Object { Remove-MpPreference -ThreatIDDefaultAction_Actions $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty AttackSurfaceReductionOnlyExclusions | ForEach-Object { Remove-MpPreference -AttackSurfaceReductionOnlyExclusions $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ControlledFolderAccessAllowedApplications | ForEach-Object { Remove-MpPreference -ControlledFolderAccessAllowedApplications $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ControlledFolderAccessProtectedFolders | ForEach-Object { Remove-MpPreference -ControlledFolderAccessProtectedFolders $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty AttackSurfaceReductionRules_Ids | ForEach-Object { Remove-MpPreference -AttackSurfaceReductionRules_Ids $_ }", false);
-                    CommandUtil.runPowerShellCommand("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty AttackSurfaceReductionRules_Actions | ForEach-Object { Remove-MpPreference -AttackSurfaceReductionRules_Actions $_ }", false);
+                    CommandUtil.getPowerShellCommandOutput("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty AttackSurfaceReductionOnlyExclusions | ForEach-Object { Remove-MpPreference -AttackSurfaceReductionOnlyExclusions $_ }", true, false);
+                    CommandUtil.getPowerShellCommandOutput("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty AttackSurfaceReductionRules_Actions | ForEach-Object { Remove-MpPreference -AttackSurfaceReductionRules_Actions $_ }", true, false);
+                    CommandUtil.getPowerShellCommandOutput("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty AttackSurfaceReductionRules_Ids | ForEach-Object { Remove-MpPreference -AttackSurfaceReductionRules_Ids $_ }", true, false);
+                    CommandUtil.getPowerShellCommandOutput("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ControlledFolderAccessAllowedApplications | ForEach-Object { Remove-MpPreference -ControlledFolderAccessAllowedApplications $_ }", true, false);
+                    CommandUtil.getPowerShellCommandOutput("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ControlledFolderAccessProtectedFolders | ForEach-Object { Remove-MpPreference -ControlledFolderAccessProtectedFolders $_ }", true, false);
+                    CommandUtil.getPowerShellCommandOutput("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ExclusionExtension | ForEach-Object { Remove-MpPreference -ExclusionExtension $_ }", true, false);
+                    CommandUtil.getPowerShellCommandOutput("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ExclusionIpAddress | ForEach-Object { Remove-MpPreference -ExclusionIpAddress $_ }", true, false);
+                    CommandUtil.getPowerShellCommandOutput("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ExclusionPath | ForEach-Object { Remove-MpPreference -ExclusionPath $_ }", true, false);
+                    CommandUtil.getPowerShellCommandOutput("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ExclusionProcess | ForEach-Object { Remove-MpPreference -ExclusionProcess $_ }", true, false);
+                    CommandUtil.getPowerShellCommandOutput("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ThreatIDDefaultAction_Actions | ForEach-Object { Remove-MpPreference -ThreatIDDefaultAction_Actions $_ }", true, false);
+                    CommandUtil.getPowerShellCommandOutput("Get-MpPreference -ErrorAction SilentlyContinue | Select-Object -ExpandProperty ThreatIDDefaultAction_Ids | ForEach-Object { Remove-MpPreference -ThreatIDDefaultAction_Ids $_ }", true, false);
                 });
             }
 
             // Removes all previous Windows Defender settings.
             if (defender.get("removePreviousSettings") != null
                     && defender.get("removePreviousSettings").equals(Boolean.TRUE)) {
-                tasks.add(() -> CommandUtil.runPowerShellCommand("Remove-MpPreference -ErrorAction SilentlyContinue"
-                        + " -RealTimeScanDirection"
+                tasks.add(() -> CommandUtil.getPowerShellCommandOutput("Remove-MpPreference -ErrorAction SilentlyContinue"
+                        + " -AllowDatagramProcessingOnWinServer"
+                        + " -AllowNetworkProtectionDownLevel"
+                        + " -AllowNetworkProtectionOnWinServer"
+                        + " -CheckForSignaturesBeforeRunningScan"
+                        + " -CloudBlockLevel"
+                        + " -CloudExtendedTimeout"
+                        + " -DisableArchiveScanning"
+                        + " -DisableAutoExclusions"
+                        + " -DisableBehaviorMonitoring"
+                        + " -DisableBlockAtFirstSeen"
+                        + " -DisableCatchupFullScan"
+                        + " -DisableCatchupQuickScan"
+                        + " -DisableCpuThrottleOnIdleScans"
+                        + " -DisableDatagramProcessing"
+                        + " -DisableDnsOverTcpParsing"
+                        + " -DisableDnsParsing"
+                        + " -DisableEmailScanning"
+                        + " -DisableGradualRelease"
+                        + " -DisableHttpParsing"
+                        + " -DisableIOAVProtection"
+                        + " -DisableInboundConnectionFiltering"
+                        + " -DisableIntrusionPreventionSystem"
+                        + " -DisablePrivacyMode"
+                        + " -DisableRdpParsing"
+                        + " -DisableRealtimeMonitoring"
+                        + " -DisableRemovableDriveScanning"
+                        + " -DisableRestorePoint"
+                        + " -DisableScanningMappedNetworkDrivesForFullScan"
+                        + " -DisableScanningNetworkFiles"
+                        + " -DisableScriptScanning"
+                        + " -DisableSshParsing"
+                        + " -DisableTlsParsing"
+                        + " -EnableControlledFolderAccess"
+                        + " -EnableDnsSinkhole"
+                        + " -EnableFileHashComputation"
+                        + " -EnableFullScanOnBatteryPower"
+                        + " -EnableLowCpuPriority"
+                        + " -EnableNetworkProtection"
+                        + " -EngineUpdatesChannel"
+                        + " -ForceUseProxyOnly"
+                        + " -HighThreatDefaultAction"
+                        + " -LowThreatDefaultAction"
+                        + " -MAPSReporting"
+                        + " -MeteredConnectionUpdates"
+                        + " -ModerateThreatDefaultAction"
+                        + " -PUAProtection"
+                        + " -PlatformUpdatesChannel"
+                        + " -ProxyBypass"
+                        + " -ProxyPacUrl"
+                        + " -ProxyServer"
                         + " -QuarantinePurgeItemsAfterDelay"
                         + " -RemediationScheduleDay"
                         + " -RemediationScheduleTime"
@@ -624,87 +697,36 @@ public class AutomaticRepairs extends JPanel {
                         + " -ReportingCriticalFailureTimeOut"
                         + " -ReportingNonCriticalTimeOut"
                         + " -ScanAvgCPULoadFactor"
-                        + " -CheckForSignaturesBeforeRunningScan"
-                        + " -ScanPurgeItemsAfterDelay"
                         + " -ScanOnlyIfIdleEnabled"
                         + " -ScanParameters"
+                        + " -ScanPurgeItemsAfterDelay"
                         + " -ScanScheduleDay"
                         + " -ScanScheduleQuickScanTime"
                         + " -ScanScheduleTime"
-                        + " -SignatureFirstAuGracePeriod"
+                        + " -SchedulerRandomizationTime"
+                        + " -SevereThreatDefaultAction"
+                        + " -SharedSignaturesPath"
                         + " -SignatureAuGracePeriod"
+                        + " -SignatureBlobFileSharesSources"
+                        + " -SignatureBlobUpdateInterval"
                         + " -SignatureDefinitionUpdateFileSharesSources"
                         + " -SignatureDisableUpdateOnStartupWithoutEngine"
                         + " -SignatureFallbackOrder"
-                        + " -SharedSignaturesPath"
+                        + " -SignatureFirstAuGracePeriod"
                         + " -SignatureScheduleDay"
                         + " -SignatureScheduleTime"
                         + " -SignatureUpdateCatchupInterval"
                         + " -SignatureUpdateInterval"
-                        + " -SignatureBlobUpdateInterval"
-                        + " -SignatureBlobFileSharesSources"
-                        + " -MeteredConnectionUpdates"
-                        + " -AllowNetworkProtectionOnWinServer"
-                        + " -DisableDatagramProcessing"
-                        + " -DisableCpuThrottleOnIdleScans"
-                        + " -MAPSReporting"
                         + " -SubmitSamplesConsent"
-                        + " -DisableAutoExclusions"
-                        + " -DisablePrivacyMode"
-                        + " -RandomizeScheduleTaskTimes"
-                        + " -SchedulerRandomizationTime"
-                        + " -DisableBehaviorMonitoring"
-                        + " -DisableIntrusionPreventionSystem"
-                        + " -DisableIOAVProtection"
-                        + " -DisableRealtimeMonitoring"
-                        + " -DisableScriptScanning"
-                        + " -DisableArchiveScanning"
-                        + " -DisableCatchupFullScan"
-                        + " -DisableCatchupQuickScan"
-                        + " -DisableEmailScanning"
-                        + " -DisableRemovableDriveScanning"
-                        + " -DisableRestorePoint"
-                        + " -DisableScanningMappedNetworkDrivesForFullScan"
-                        + " -DisableScanningNetworkFiles"
                         + " -UILockdown"
                         + " -UnknownThreatDefaultAction"
-                        + " -LowThreatDefaultAction"
-                        + " -ModerateThreatDefaultAction"
-                        + " -HighThreatDefaultAction"
-                        + " -SevereThreatDefaultAction"
-                        + " -DisableBlockAtFirstSeen"
-                        + " -PUAProtection"
-                        + " -CloudBlockLevel"
-                        + " -CloudExtendedTimeout"
-                        + " -EnableNetworkProtection"
-                        + " -EnableControlledFolderAccess"
-                        + " -EnableLowCpuPriority"
-                        + " -EnableFileHashComputation"
-                        + " -EnableFullScanOnBatteryPower"
-                        + " -ProxyPacUrl"
-                        + " -ProxyServer"
-                        + " -ProxyBypass"
-                        + " -ForceUseProxyOnly"
-                        + " -DisableTlsParsing"
-                        + " -DisableHttpParsing"
-                        + " -DisableDnsParsing"
-                        + " -DisableDnsOverTcpParsing"
-                        + " -DisableSshParsing"
-                        + " -PlatformUpdatesChannel"
-                        + " -EngineUpdatesChannel"
-                        + " -DisableGradualRelease"
-                        + " -AllowNetworkProtectionDownLevel"
-                        + " -AllowDatagramProcessingOnWinServer"
-                        + " -EnableDnsSinkhole"
-                        + " -DisableInboundConnectionFiltering"
-                        + " -DisableRdpParsing"
-                        + " -Force", false));
+                        + " -Force", true, false));
             }
 
             // Sets Windows Defender to recommended settings.
             if (defender.get("setRecommendedSettings") != null
                     && defender.get("setRecommendedSettings").equals(Boolean.TRUE)) {
-                tasks.add(() -> CommandUtil.runPowerShellCommand("Set-MpPreference -ErrorAction SilentlyContinue"
+                tasks.add(() -> CommandUtil.getPowerShellCommandOutput("Set-MpPreference -ErrorAction SilentlyContinue"
                         + " -CloudBlockLevel 4"
                         + " -CloudExtendedTimeout 10"
                         + " -DisableArchiveScanning 0"
@@ -728,14 +750,14 @@ public class AutomaticRepairs extends JPanel {
                         + " -ScanAvgCPULoadFactor 50"
                         + " -SevereThreatDefaultAction Remove"
                         + " -SignatureBlobUpdateInterval 120"
-                        + " -SubmitSamplesConsent 3", false));
+                        + " -SubmitSamplesConsent 3", true, false));
             }
 
             // Sets Windows Defender ASR rules to recommended settings.
-            if (defender.get("setASRRules") != null
-                    && defender.get("setASRRules").equals(Boolean.TRUE)) {
+            if (defender.get("setRecommendedASRRules") != null
+                    && defender.get("setRecommendedASRRules").equals(Boolean.TRUE)) {
                 tasks.add(() -> {
-                    CommandUtil.runPowerShellCommand("Add-MpPreference"
+                    CommandUtil.getPowerShellCommandOutput("Add-MpPreference"
                             + " -AttackSurfaceReductionRules_Ids "
                             + "26190899-1602-49e8-8b27-eb1d0a1ce869," // ASR: Block Adobe Reader from creating child processes
                             + "3b576869-a4ec-4529-8536-b80a7769e899," // ASR: Block all Office applications from creating child processes
@@ -749,29 +771,29 @@ public class AutomaticRepairs extends JPanel {
                             + "d3e037e1-3eb8-44c8-a917-57927947596d," // ASR: Block untrusted and unsigned processes that run from USB
                             + "d4f940ab-401b-4efc-aadc-ad5f3c50688a," // ASR: Block Win32 API calls from Office macros
                             + "e6db77e5-3df2-4cf1-b95a-636979351e5b" // ASR: Use advanced protection against ransomware
-                            + " -AttackSurfaceReductionRules_Actions Enabled", false);
+                            + " -AttackSurfaceReductionRules_Actions Enabled", true, false);
 
                     // Disables certain ASR rules from blocking.
-                    CommandUtil.runPowerShellCommand("Add-MpPreference"
+                    CommandUtil.getPowerShellCommandOutput("Add-MpPreference"
                             + " -AttackSurfaceReductionRules_Ids "
                             + "01443614-cd74-433a-b99e-2ecdc07bfc25," // ASR: Don't block credential stealing from the Windows local security authority subsystem
                             + "9e6c4e1f-7d60-472f-ba1a-a39ef669e4b2," // ASR: Don't block executable files from running unless they meet a prevalence, age, or trusted list criterion
                             + "d1e49aac-8f56-4280-b9ba-993a6d77406c" // ASR: Don't block process creations originating from PSExec and WMI commands
-                            + " -AttackSurfaceReductionRules_Actions Disabled", false);
+                            + " -AttackSurfaceReductionRules_Actions Disabled", true, false);
 
                     // Disables certain ASR rules from warning.
-                    CommandUtil.runPowerShellCommand("Add-MpPreference"
+                    CommandUtil.getPowerShellCommandOutput("Add-MpPreference"
                             + " -AttackSurfaceReductionRules_Ids "
                             + "56a863a9-875e-4185-98a7-b882c64b5ce5," // ASR: Warn against abuse of exploited vulnerable signed drivers
                             + "a8f5898e-1dc8-49a9-9878-85004b8a61e6" // ASR: Warn against Webshell creation for servers
-                            + " -AttackSurfaceReductionRules_Actions Warn", false);
+                            + " -AttackSurfaceReductionRules_Actions Warn", true, false);
                 });
             }
         }
 
-        // Execute system tasks using TaskUtil.
+        // Execute Windows Defender tasks using TaskUtil.
         TaskUtil.executeTasks(tasks);
-        DebugUtil.debug("Completed system tweaks.");
+        DebugUtil.debug("Completed Windows Defender tweaks.");
     }
 
     /**

@@ -1,0 +1,9 @@
+{
+  "windowsDefender": {
+    "enableFirewall": true,
+    "removeExclusions": true,
+    "removePreviousSettings": true,
+    "setRecommendedSettings": true,
+    "setRecommendedASRRules": true
+  }
+}
