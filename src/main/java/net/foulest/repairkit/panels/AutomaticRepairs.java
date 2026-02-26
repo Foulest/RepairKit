@@ -99,7 +99,7 @@ public class AutomaticRepairs extends JPanel {
         add(progressLabel);
 
         String @NotNull [] progressItems = {
-                "Create Restore Point",
+                "Create Restore Point (Slow)",
                 "Delete System Policies",
                 "Run Registry Tweaks",
                 "Run System Tweaks",
@@ -135,9 +135,6 @@ public class AutomaticRepairs extends JPanel {
                 x += checkboxWidth;
             }
         }
-
-        // Sets the 'Create Restore Point' checkbox to selected by default.
-        progressCheckboxes[0].setSelected(true);
 
         // Adds the progress checkboxes to the panel.
         DebugUtil.debug("Adding the Automatic Repairs progress checkboxes to the panel...");
@@ -362,9 +359,6 @@ public class AutomaticRepairs extends JPanel {
                     checkbox.setEnabled(true);
                     checkbox.setSelected(false);
                 }
-
-                // Sets the 'Create Restore Point' checkbox to selected by default.
-                progressCheckboxes[0].setSelected(true);
             } catch (HeadlessException ex) {
                 DebugUtil.warn("Failed to run Automatic Repairs", ex);
             }
@@ -379,7 +373,7 @@ public class AutomaticRepairs extends JPanel {
      */
     private static void createRestorePoint() {
         DebugUtil.debug("Creating a restore point...");
-        CommandUtil.runPowerShellCommand("Checkpoint-Computer -Description 'RepairKit Automatic Repairs'", false);
+        CommandUtil.getPowerShellCommandOutput("Checkpoint-Computer -Description 'RepairKit Automatic Repairs' -ErrorAction SilentlyContinue", true, false);
     }
 
     /**
