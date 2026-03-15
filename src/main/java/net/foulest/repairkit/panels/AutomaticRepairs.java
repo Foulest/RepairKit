@@ -566,6 +566,13 @@ public class AutomaticRepairs extends JPanel {
             });
         }
 
+        // Reinstalls the Windows 'Get Help' app if missing.
+        if (config.get("fixGetHelpApp") != null
+                && config.get("fixGetHelpApp").equals(Boolean.TRUE)) {
+            tasks.add(() -> CommandUtil.runCommand("winget install --id 9PKDZBMV1H3T --source msstore" +
+                    " --accept-package-agreements --accept-source-agreements", false));
+        }
+
         // Execute system tasks using TaskUtil.
         TaskUtil.executeTasks(tasks);
         DebugUtil.debug("Completed system tweaks.");

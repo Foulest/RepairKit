@@ -8,6 +8,7 @@
     "fixNetworkIssues": true,
     "fixExplorerFrame": true,
     "disableNetBios": true,
-    "fixWindowsMediaPlayer": true
+    "fixWindowsMediaPlayer": true,
+    "fixGetHelpApp": true
   }
 }
