@@ -17,8 +17,10 @@
  */
 package net.foulest.repairkit.util;
 
+import lombok.AccessLevel;
 import lombok.Cleanup;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -37,7 +39,8 @@ import java.util.concurrent.CompletableFuture;
  * @author Foulest
  */
 @Data
-public class CommandUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CommandUtil {
 
     /**
      * Runs a command.

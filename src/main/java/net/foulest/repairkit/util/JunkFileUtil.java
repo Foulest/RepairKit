@@ -17,7 +17,9 @@
  */
 package net.foulest.repairkit.util;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import net.foulest.repairkit.RepairKit;
 import net.foulest.repairkit.util.config.ConfigLoader;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +43,8 @@ import java.util.*;
  * @author Foulest
  */
 @Data
-public class JunkFileUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class JunkFileUtil {
 
     // File extensions to scan for
     // Note: These are protected and can't be modified in the config files

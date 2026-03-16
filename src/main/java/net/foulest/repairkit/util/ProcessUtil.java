@@ -17,7 +17,9 @@
  */
 package net.foulest.repairkit.util;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -26,7 +28,8 @@ import org.jetbrains.annotations.NotNull;
  * @author Foulest
  */
 @Data
-public class ProcessUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ProcessUtil {
 
     /**
      * Checks if a service is running.

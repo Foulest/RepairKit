@@ -17,7 +17,9 @@
  */
 package net.foulest.repairkit.util;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import net.foulest.repairkit.RepairKit;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -44,7 +46,8 @@ import java.util.Map;
  * @author Foulest
  */
 @Data
-public class SwingUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SwingUtil {
 
     /**
      * Creates an action button without a tooltip.

@@ -17,7 +17,9 @@
  */
 package net.foulest.repairkit.util;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
@@ -31,7 +33,8 @@ import java.util.concurrent.Executors;
  * @author Foulest
  */
 @Data
-public class TaskUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class TaskUtil {
 
     /**
      * Executes a list of tasks concurrently using an ExecutorService and CountDownLatch.

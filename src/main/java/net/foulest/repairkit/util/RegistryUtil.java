@@ -20,7 +20,9 @@ package net.foulest.repairkit.util;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.ptr.IntByReference;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -32,7 +34,8 @@ import java.util.List;
  * @author Foulest
  */
 @Data
-public class RegistryUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class RegistryUtil {
 
     /**
      * Creates a registry key if it doesn't exist.

@@ -17,7 +17,9 @@
  */
 package net.foulest.repairkit.util;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +42,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Foulest
  */
 @Data
-public class DebugUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DebugUtil {
 
     private static final Path logFile = Paths.get(System.getenv("TEMP") + "\\RepairKit.log");
     private static final Lock lock = new ReentrantLock();

@@ -49,12 +49,12 @@ public class ServicesTaskRunner extends AbstractTaskRunner {
         @NotNull List<Runnable> tasks = new ArrayList<>();
         Map<String, Object> values = (Map<String, Object>) entries.get("values");
 
-        values.forEach((key, value) -> {
+        values.forEach((key, obj) -> {
             @NotNull Runnable task = () -> {
                 ServiceAction action;
 
-                if (value instanceof String) {
-                    switch ((String) value) {
+                if (obj instanceof String value) {
+                    switch (value) {
                         case "boot":
                             action = ServiceAction.BOOT;
                             break;
@@ -78,7 +78,7 @@ public class ServicesTaskRunner extends AbstractTaskRunner {
                             return;
                     }
                 } else {
-                    DebugUtil.debug("Invalid value: " + value);
+                    DebugUtil.debug("Invalid value: " + obj);
                     return;
                 }
 

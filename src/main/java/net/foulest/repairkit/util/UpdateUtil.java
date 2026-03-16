@@ -17,7 +17,9 @@
  */
 package net.foulest.repairkit.util;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import net.foulest.repairkit.RepairKit;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,7 +43,8 @@ import java.util.regex.Pattern;
  * @author Foulest
  */
 @Data
-public class UpdateUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class UpdateUtil {
 
     private static final String REPO_API_URL = "https://api.github.com/repos/Foulest/RepairKit/releases/latest";
     private static final String DOWNLOAD_URL = "https://github.com/Foulest/RepairKit/releases/latest";

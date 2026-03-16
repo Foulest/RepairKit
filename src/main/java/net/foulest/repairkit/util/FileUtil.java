@@ -17,7 +17,9 @@
  */
 package net.foulest.repairkit.util;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import net.foulest.repairkit.RepairKit;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -41,7 +43,8 @@ import java.util.zip.ZipInputStream;
  * @author Foulest
  */
 @Data
-public class FileUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class FileUtil {
 
     /**
      * The temporary directory for the program.
@@ -158,7 +161,6 @@ public class FileUtil {
      */
     @Contract("_ -> new")
     public static @NotNull ImageIcon getImageIcon(String path) {
-        DebugUtil.debug("Getting image icon: " + path);
         ClassLoader classLoader = RepairKit.class.getClassLoader();
         @Nullable URL resource = classLoader.getResource(path);
 

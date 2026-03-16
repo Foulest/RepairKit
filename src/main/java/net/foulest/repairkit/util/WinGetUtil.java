@@ -2,7 +2,9 @@ package net.foulest.repairkit.util;
 
 import com.sshtools.twoslices.Toast;
 import com.sshtools.twoslices.ToastType;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import net.foulest.repairkit.util.config.ConfigLoader;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +18,8 @@ import java.util.*;
  */
 @Data
 @SuppressWarnings("resource")
-public class WinGetUtil {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class WinGetUtil {
 
     /**
      * The list of excluded programs.
