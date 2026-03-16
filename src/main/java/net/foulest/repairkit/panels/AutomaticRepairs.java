@@ -566,11 +566,20 @@ public class AutomaticRepairs extends JPanel {
             });
         }
 
-        // Reinstalls the Windows 'Get Help' app if missing.
-        if (config.get("fixGetHelpApp") != null
-                && config.get("fixGetHelpApp").equals(Boolean.TRUE)) {
+        // Re-installs the Windows 'Get Help' app if missing.
+        if (config.get("fixMissingGetHelpApp") != null
+                && config.get("fixMissingGetHelpApp").equals(Boolean.TRUE)) {
             tasks.add(() -> CommandUtil.runCommand("winget install --id 9PKDZBMV1H3T --source msstore" +
                     " --accept-package-agreements --accept-source-agreements", false));
+        }
+
+        // Repairs every installed App Package by re-registering them.
+        if (config.get("fixBrokenWindowsApps") != null
+                && config.get("fixBrokenWindowsApps").equals(Boolean.TRUE)) {
+            tasks.add(() -> CommandUtil.runPowerShellCommand("Get-AppxPackage | Where-Object {"
+                    + " $_.InstallLocation -and (Test-Path $_.InstallLocation) } | ForEach-Object {"
+                    + " Add-AppxPackage -DisableDevelopmentMode -Register ($_.InstallLocation + '\\AppxManifest.xml')"
+                    + " -ErrorAction SilentlyContinue }", false));
         }
 
         // Execute system tasks using TaskUtil.

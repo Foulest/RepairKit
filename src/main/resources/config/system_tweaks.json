@@ -9,6 +9,7 @@
     "fixExplorerFrame": true,
     "disableNetBios": true,
     "fixWindowsMediaPlayer": true,
-    "fixGetHelpApp": true
+    "fixMissingGetHelpApp": true,
+    "fixBrokenWindowsApps": true
   }
 }
