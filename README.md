@@ -1,5 +1,17 @@
+# RepairKit
 
-<div align="right">
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+[![CodeQL](https://github.com/Foulest/RepairKit/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/Foulest/RepairKit/actions/workflows/github-code-scanning/codeql)
+[![Downloads](https://img.shields.io/github/downloads/Foulest/RepairKit/total.svg)](https://github.com/Foulest/RepairKit/releases)
+
+**RepairKit** is an all-in-one Java-based Windows repair and maintenance toolkit.
+
+[Softpedia](https://softpedia.com/get/System/OS-Enhancements/RepairKit.shtml)
+• [MajorGeeks](https://m.majorgeeks.com/files/details/repairkit.html)
+• [Uptodown](https://repairkit.en.uptodown.com/windows)
+• [AlternativeTo](https://alternativeto.net/software/repairkit/about)
+
+<div align="left">
   <details>
     <summary >🌐 Language</summary>
     <div>
@@ -29,19 +41,6 @@
     </div>
   </details>
 </div>
-
-# RepairKit
-
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-[![CodeQL](https://github.com/Foulest/RepairKit/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/Foulest/RepairKit/actions/workflows/github-code-scanning/codeql)
-[![Downloads](https://img.shields.io/github/downloads/Foulest/RepairKit/total.svg)](https://github.com/Foulest/RepairKit/releases)
-
-**RepairKit** is an all-in-one Java-based Windows repair and maintenance toolkit.
-
-[Softpedia](https://softpedia.com/get/System/OS-Enhancements/RepairKit.shtml)
-• [MajorGeeks](https://m.majorgeeks.com/files/details/repairkit.html)
-• [Uptodown](https://repairkit.en.uptodown.com/windows)
-• [AlternativeTo](https://alternativeto.net/software/repairkit/about)
 
 ###
 
