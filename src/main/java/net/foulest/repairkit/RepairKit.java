@@ -80,7 +80,7 @@ public final class RepairKit extends JFrame {
 
             // Checks for incompatibility issues.
             DebugUtil.debug("Checking for incompatibility issues...");
-            checkOperatingSystemCompatibility();
+            checkOSCompatibility();
 
             // Checks for Medal.
             if (!safeMode) {
@@ -251,7 +251,7 @@ public final class RepairKit extends JFrame {
     /**
      * Checks if the user's operating system is supported.
      */
-    private static void checkOperatingSystemCompatibility() {
+    private static void checkOSCompatibility() {
         String osName = System.getProperty("os.name");
 
         // Checks if the operating system is 32-bit.
@@ -270,12 +270,12 @@ public final class RepairKit extends JFrame {
 
         // Checks if the operating system is outdated (older than Windows 10).
         DebugUtil.debug("Checking if the operating system is outdated...");
-        if (!osName.equalsIgnoreCase("Windows 10")
-                && !osName.equalsIgnoreCase("Windows 11")
-                && !osName.equalsIgnoreCase("Windows Server 2025")
-                && !osName.equalsIgnoreCase("Windows Server 2022")
-                && !osName.equalsIgnoreCase("Windows Server 2019")
-                && !osName.equalsIgnoreCase("Windows Server 2016")) {
+        if (!"Windows 10".equalsIgnoreCase(osName)
+                && !"Windows 11".equalsIgnoreCase(osName)
+                && !"Windows Server 2025".equalsIgnoreCase(osName)
+                && !"Windows Server 2022".equalsIgnoreCase(osName)
+                && !"Windows Server 2019".equalsIgnoreCase(osName)
+                && !"Windows Server 2016".equalsIgnoreCase(osName)) {
             if (osName.contains("Windows")) {
                 SoundUtil.playSound(ConstantUtil.ERROR_SOUND);
                 JOptionPane.showMessageDialog(null,
