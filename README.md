@@ -36,7 +36,7 @@
         | <a href="https://openaitx.github.io/view.html?user=Foulest&project=RepairKit&lang=tr">Türkçe</a>
         | <a href="https://openaitx.github.io/view.html?user=Foulest&project=RepairKit&lang=vi">Tiếng Việt</a>
         | <a href="https://openaitx.github.io/view.html?user=Foulest&project=RepairKit&lang=id">Bahasa Indonesia</a>
-        | <a href="https://openaitx.github.io/view.html?user=Foulest&project=RepairKit&lang=as">অসমীয়া</
+        | <a href="https://openaitx.github.io/view.html?user=Foulest&project=RepairKit&lang=as">অসমীয়া</a>
       </div>
     </div>
   </details>
