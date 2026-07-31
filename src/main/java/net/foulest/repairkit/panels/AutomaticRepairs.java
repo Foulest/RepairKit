@@ -529,13 +529,17 @@ public class AutomaticRepairs extends JPanel {
         if (config.get("fixNetworkIssues") != null
                 && config.get("fixNetworkIssues").equals(Boolean.TRUE)) {
             tasks.add(() -> {
-                CommandUtil.runCommand("netsh winsock reset", true);
-                CommandUtil.runCommand("netsh int ip reset", true);
-                CommandUtil.runCommand("ipconfig /flushdns", true);
+                CommandUtil.runCommand("ipconfig /flushdns", false);
+                CommandUtil.runCommand("netsh winsock reset", false);
+                CommandUtil.runCommand("netsh int ip reset", false);
+                CommandUtil.runCommand("netsh int tcp set global rss=enabled", false);
+                CommandUtil.runCommand("netsh int tcp set global autotuninglevel=normal", false);
+                CommandUtil.runCommand("netsh int tcp set global ecncapability=default", false);
+                CommandUtil.runCommand("netsh int tcp set global timestamps=enabled", false);
 
                 // Repairs broken Wi-Fi settings.
                 RegistryUtil.deleteRegistryKey(WinReg.HKEY_CLASSES_ROOT, "CLSID\\{988248f3-a1ad-49bf-9170-676cbbc36ba3}");
-                CommandUtil.runCommand("netcfg -v -u dni_dne", true);
+                CommandUtil.runCommand("netcfg -v -u dni_dne", false);
             });
         }
 
