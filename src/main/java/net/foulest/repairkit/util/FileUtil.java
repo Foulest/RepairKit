@@ -111,7 +111,18 @@ public final class FileUtil {
                 }
 
                 saveFile(input, tempDirectory + "\\7zr.exe", true);
-                CommandUtil.getCommandOutput("\"" + tempDirectory + "\\7zr.exe\" x \"" + fileZip + "\"" + " -y -o\"" + fileDest + "\"", false, false);
+
+                try {
+                    @NotNull ProcessBuilder processBuilder = new ProcessBuilder(
+                            tempDirectory + "\\7zr.exe", "x", fileZip, "-y", "-o" + fileDest);
+                    processBuilder.redirectErrorStream(true);
+                    processBuilder.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+                    Process process = processBuilder.start();
+                    process.waitFor();
+                } catch (InterruptedException ex) {
+                    DebugUtil.warn("Failed to wait for extraction: " + fileZip, ex);
+                    Thread.currentThread().interrupt();
+                }
             } catch (IOException ex) {
                 DebugUtil.warn("Failed to unzip file: " + fileZip + " to " + fileDest, ex);
             }

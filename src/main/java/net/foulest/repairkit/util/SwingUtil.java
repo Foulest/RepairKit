@@ -37,7 +37,10 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -146,7 +149,24 @@ public final class SwingUtil {
         }
 
         boolean launchArgsEmpty = launchArgs.isEmpty();
-        CommandUtil.runCommand("\"" + path + "\"" + (launchArgsEmpty ? "" : " " + launchArgs), true);
+
+        @NotNull List<String> commandLine = new ArrayList<>();
+        commandLine.add(path.toString());
+
+        if (!launchArgsEmpty) {
+            commandLine.addAll(Arrays.asList(launchArgs.toString().trim().split("\\s+")));
+        }
+
+        DebugUtil.debug("Launching application: " + String.join(" ", commandLine));
+
+        try {
+            @NotNull ProcessBuilder processBuilder = new ProcessBuilder(commandLine);
+            processBuilder.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+            processBuilder.redirectError(ProcessBuilder.Redirect.DISCARD);
+            processBuilder.start();
+        } catch (IOException ex) {
+            DebugUtil.warn("Failed to launch application: " + path, ex);
+        }
     }
 
     /**

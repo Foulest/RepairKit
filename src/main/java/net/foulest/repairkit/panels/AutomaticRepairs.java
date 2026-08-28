@@ -563,7 +563,7 @@ public class AutomaticRepairs extends JPanel {
         if (config.get("disableNetBios") != null
                 && config.get("disableNetBios").equals(Boolean.TRUE)) {
             @NotNull String baseKeyPath = "SYSTEM\\CurrentControlSet\\services\\NetBT\\Parameters\\Interfaces";
-            java.util.@NotNull List<String> subKeys = RegistryUtil.listSubKeys(WinReg.HKEY_LOCAL_MACHINE, baseKeyPath);
+            @NotNull List<String> subKeys = RegistryUtil.listSubKeys(WinReg.HKEY_LOCAL_MACHINE, baseKeyPath);
 
             for (String subKey : subKeys) {
                 @NotNull String fullPath = baseKeyPath + "\\" + subKey;
