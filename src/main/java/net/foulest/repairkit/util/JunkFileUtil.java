@@ -163,7 +163,14 @@ public final class JunkFileUtil {
                             continue;
                         }
 
-                        @NotNull Path filePath = Paths.get(file);
+                        @NotNull Path filePath;
+
+                        try {
+                            filePath = Paths.get(file);
+                        } catch (InvalidPathException ex) {
+                            DebugUtil.warn("Skipped file with invalid path: " + file, ex);
+                            continue;
+                        }
 
                         // Check if the path is in the excluded paths set
                         if (EXCLUDED_PATHS.stream().anyMatch(excludedPath -> filePath.toAbsolutePath().normalize().startsWith(excludedPath))) {
