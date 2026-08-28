@@ -77,7 +77,7 @@ public final class UpdateUtil {
                         }
                     });
                 }).exceptionally(ex -> {
-                    DebugUtil.warn("Async update check failed", (Exception) ex);
+                    DebugUtil.warn("Async update check failed", ex);
                     return null;
                 });
     }

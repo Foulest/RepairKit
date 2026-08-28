@@ -53,16 +53,21 @@ public final class CommandUtil {
             try {
                 @NotNull ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
                 processBuilder.redirectErrorStream(true);
-                @NotNull Process process = processBuilder.start();
 
-                process.onExit().thenRun(() -> {
-                    try {
-                        process.waitFor();
-                    } catch (InterruptedException ex) {
-                        DebugUtil.warn("Failed to wait for command: " + command, ex);
-                        Thread.currentThread().interrupt();
-                    }
-                }).join();
+                @NotNull Process process = processBuilder.start();
+                process.getOutputStream().close();
+
+                @Cleanup InputStream inputStream = process.getInputStream();
+                byte[] buffer = new byte[8192];
+
+                while (inputStream.read(buffer) != -1) {
+                    // Output is intentionally discarded
+                }
+
+                process.waitFor();
+            } catch (InterruptedException ex) {
+                DebugUtil.warn("Failed to wait for command: " + command, ex);
+                Thread.currentThread().interrupt();
             } catch (IOException ex) {
                 DebugUtil.warn("Failed to run command: " + command, ex);
             }
@@ -90,7 +95,9 @@ public final class CommandUtil {
             try {
                 @NotNull ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", command);
                 processBuilder.redirectErrorStream(true);
+
                 @NotNull Process process = processBuilder.start();
+                process.getOutputStream().close();
 
                 @Cleanup InputStream inputStream = process.getInputStream();
 
@@ -108,17 +115,12 @@ public final class CommandUtil {
                     }
                 }
 
-                process.onExit().thenRun(() -> {
-                    try {
-                        process.waitFor();
-                    } catch (InterruptedException ex) {
-                        DebugUtil.warn("Failed to wait for command: " + command, ex);
-                        Thread.currentThread().interrupt();
-                    }
-                }).join();
+                process.waitFor();
+            } catch (InterruptedException ex) {
+                DebugUtil.warn("Failed to wait for command: " + command, ex);
+                Thread.currentThread().interrupt();
             } catch (IOException ex) {
                 DebugUtil.warn("Failed to run command: " + command, ex);
-                Thread.currentThread().interrupt();
             }
         };
 

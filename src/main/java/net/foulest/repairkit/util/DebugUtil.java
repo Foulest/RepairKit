@@ -62,7 +62,7 @@ public final class DebugUtil {
         // Writes the message to the log file.
         lock.lock();
         try {
-            Files.writeString(logFile, timeStampedMessage, StandardOpenOption.APPEND);
+            Files.writeString(logFile, timeStampedMessage, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {

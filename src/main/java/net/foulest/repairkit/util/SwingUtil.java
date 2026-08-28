@@ -146,7 +146,7 @@ public final class SwingUtil {
         }
 
         boolean launchArgsEmpty = launchArgs.isEmpty();
-        CommandUtil.runCommand(path + (launchArgsEmpty ? "" : " " + launchArgs), true);
+        CommandUtil.runCommand("\"" + path + "\"" + (launchArgsEmpty ? "" : " " + launchArgs), true);
     }
 
     /**

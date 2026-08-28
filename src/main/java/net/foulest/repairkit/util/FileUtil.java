@@ -111,7 +111,7 @@ public final class FileUtil {
                 }
 
                 saveFile(input, tempDirectory + "\\7zr.exe", true);
-                CommandUtil.getCommandOutput("\"" + tempDirectory + "\\7zr.exe\" x \"" + fileZip + "\"" + " -y -o\"" + fileDest, false, false);
+                CommandUtil.getCommandOutput("\"" + tempDirectory + "\\7zr.exe\" x \"" + fileZip + "\"" + " -y -o\"" + fileDest + "\"", false, false);
             } catch (IOException ex) {
                 DebugUtil.warn("Failed to unzip file: " + fileZip + " to " + fileDest, ex);
             }

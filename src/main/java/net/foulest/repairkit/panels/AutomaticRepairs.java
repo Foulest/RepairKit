@@ -227,18 +227,18 @@ public class AutomaticRepairs extends JPanel {
                     createRestorePoint();
                     SwingUtilities.invokeLater(() -> progressCheckboxes[0].setSelected(true));
                     totalCompleted.incrementAndGet();
-                    runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")");
+                    SwingUtilities.invokeLater(() -> runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")"));
                 }
 
                 // Updates the run button text to show progress.
-                runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")");
+                SwingUtilities.invokeLater(() -> runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")"));
 
                 // Deletes system policies.
                 if (deleteSystemPolicies) {
                     deleteSystemPolicies();
                     SwingUtilities.invokeLater(() -> progressCheckboxes[1].setSelected(true));
                     totalCompleted.incrementAndGet();
-                    runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")");
+                    SwingUtilities.invokeLater(() -> runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")"));
                 }
 
                 // Creates tasks for the executor.
@@ -249,7 +249,7 @@ public class AutomaticRepairs extends JPanel {
                                 runRegistryTweaks();
                                 SwingUtilities.invokeLater(() -> progressCheckboxes[2].setSelected(true));
                                 totalCompleted.incrementAndGet();
-                                runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")");
+                                SwingUtilities.invokeLater(() -> runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")"));
                             }
                         },
 
@@ -259,7 +259,7 @@ public class AutomaticRepairs extends JPanel {
                                 runSystemTweaks();
                                 SwingUtilities.invokeLater(() -> progressCheckboxes[3].setSelected(true));
                                 totalCompleted.incrementAndGet();
-                                runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")");
+                                SwingUtilities.invokeLater(() -> runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")"));
                             }
                         },
 
@@ -269,7 +269,7 @@ public class AutomaticRepairs extends JPanel {
                                 runFeaturesTweaks();
                                 SwingUtilities.invokeLater(() -> progressCheckboxes[4].setSelected(true));
                                 totalCompleted.incrementAndGet();
-                                runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")");
+                                SwingUtilities.invokeLater(() -> runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")"));
                             }
 
                             // Repairs disk issues.
@@ -278,7 +278,7 @@ public class AutomaticRepairs extends JPanel {
                                 repairDiskIssues();
                                 SwingUtilities.invokeLater(() -> progressCheckboxes[9].setSelected(true));
                                 totalCompleted.incrementAndGet();
-                                runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")");
+                                SwingUtilities.invokeLater(() -> runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")"));
                             }
                         },
 
@@ -288,7 +288,7 @@ public class AutomaticRepairs extends JPanel {
                                 runServicesTweaks();
                                 SwingUtilities.invokeLater(() -> progressCheckboxes[5].setSelected(true));
                                 totalCompleted.incrementAndGet();
-                                runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")");
+                                SwingUtilities.invokeLater(() -> runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")"));
                             }
                         },
 
@@ -298,7 +298,7 @@ public class AutomaticRepairs extends JPanel {
                                 runWindowsDefenderTweaks();
                                 SwingUtilities.invokeLater(() -> progressCheckboxes[6].setSelected(true));
                                 totalCompleted.incrementAndGet();
-                                runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")");
+                                SwingUtilities.invokeLater(() -> runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")"));
                             }
                         },
 
@@ -308,7 +308,7 @@ public class AutomaticRepairs extends JPanel {
                                 JunkFileUtil.removeJunkFiles();
                                 SwingUtilities.invokeLater(() -> progressCheckboxes[7].setSelected(true));
                                 totalCompleted.incrementAndGet();
-                                runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")");
+                                SwingUtilities.invokeLater(() -> runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")"));
                             }
                         },
 
@@ -321,7 +321,7 @@ public class AutomaticRepairs extends JPanel {
 
                                 SwingUtilities.invokeLater(() -> progressCheckboxes[8].setSelected(true));
                                 totalCompleted.incrementAndGet();
-                                runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")");
+                                SwingUtilities.invokeLater(() -> runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")"));
                             }
                         },
 
@@ -331,7 +331,7 @@ public class AutomaticRepairs extends JPanel {
                                 updateOutdatedPrograms();
                                 SwingUtilities.invokeLater(() -> progressCheckboxes[10].setSelected(true));
                                 totalCompleted.incrementAndGet();
-                                runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")");
+                                SwingUtilities.invokeLater(() -> runButton.setText("Running Repairs... (" + totalCompleted + "/" + totalChecked + ")"));
                             }
                         }
                 );

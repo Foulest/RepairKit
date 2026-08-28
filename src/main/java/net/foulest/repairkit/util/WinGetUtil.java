@@ -32,16 +32,16 @@ public final class WinGetUtil {
     @SuppressWarnings("unchecked")
     public static void updateAllPrograms() {
         @NotNull ConfigLoader configLoader = new ConfigLoader(FileUtil.getConfigFile("update_programs.json"));
-        Map<String, Object> config = configLoader.getConfig().get("excludedPrograms");
-        Object values = config.get("values");
+        Map<String, Object> config = configLoader.getConfig() == null ? null : configLoader.getConfig().get("excludedPrograms");
+        Object values = config == null ? null : config.get("values");
 
         if (values == null || ((Collection<String>) values).isEmpty()) {
-            Toast.toast(ToastType.INFO, "RepairKit", "No excluded programs found.");
             DebugUtil.debug("No excluded programs found.");
-            return;
+            excludedPrograms = new ArrayList<>();
+        } else {
+            excludedPrograms = new ArrayList<>((Collection<String>) values);
         }
 
-        excludedPrograms = new ArrayList<>((Collection<String>) values);
         @NotNull List<String> outdatedPrograms = getOutdatedPrograms();
 
         // Checks if the user clicked no.
@@ -61,11 +61,11 @@ public final class WinGetUtil {
         int excludedCount = 0;
 
         for (@NotNull String id : outdatedPrograms) {
-            excludedPrograms.stream().filter(excluded -> excluded.toLowerCase(Locale.ROOT)
-                    .contains(id.toLowerCase(Locale.ROOT))).forEach(excluded -> {
+            if (excludedPrograms.stream().anyMatch(excluded -> id.toLowerCase(Locale.ROOT)
+                    .contains(excluded.toLowerCase(Locale.ROOT)))) {
                 DebugUtil.debug("Skipping excluded program: " + id);
                 updatedPrograms.add(id);
-            });
+            }
 
             // Skips programs that have already been marked as updated.
             if (updatedPrograms.contains(id)) {
@@ -89,16 +89,6 @@ public final class WinGetUtil {
             // Pause for a moment to allow the notification to fade.
             try {
                 Thread.sleep(3000);
-            } catch (InterruptedException ex) {
-                DebugUtil.warn("Failed to sleep thread", ex);
-                Thread.currentThread().interrupt();
-            }
-        }
-
-        // Busy-wait until all programs have been updated.
-        while (updatedPrograms.size() < outdatedPrograms.size()) {
-            try {
-                Thread.sleep(500);
             } catch (InterruptedException ex) {
                 DebugUtil.warn("Failed to sleep thread", ex);
                 Thread.currentThread().interrupt();
@@ -139,9 +129,9 @@ public final class WinGetUtil {
             DebugUtil.debug("Found program: " + line);
             @NotNull String trim = line.trim();
 
-            // Skips excluded programs (checks via lowercase).
-            if (excludedPrograms.stream().anyMatch(excluded -> excluded.toLowerCase(Locale.ROOT)
-                    .contains(trim.toLowerCase(Locale.ROOT)))) {
+            // Skips excluded programs (checks via lowercase)
+            if (excludedPrograms.stream().anyMatch(excluded -> trim.toLowerCase(Locale.ROOT)
+                    .contains(excluded.toLowerCase(Locale.ROOT)))) {
                 DebugUtil.debug("Skipping excluded program: " + trim);
                 continue;
             }

@@ -89,7 +89,9 @@ public final class JunkFileUtil {
         // Gets the file extensions to scan for from the config file.
         Object fileExtensions = junkFilesConfig.get("fileExtensions");
         if (fileExtensions != null && !((Collection<String>) fileExtensions).isEmpty()) {
-            JUNK_FILE_EXTENSIONS = Set.copyOf((Collection<String>) fileExtensions);
+            @NotNull Set<String> mergedExtensions = new HashSet<>(JUNK_FILE_EXTENSIONS);
+            mergedExtensions.addAll((Collection<String>) fileExtensions);
+            JUNK_FILE_EXTENSIONS = Set.copyOf(mergedExtensions);
         }
 
         // Gets the paths to exclude from scanning from the config file.
@@ -109,7 +111,8 @@ public final class JunkFileUtil {
             }
 
             // Adds the excluded paths to the set without overwriting the default excluded paths.
-            EXCLUDED_PATHS.addAll(excludedPaths);
+            excludedPaths.addAll(EXCLUDED_PATHS);
+            EXCLUDED_PATHS = Set.copyOf(excludedPaths);
         }
 
         // Empties the Recycle Bin.
