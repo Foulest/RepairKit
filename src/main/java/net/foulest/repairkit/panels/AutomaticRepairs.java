@@ -359,8 +359,18 @@ public class AutomaticRepairs extends JPanel {
                     checkbox.setEnabled(true);
                     checkbox.setSelected(false);
                 }
-            } catch (HeadlessException ex) {
+            } catch (RuntimeException ex) {
                 DebugUtil.warn("Failed to run Automatic Repairs", ex);
+            } finally {
+                SwingUtilities.invokeLater(() -> {
+                    runButton.setText("Run Automatic Repairs");
+                    runButton.setEnabled(true);
+                    runButton.setBackground(new Color(0, 120, 215));
+
+                    for (@NotNull JCheckBox checkbox : progressCheckboxes) {
+                        checkbox.setEnabled(true);
+                    }
+                });
             }
         });
 
